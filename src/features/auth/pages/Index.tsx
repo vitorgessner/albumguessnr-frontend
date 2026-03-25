@@ -32,54 +32,60 @@ const Index = () => {
     const registerFormMethods = useForm<FormData>();
 
     const onLoginSubmit: SubmitHandler<FormData> = async (data) => {
+        setloginErrors(null);
         try {
             const response = await axios.post<FormResponse>('/login', data);
             const responseData = response.data;
 
             setCookie('token', responseData.token, 1);
-            setloginErrors(null);
         } catch (err) {
-            if (err instanceof AxiosError){
+            if (err instanceof AxiosError) {
                 const errorResponse = err.response?.data;
                 setloginErrors({ ...errorResponse });
                 console.error(errorResponse);
+                loginFormMethods.resetField('password')
             }
         }
 
     }
 
     const onRegisterSubmit: SubmitHandler<FormData> = async (data) => {
+        setregisterErrors(null);
         try {
             const response = await axios.post<FormResponse>('/register', data);
             const responseData = response.data;
 
             clearCookie('token');
             setCookie('token', responseData.token, 1);
-            
-            setregisterErrors(null);
         } catch (err) {
             if (err instanceof AxiosError) {
                 const errorResponse = err.response?.data;
                 setregisterErrors({ ...errorResponse });
                 console.error(errorResponse);
+                registerFormMethods.resetField('password');
             }
         }
     }
 
+    const loginFormErrors = loginFormMethods.formState.errors;
+    const registerFormErrors = registerFormMethods.formState.errors;
+
     return (
-        <div className="flex justify-center items-center h-dvh gap-2">
-            <article className="border-2 border-black p-5">
-                <h1>Login</h1>
+        <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
+            <article className={"border-2 border-(--border) p-5 bg-(--primary-color)"}>
+                <h1 className="text-xl mb-2">Login</h1>
                 <Form className="flex flex-col gap-2" onSubmit={loginFormMethods.handleSubmit(onLoginSubmit)}>
                     <Form.Label>
                         Email: <Form.Input type="email" {...loginFormMethods.register('email',
                             {
                                 required: "Email is required",
                             }
-                        )} />
+                        )}/>
                     </Form.Label>
-                    {loginFormMethods.formState.errors.email && 
-                    <span className="text-red-600 text-right text-sm">{loginFormMethods.formState.errors.email.message}</span>}
+
+                    {loginFormErrors.email &&
+                        <span className="text-(--error-text) text-right text-sm">{loginFormErrors.email.message}</span>}
+
                     <Form.Label>
                         Password: <Form.Input type="password" {...loginFormMethods.register('password',
                             {
@@ -87,52 +93,46 @@ const Index = () => {
                             }
                         )} />
                     </Form.Label>
-                    {loginFormMethods.formState.errors.password && 
-                    <span className="text-red-600 text-right text-sm">{loginFormMethods.formState.errors.password.message}</span>}
-                    <Form.Input type="submit" value="login" className="cursor-pointer" />
-                    {loginErrors && 
-                    <span className="text-red-600 text-center">{loginErrors.message}</span>}
+
+                    {loginFormErrors.password &&
+                        <span className="text-(--error-text) text-right text-sm">{loginFormErrors.password.message}</span>}
+
+                    <Form.Input type="submit" value="Login" className="cursor-pointer" />
+
+                    {loginErrors &&
+                        <span className="text-(--error-text) text-center">{loginErrors.message}</span>}
+                    {loginFormMethods.formState.isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
+
                 </Form>
             </article>
-            <article className="border-2 border-black p-5">
-                <h1>Create an account</h1>
+            <article className="border-2 border-(--border) p-5 bg-(--primary-color)">
+                <h1 className="text-xl mb-2">Create an account</h1>
                 <Form className="flex flex-col gap-2" onSubmit={registerFormMethods.handleSubmit(onRegisterSubmit)}>
                     <Form.Label>
                         Email: <Form.Input type="email" {...registerFormMethods.register('email', {
                             required: "Email is required",
-                        })}/>
+                        })} />
                     </Form.Label>
-                    {registerFormMethods.formState.errors.email && 
-                    <span className="text-red-600 text-right text-sm">{registerFormMethods.formState.errors.email.message}</span>}
+
+                    {registerFormErrors.email &&
+                        <span className="text-(--error-text) text-right text-sm">{registerFormErrors.email.message}</span>}
+
                     <Form.Label>
                         Password: <Form.Input type="password" {...registerFormMethods.register('password', {
                             required: "Password is required",
-                        })}/>
+                        })} />
                     </Form.Label>
-                    {registerFormMethods.formState.errors.password && 
-                    <span className="text-red-600 text-right text-sm">{registerFormMethods.formState.errors.password.message}</span>}
+
+                    {registerFormErrors.password &&
+                        <span className="text-(--error-text) text-right text-sm">{registerFormErrors.password.message}</span>}
+
                     <Form.Input type="submit" value="Create account" className="cursor-pointer" />
-                    {registerErrors && <span className="text-red-600 text-center">{registerErrors.message}</span>}
+
+                    {registerErrors && <span className="text-(--error-text) text-center">{registerErrors.message}</span>}
+                    {registerFormMethods.formState.isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
+
                 </Form>
             </article>
-            <button className="cursor-pointer border-2 p-1"
-                onClick={ async () => { 
-                    try {
-                        const response = await axios.get('/auth')
-                        console.log(response.data);
-                    } catch (err) {
-                        if (err instanceof AxiosError){
-                            console.error(err.response?.data);
-                        }
-                    }
-                } }
-            >CLICA</button>
-            <button className="cursor-pointer border-2 p-1"
-                    onClick={
-                        () => {
-                            clearCookie('token');
-                        }
-                    }>DESLOGA</button>
         </div>
     )
 }

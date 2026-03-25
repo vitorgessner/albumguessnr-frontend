@@ -7,16 +7,25 @@
     @apply m-0 p-0 box-border
   }
 
+  body {
+    @apply bg-linear-0 from-(--primary-color) to-(--secondary-color)
+  }
+
   input {
-    @apply border-2 border-black
+    @apply border-2 border-(--border) bg-(--accent-primary-color) px-2 py-1
   }
 }
 
 :root {
-  --text: #6b6375;
+  --primary-color: #fafafa;
+  --accent-primary-color: #edeeff;
+  --secondary-color: #e4e5f1;
+  --text: #272727;
   --text-h: #08060d;
+  --loading-text: #6572AB;
+  --error-text: #CC4141;
   --bg: #fff;
-  --border: #e5e4e7;
+  --border: #afb1d0;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
@@ -46,10 +55,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
+    --primary-color: #34343d;
+    --accent-primary-color: hsl(240, 8%, 17%);
+    --secondary-color: #4f4e58;
+    --text: #fafafa;
     --text-h: #f3f4f6;
+    --loading-text: #869AE3;
+    --error-text: #FC7272;
     --bg: #16171d;
-    --border: #2e303a;
+    --border: #858692;
     --code-bg: #1f2028;
     --accent: #c084fc;
     --accent-bg: rgba(192, 132, 252, 0.15);
