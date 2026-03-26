@@ -6,7 +6,12 @@ interface IFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
     children: React.ReactNode
 }
 
-const Form = ({className, children, ...props}: IFormProps) => {
+type FormComponent = React.FC<IFormProps> & {
+    Label: typeof Label;
+    Input: typeof Input;
+}
+
+const Form: FormComponent = ({className, children, ...props}: IFormProps) => {
     return (
         <>
             <form method="post" className={className} {...props}>
