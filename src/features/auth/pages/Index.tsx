@@ -39,10 +39,9 @@ const Index = () => {
 
             setCookie('token', responseData.token, 1);
         } catch (err) {
-            if (err instanceof AxiosError) {
-                const errorResponse = err.response?.data;
-                setloginErrors({ ...errorResponse });
-                console.error(errorResponse);
+            if (err instanceof AxiosError && err.response?.data) {
+                setloginErrors({ ...err.response.data });
+                console.error(err.response.data);
                 loginFormMethods.resetField('password')
             }
         }
@@ -58,10 +57,9 @@ const Index = () => {
             clearCookie('token');
             setCookie('token', responseData.token, 1);
         } catch (err) {
-            if (err instanceof AxiosError) {
-                const errorResponse = err.response?.data;
-                setregisterErrors({ ...errorResponse });
-                console.error(errorResponse);
+            if (err instanceof AxiosError && err.response?.data) {
+                setregisterErrors({ ...err.response.data });
+                console.error(err.response.data);
                 registerFormMethods.resetField('password');
             }
         }
@@ -72,11 +70,13 @@ const Index = () => {
 
     return (
         <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
-            <article className={"border-2 border-(--border) p-5 bg-(--primary-color)"}>
+            <article className={"border-2 border-(--border) p-5 bg-(--primary-color)"}
+                    aria-label="login-form"
+                    data-testid="login-section">
                 <h1 className="text-xl mb-2">Login</h1>
                 <Form className="flex flex-col gap-2" onSubmit={loginFormMethods.handleSubmit(onLoginSubmit)}>
                     <Form.Label>
-                        Email: <Form.Input type="email" {...loginFormMethods.register('email',
+                        Email: <Form.Input data-testid="inputEmail" type="email" {...loginFormMethods.register('email',
                             {
                                 required: "Email is required",
                             }
@@ -105,7 +105,9 @@ const Index = () => {
 
                 </Form>
             </article>
-            <article className="border-2 border-(--border) p-5 bg-(--primary-color)">
+            <article className="border-2 border-(--border) p-5 bg-(--primary-color)"
+                    aria-label="register-form"
+                    data-testid="register-section">
                 <h1 className="text-xl mb-2">Create an account</h1>
                 <Form className="flex flex-col gap-2" onSubmit={registerFormMethods.handleSubmit(onRegisterSubmit)}>
                     <Form.Label>
