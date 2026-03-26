@@ -14,6 +14,10 @@
   input {
     @apply border-2 border-(--border) bg-(--accent-primary-color) px-2 py-1
   }
+
+  textarea {
+    @apply border-2 border-(--border) bg-(--accent-primary-color) px-2 py-1
+  }
 }
 
 :root {
