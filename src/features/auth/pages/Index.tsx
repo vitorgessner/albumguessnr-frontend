@@ -4,6 +4,7 @@ import Form from "../components/form/Form";
 import { useState } from "react";
 import { clearCookie, setCookie } from "../../../shared/utils/cookie";
 import { AxiosError } from "axios";
+import { useNavigate } from 'react-router';
 
 type FormData = {
     email: string;
@@ -31,6 +32,8 @@ const Index = () => {
     const loginFormMethods = useForm<FormData>();
     const registerFormMethods = useForm<FormData>();
 
+    const navigate = useNavigate();
+
     const onLoginSubmit: SubmitHandler<FormData> = async (data) => {
         setloginErrors(null);
         try {
@@ -38,6 +41,7 @@ const Index = () => {
             const responseData = response.data;
 
             setCookie('token', responseData.token, 1);
+            navigate('/edit/profile');
         } catch (err) {
             if (err instanceof AxiosError && err.response?.data) {
                 setloginErrors({ ...err.response.data });
@@ -56,6 +60,7 @@ const Index = () => {
 
             clearCookie('token');
             setCookie('token', responseData.token, 1);
+            navigate('/edit/profile');
         } catch (err) {
             if (err instanceof AxiosError && err.response?.data) {
                 setregisterErrors({ ...err.response.data });
