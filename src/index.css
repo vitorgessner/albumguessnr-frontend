@@ -28,6 +28,7 @@
   --text-h: #08060d;
   --loading-text: #6572AB;
   --error-text: #CC4141;
+  --success-text: rgb(86, 179, 101);
   --bg: #fff;
   --border: #afb1d0;
   --code-bg: #f4f3ec;
@@ -66,6 +67,7 @@
     --text-h: #f3f4f6;
     --loading-text: #869AE3;
     --error-text: #FC7272;
+    --success-text: rgb(86, 179, 101);
     --bg: #16171d;
     --border: #858692;
     --code-bg: #1f2028;

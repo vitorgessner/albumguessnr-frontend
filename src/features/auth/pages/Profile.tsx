@@ -1,5 +1,7 @@
 import { useForm, type SubmitHandler } from "react-hook-form"
 import Form from "../components/form/Form"
+import { useState } from "react"
+import useAuthStore from "../stores/useAuthStore"
 
 type FormData = {
     username: string,
@@ -8,6 +10,9 @@ type FormData = {
 }
 
 const Profile = () => {
+    const { user } = useAuthStore();
+
+    const [isEditing, setIsEditing] = useState<boolean>(true);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
 
     const onProfileSubmit: SubmitHandler<FormData> = async (data) => {
@@ -15,14 +20,14 @@ const Profile = () => {
     }
 
     return (
-        <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
+        isEditing && (<div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
             <article className={"border-2 border-(--border) p-5 bg-(--primary-color)"}
                 aria-label="login-form"
                 data-testid="login-section">
-                <h1 className="text-xl mb-2">Profile</h1>
+                <h1 className="text-xl mb-2">Edit your profile</h1>
                 <Form className="flex flex-col gap-2" encType='multipart/form-data' onSubmit={handleSubmit(onProfileSubmit)}>
                     <Form.Label>
-                        Username: <Form.Input type="text" {...register('username',
+                        Username: <Form.Input type="text" defaultValue={user?.profile.username} {...register('username',
                             {
                                 required: "Username is required",
                             }
@@ -49,7 +54,7 @@ const Profile = () => {
                                 },
                                 acceptedFormats: (files) => {
                                     if (files.length === 0) return true;
-                                    return ["image/jpeg", "image/png"].includes(files[0]?.type) || "File format must be JPEG or PNG"
+                                    return ["image/jpeg", "image/png", "image/svg"].includes(files[0]?.type) || "File format must be JPEG or PNG"
                                 }
                             }
                         })} />
@@ -62,7 +67,7 @@ const Profile = () => {
                     {isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
                 </Form>
             </article>
-        </div>
+        </div>)
     )
 }
 
