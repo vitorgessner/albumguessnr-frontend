@@ -4,9 +4,10 @@ import axios from "../utils/axios";
 import useAuthStore from '../../features/auth/stores/useAuthStore';
 import useMe from "../../features/auth/hooks/useMe";
 import { Pencil, Calendar, ShoppingBasket, LogOut } from 'lucide-react';
+import { toast, ToastContainer } from "react-toastify";
 
 const Header = () => {
-    const { user, isAuthenticated, logout } = useAuthStore();
+    const { user, isAuthenticated, logout, setIsLoggingOut, isLoading } = useAuthStore();
     const fetchUser = useMe();
 
     const navigate = useNavigate();
@@ -22,16 +23,25 @@ const Header = () => {
         fetch();
     }, [fetchUser])
 
+    useEffect(() => {
+        if (path.state?.message) {
+            toast.error(path.state.message);
+        }
+    })
+
     const handleLogout = async () => {
         setIsModalOpen(false);
-        logout();
+        setIsLoggingOut(true);
         try {
             await axios.post('/logout');
-            navigate('/auth', { state: {} });
+            navigate('/auth', { state: { intentional: true} } );
+            logout();
         } catch (err) {
             console.log(err);
+            navigate(path.pathname, { state: { message: 'Logout failed' } });
         }
     }
+
     return (
         <>
             <header className="bg-(--primary-color) p-3 fixed w-full flex justify-center items-center">
@@ -58,7 +68,8 @@ const Header = () => {
                     </div>
                 </aside>}
             </header>
-            <Outlet />
+            <ToastContainer />
+            {!isLoading ? <Outlet /> : <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>}
         </>
     )
 }
