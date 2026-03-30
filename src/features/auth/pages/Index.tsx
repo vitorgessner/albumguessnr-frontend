@@ -3,7 +3,7 @@ import axios from "../../../shared/utils/axios";
 import Form from "../components/form/Form";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, Navigate } from "react-router";
 import useMe from "../hooks/useMe";
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -27,7 +27,6 @@ type ErrorResponse = {
 const Index = () => {
     const fetchUser = useMe();
 
-    const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
@@ -49,7 +48,7 @@ const Index = () => {
             await axios.post<FormResponse>('/login', data);
             const user = await fetchUser()
             if (!user) return null;
-            navigate(`/${user?.profile.username}/profile/edit`);
+            return <Navigate to={`/profile/${user?.profile.username}`} />;
         } catch (err) {
             if (err instanceof AxiosError && err.response?.data) {
                 setloginErrors({ ...err.response.data });
@@ -85,7 +84,7 @@ const Index = () => {
                 <h1 className="text-xl mb-2">Login</h1>
                 <Form className="flex flex-col gap-2" onSubmit={loginFormMethods.handleSubmit(onLoginSubmit)}>
                     <Form.Label>
-                        Email: <Form.Input data-testid="inputEmail" type="email" {...loginFormMethods.register('email',
+                        Email*: <Form.Input data-testid="inputEmail" type="email" {...loginFormMethods.register('email',
                             {
                                 required: "Email is required",
                             }
@@ -96,7 +95,7 @@ const Index = () => {
                         <span className="text-(--error-text) text-right text-sm">{loginFormErrors.email.message}</span>}
 
                     <Form.Label>
-                        Password: <Form.Input type="password" {...loginFormMethods.register('password',
+                        Password*: <Form.Input type="password" {...loginFormMethods.register('password',
                             {
                                 required: "Password is required",
                             }
@@ -120,7 +119,7 @@ const Index = () => {
                 <h1 className="text-xl mb-2">Create an account</h1>
                 <Form className="flex flex-col gap-2" onSubmit={registerFormMethods.handleSubmit(onRegisterSubmit)}>
                     <Form.Label>
-                        Email: <Form.Input type="email" {...registerFormMethods.register('email', {
+                        Email*: <Form.Input type="email" {...registerFormMethods.register('email', {
                             required: "Email is required",
                         })} />
                     </Form.Label>
@@ -129,7 +128,7 @@ const Index = () => {
                         <span className="text-(--error-text) text-right text-sm">{registerFormErrors.email.message}</span>}
 
                     <Form.Label>
-                        Password: <Form.Input type="password" {...registerFormMethods.register('password', {
+                        Password*: <Form.Input type="password" {...registerFormMethods.register('password', {
                             required: "Password is required",
                         })} />
                     </Form.Label>

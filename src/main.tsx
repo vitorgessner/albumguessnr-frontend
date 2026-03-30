@@ -9,6 +9,7 @@ import Header from './shared/layouts/Header.tsx';
 import NotFoundPage from './shared/pages/NotFoundPage.tsx';
 import ProtectedRoute from './shared/components/ProtectedRoute.tsx';
 import UnprotectedRoute from './shared/components/UnprotectedRoute.tsx';
+import EditProfile from './features/auth/pages/EditProfile.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -20,7 +21,8 @@ createRoot(document.getElementById('root')!).render(
             <Route path='/auth' element={<Index />} />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route path='/:username/profile/edit' element={<Profile />} />
+            <Route path='/profile/:username' element={<Profile />} />
+            <Route path='/profile/:username/edit' element={<EditProfile />}/>
           </Route>
         </Route>
         <Route path='*' element={<NotFoundPage />} />

@@ -11,12 +11,22 @@
     @apply bg-linear-0 from-(--primary-color) to-(--secondary-color)
   }
 
+  button {
+    @apply cursor-pointer
+  }
+
   input {
     @apply border-2 border-(--border) bg-(--accent-primary-color) px-2 py-1
   }
 
   textarea {
     @apply border-2 border-(--border) bg-(--accent-primary-color) px-2 py-1
+  }
+}
+
+@layer utilities {
+  .achievements {
+    flex: 0 0 16.66%;
   }
 }
 
