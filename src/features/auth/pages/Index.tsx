@@ -3,9 +3,10 @@ import axios from "../../../shared/utils/axios";
 import Form from "../components/form/Form";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { useLocation, Navigate } from "react-router";
+import { Navigate } from "react-router";
 import useMe from "../hooks/useMe";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import useAuthStore from "../stores/useAuthStore";
 
 type FormData = {
     email: string;
@@ -26,14 +27,13 @@ type ErrorResponse = {
 
 const Index = () => {
     const fetchUser = useMe();
+    const { setIsLoggingOut } = useAuthStore();
 
-    const location = useLocation();
+    // const location = useLocation();
 
     useEffect(() => {
-        if (location.state?.message) {
-            toast.error(location.state?.message);
-        }
-    }, [location]);
+        setIsLoggingOut(false);
+    }, [setIsLoggingOut]);
 
     const [loginErrors, setloginErrors] = useState<ErrorResponse | null>();
     const [registerErrors, setregisterErrors] = useState<ErrorResponse | null>();

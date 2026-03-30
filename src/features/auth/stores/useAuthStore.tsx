@@ -5,19 +5,19 @@ interface IAuthState {
     user: IUserWithProfile | undefined;
     isAuthenticated: boolean;
     isLoading: boolean;
-    isEditing: boolean;
+    isLoggingOut: boolean;
 
     setUser: (user: IUserWithProfile) => void;
     logout: () => void;
     setIsLoading: (isLoading: boolean) => void;
-    setIsEditing: (isEditing: boolean) => void;
+    setIsLoggingOut: (isLoggingOut: boolean) => void;
 }
 
 const useAuthStore = create<IAuthState>()((set) => ({
     user: undefined,
     isAuthenticated: false,
     isLoading: true,
-    isEditing: false,
+    isLoggingOut: false,
 
     setUser: (user) => set(() => ({
         user,
@@ -28,8 +28,8 @@ const useAuthStore = create<IAuthState>()((set) => ({
         isLoading,
     })),
 
-    setIsEditing: (isEditing) => set(() => ({
-        isEditing,
+    setIsLoggingOut: (isLoggingOut) => set(() => ({
+        isLoggingOut,
     }))
 }))
 

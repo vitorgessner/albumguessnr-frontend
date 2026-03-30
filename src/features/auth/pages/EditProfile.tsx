@@ -17,7 +17,7 @@ interface IFormResponse {
 }
 
 const EditProfile = () => {
-    const { user, setIsEditing } = useAuthStore();
+    const { user } = useAuthStore();
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
     const navigate = useNavigate();
 
@@ -35,7 +35,6 @@ const EditProfile = () => {
             });
             
             if (response.data.status === 'success') {
-                setIsEditing(false);
                 navigate(`/profile/${data.username}`)
             }
         } catch (err) {

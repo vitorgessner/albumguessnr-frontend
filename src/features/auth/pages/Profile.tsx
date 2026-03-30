@@ -4,7 +4,7 @@ import useAuthStore from "../stores/useAuthStore"
 import { Star } from "lucide-react";
 
 const Profile = () => {
-    const { user } = useAuthStore();
+    const { user} = useAuthStore();
     const fetchUser = useMe();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -14,15 +14,15 @@ const Profile = () => {
             .then(() => {
                 setIsLoading(false);
             })
-    }, [fetchUser]);
+    }, [fetchUser, setIsLoading]);
 
+    if (isLoading) return <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>
+    
     if (!user) return null;
 
     const date = new Date(user.createdAt);
     const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`
-
-    if (isLoading) return <div>Loading...</div>
 
     return (
         <main className="flex flex-col lg:flex-row justify-center gap-8 h-full lg:h-dvh pt-16 text-center">
