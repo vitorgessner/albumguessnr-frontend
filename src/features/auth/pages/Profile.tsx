@@ -1,73 +1,62 @@
-import { useForm, type SubmitHandler } from "react-hook-form"
-import Form from "../components/form/Form"
-import { useState } from "react"
+import { useEffect, useState } from "react";
+import useMe from "../hooks/useMe";
 import useAuthStore from "../stores/useAuthStore"
-
-type FormData = {
-    username: string,
-    bio: string,
-    pfp: FileList
-}
+import { Star } from "lucide-react";
 
 const Profile = () => {
     const { user } = useAuthStore();
+    const fetchUser = useMe();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const [isEditing, setIsEditing] = useState<boolean>(true);
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>();
+    useEffect(() => {
+        fetchUser()
+            .then(response => response)
+            .then(() => {
+                setIsLoading(false);
+            })
+    }, [fetchUser]);
 
-    const onProfileSubmit: SubmitHandler<FormData> = async (data) => {
-        console.log(data);
-    }
+    if (!user) return null;
+
+    const date = new Date(user.createdAt);
+    const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+    const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`
+
+    if (isLoading) return <div>Loading...</div>
 
     return (
-        isEditing && (<div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
-            <article className={"border-2 border-(--border) p-5 bg-(--primary-color)"}
-                aria-label="login-form"
-                data-testid="login-section">
-                <h1 className="text-xl mb-2">Edit your profile</h1>
-                <Form className="flex flex-col gap-2" encType='multipart/form-data' onSubmit={handleSubmit(onProfileSubmit)}>
-                    <Form.Label>
-                        Username: <Form.Input type="text" defaultValue={user?.profile.username} {...register('username',
-                            {
-                                required: "Username is required",
-                            }
-                        )} />
-                    </Form.Label>
-
-                    {errors.username &&
-                        <span className="text-(--error-text) text-right text-sm">{errors.username.message}</span>}
-
-                    <Form.Label>
-                        Bio: <Form.Textfield {...register('bio')} rows={5} cols={20}/>
-                    </Form.Label>
-
-                    {errors.bio &&
-                        <span className="text-(--error-text) text-right text-sm">{errors.bio.message}</span>}
-
-                    <Form.Label>
-                        Profile Picture: <Form.Input type="file" {...register('pfp', {
-                            required: false,
-                            validate: {
-                                lessThan3MB: (files) => {
-                                    if (files.length === 0) return true
-                                    return files[0]?.size < 3 * 1024 * 1024 || 'File size must be less than 3MB';
-                                },
-                                acceptedFormats: (files) => {
-                                    if (files.length === 0) return true;
-                                    return ["image/jpeg", "image/png", "image/svg"].includes(files[0]?.type) || "File format must be JPEG or PNG"
-                                }
-                            }
-                        })} />
-                    </Form.Label>
-
-                    {errors.pfp &&
-                        <span className="text-(--error-text) text-right text-sm">{errors.pfp.message}</span>}
-
-                    <Form.Input type="submit" value="Save Profile" className="cursor-pointer" />
-                    {isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
-                </Form>
-            </article>
-        </div>)
+        <main className="flex flex-col lg:flex-row justify-center gap-8 h-full lg:h-dvh pt-16 text-center">
+            <section className="text-center order-1 lg:order-2">
+                    <img src={user.profile.avatar_url} alt={user.profile.username} className="mx-auto rounded-full w-37.5 h-37.5 object-cover object-center" />
+                <h1 className="text-3xl font-bold">{user.profile.username}</h1>
+                <p className="flex justify-center items-center opacity-80 text-xl"><Star className="opacity-80" fill="text-(--primary-color)" stroke="text-(--primary-color)" /> 478 pontos</p>
+                <p className="opacity-80">Entrou em {creationDate}</p>
+                <p className="opacity-80">
+                    Adivinhou 400 álbuns
+                </p>
+                <p className="mx-auto opacity-80 text-left p-2 bg-(--primary-color) border-2 border-(--text) w-67.5 h-30 mt-2">{user.profile.bio}</p>
+            </section>
+            <section className="order-2 lg:order-1 max-w-76 mx-auto lg:mx-0">
+                <article className="bg-(--primary-color) border-2 border-(--text) text-center max-h-96.75 overflow-scroll px-2 py-1">
+                    <h2 className="text-2xl font-bold">Achievenments</h2>
+                    <ul className="flex flex-wrap w-62.5">
+                        {Array.from({ length: 100 }).map(() => {
+                            return <li className="text-3xl achievements py-1">😭</li>
+                        })}
+                    </ul>
+                </article>
+            </section>
+            <section className="mx-auto order-3 max-w-76 lg:mx-0">
+                <article className="text-center bg-(--primary-color) border-2 border-(--text) max-h-96.75 overflow-scroll px-2 py-1">
+                    <h2 className="text-2xl font-bold">Friends' Ranking</h2>
+                    <ul className="flex flex-col w-62.5 gap-2">
+                        {Array.from({ length: 16 }).map(() => {
+                            return <li className="p-1 flex items-center justify-between border-2"><div className="flex items-center gap-2"><span className="text-3xl">😎</span> <h3>FriendName</h3></div><div className="flex items-center gap-1"><Star /> <span>400</span></div></li>
+                        })}
+                    </ul>
+                </article>
+            </section>
+        </main>
     )
 }
 
