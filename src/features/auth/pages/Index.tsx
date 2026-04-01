@@ -35,21 +35,26 @@ const Index = () => {
         setIsLoggingOut(false);
     }, [setIsLoggingOut]);
 
-    const [loginErrors, setloginErrors] = useState<ErrorResponse | null>();
+    const [loginErrors, setloginErrors] = useState<ErrorResponse | string | Error | null>();
     const [registerErrors, setregisterErrors] = useState<ErrorResponse | null>();
-    const [response, setResponse] = useState<{ status: string, message: string }>();
+    const [registerResponse, setRegisterResponse] = useState<{ status: string, message: string } | null>();
+    const [loginResponse, setLoginResponse] = useState<{ status: string, message: string } | null>();
 
     const loginFormMethods = useForm<FormData>();
     const registerFormMethods = useForm<FormData>();
 
     const onLoginSubmit: SubmitHandler<FormData> = async (data) => {
         setloginErrors(null);
+        setLoginResponse(null);
         try {
             await axios.post<FormResponse>('/login', data);
             const user = await fetchUser()
             if (!user) return null;
             return <Navigate to={`/profile/${user?.profile.username}`} />;
         } catch (err) {
+            if (err instanceof Error) {
+                setloginErrors(err);
+            }
             if (err instanceof AxiosError && err.response?.data) {
                 setloginErrors({ ...err.response.data });
                 console.error(err.response.data);
@@ -60,10 +65,11 @@ const Index = () => {
 
     const onRegisterSubmit: SubmitHandler<FormData> = async (data) => {
         setregisterErrors(null);
+        setRegisterResponse(null);
         try {
             const response = await axios.post<FormResponse>('/register', data);
             const responseData = response.data;
-            setResponse(responseData);
+            setRegisterResponse(responseData);
         } catch (err) {
             if (err instanceof AxiosError && err.response?.data) {
                 setregisterErrors({ ...err.response.data });
@@ -108,8 +114,26 @@ const Index = () => {
                     <Form.Input type="submit" value="Login" className="cursor-pointer" />
 
                     {loginErrors &&
-                        <span className="text-(--error-text) text-center">{loginErrors.message}</span>}
+                        <span className="text-(--error-text) text-center">{loginErrors.message || loginErrors}</span>}
+                    {loginErrors && loginErrors.message === 'Email not verified' && <button className="text-(--loading-text) max-w-fit mx-auto" onClick={async (e) => {
+                        e.preventDefault();
+                        try {
+                            const response = await axios.post(`/resendVerification/`, {email: loginFormMethods.getValues('email')});
+                            setLoginResponse(response.data);
+                        } catch (err) {
+                            if (err instanceof Error) {
+                                setloginErrors(err);
+                            }
+                            if (err instanceof AxiosError && err.response?.data) {
+                                setloginErrors({ ...err.response.data });
+                                console.error(err.response.data);
+                                loginFormMethods.resetField('password')
+                            }
+                            console.log(err);
+                        }
+                    }}>Resend email</button>}
                     {loginFormMethods.formState.isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
+                    {loginResponse && <span className="text-center text-(--success-text)">{loginResponse.status + ': ' + loginResponse.message}</span>}
 
                 </Form>
             </article>
@@ -140,7 +164,7 @@ const Index = () => {
 
                     {registerErrors && <span className="text-(--error-text) text-center">{registerErrors.message}</span>}
                     {registerFormMethods.formState.isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
-                    {response && <span className="text-center text-(--success-text)">{response.status + ': ' + response.message}</span>}
+                    {registerResponse && <span className="text-center text-(--success-text)">{registerResponse.status + ': ' + registerResponse.message}</span>}
 
                 </Form>
             </article>

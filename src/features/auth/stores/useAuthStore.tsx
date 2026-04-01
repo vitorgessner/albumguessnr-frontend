@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import type { IUserWithProfile } from "../../../shared/types/user";
+import type { IUserWithProfileAndLastfmIntegration } from "../../../shared/types/user";
 
 interface IAuthState {
-    user: IUserWithProfile | undefined;
+    user: IUserWithProfileAndLastfmIntegration | undefined;
     isAuthenticated: boolean;
     isLoading: boolean;
     isLoggingOut: boolean;
 
-    setUser: (user: IUserWithProfile) => void;
+    setUser: (user: IUserWithProfileAndLastfmIntegration) => void;
     logout: () => void;
     setIsLoading: (isLoading: boolean) => void;
     setIsLoggingOut: (isLoggingOut: boolean) => void;
