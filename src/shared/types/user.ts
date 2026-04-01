@@ -2,7 +2,7 @@ export interface IMeResponse {
     user: {
         createdAt: Date;
         email: string;
-        emailVerifies: true;
+        emailVerified: true;
         id: string;
         profile: {
             avatar_url: string;
@@ -11,14 +11,20 @@ export interface IMeResponse {
             updatedAt: Date;
             userId: string;
             username: string;
+        },
+        lastfmIntegrationId: string,
+        lastfmIntegration: {
+            id: string,
+            lastfmUsername: string,
+            lastSyncedAt: Date,
         }
     } | undefined;
 }
 
-export interface IUserWithProfile {
+export interface IUserWithProfileAndLastfmIntegration {
     createdAt: Date;
     email: string;
-    emailVerifies: true;
+    emailVerified: true;
     id: string;
     profile: {
         avatar_url: string;
@@ -27,5 +33,11 @@ export interface IUserWithProfile {
         updatedAt: Date;
         userId: string;
         username: string;
+    },
+    lastfmIntegrationId: string,
+    lastfmIntegration: {
+        id: string,
+        lastfmUsername: string,
+        lastSyncedAt: Date,
     }
 }

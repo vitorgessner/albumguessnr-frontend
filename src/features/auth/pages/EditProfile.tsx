@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 
 type FormData = {
     username: string,
+    lastfmUsername: string,
     bio: string,
     pfp: FileList
 }
@@ -33,6 +34,8 @@ const EditProfile = () => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+
+            await axios.put(`/integration/${user?.profile.username}`, { lastfmUsername: data.lastfmUsername })
             
             if (response.data.status === 'success') {
                 navigate(`/profile/${data.username}`)
@@ -57,6 +60,10 @@ const EditProfile = () => {
                                 required: "Username is required",
                             }
                         )} />
+                    </Form.Label>
+
+                    <Form.Label>
+                        LastFm Username: <Form.Input defaultValue={user?.lastfmIntegration && user?.lastfmIntegration.lastfmUsername} type="text" {...register('lastfmUsername')} />
                     </Form.Label>
 
                     {errors.username &&

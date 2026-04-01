@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import axios from '../../../shared/utils/axios';
 import useAuthStore from "../stores/useAuthStore";
-import type { IMeResponse, IUserWithProfile } from "../../../shared/types/user";
+import type { IMeResponse, IUserWithProfileAndLastfmIntegration } from "../../../shared/types/user";
 
 const useMe = () => {
     const { setUser, setIsLoading } = useAuthStore();
@@ -12,7 +12,7 @@ const useMe = () => {
                 return null;
             }
     
-            const user: IUserWithProfile = response.data.user;
+            const user: IUserWithProfileAndLastfmIntegration = response.data.user;
             setUser(user);
     
             return user;
