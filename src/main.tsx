@@ -10,6 +10,7 @@ import NotFoundPage from './shared/pages/NotFoundPage.tsx';
 import ProtectedRoute from './shared/components/ProtectedRoute.tsx';
 import UnprotectedRoute from './shared/components/UnprotectedRoute.tsx';
 import EditProfile from './features/auth/pages/EditProfile.tsx';
+import Guess from './features/game/guess/pages/Guess.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')!).render(
           <Route element={<ProtectedRoute />}>
             <Route path='/profile/:username' element={<Profile />} />
             <Route path='/profile/:username/edit' element={<EditProfile />}/>
+            <Route path='/guess' element={< Guess/>}/>
           </Route>
         </Route>
         <Route path='*' element={<NotFoundPage />} />

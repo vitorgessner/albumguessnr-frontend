@@ -18,6 +18,7 @@ const useMe = () => {
             return user;
         } catch (err) {
             console.log(err);
+            return null
         } finally {
             setIsLoading(false);
         }

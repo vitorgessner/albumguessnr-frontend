@@ -17,11 +17,18 @@ const Header = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            await fetchUser()
+            const response = await fetchUser()
+            
+            if (!response) {
+                setIsLoggingOut(true);    
+                await axios.post('/logout');
+                logout();
+                navigate('/auth', { state: { intentional: true } } );
+            }
         }
 
         fetch();
-    }, [fetchUser])
+    }, [fetchUser, navigate, logout, setIsLoggingOut])
 
     useEffect(() => {
         if (path.state?.message) {
@@ -50,7 +57,7 @@ const Header = () => {
                     {!isAuthenticated && !(path.pathname === '/auth') && <Link to={'/auth'} className="absolute right-5 underline">Log in or create an account</Link>}
                 </div>
                 <div className="absolute right-5 flex items-center justify-right gap-5">
-                    <Link to={'/guess'}>Guess</Link>
+                    {isAuthenticated && <Link to={'/guess'}>Guess</Link>}
                     {isAuthenticated && <button className="cursor-pointer"><img src={user?.profile.avatar_url} className="w-10 h-10 rounded-full object-cover" onClick={() => setIsModalOpen(prev => !prev)} /></button>}
                 </div>
                 {isModalOpen && <aside className="bg-(--primary-color) fixed flex flex-col right-4 top-15 justify-center gap-3 w-55">
@@ -74,7 +81,7 @@ const Header = () => {
                 </aside>}
             </header>
             <ToastContainer />
-            {!isLoading ? <Outlet /> : <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>}
+            {!isLoading ? <Outlet/> : <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>}
         </>
     )
 }

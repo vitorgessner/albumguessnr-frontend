@@ -29,8 +29,6 @@ const Index = () => {
     const fetchUser = useMe();
     const { setIsLoggingOut } = useAuthStore();
 
-    // const location = useLocation();
-
     useEffect(() => {
         setIsLoggingOut(false);
     }, [setIsLoggingOut]);
