@@ -35,10 +35,14 @@ const EditProfile = () => {
                 }
             });
 
-            await axios.put(`/integration/${user?.profile.username}`, { lastfmUsername: data.lastfmUsername })
+            const integrated = await axios.put(`/integration`, { lastfmUsername: data.lastfmUsername });
             
             if (response.data.status === 'success') {
                 navigate(`/profile/${data.username}`)
+            }
+
+            if (integrated.data.status === 'success') {
+                await axios.get(`/integration/albums/`)
             }
         } catch (err) {
             if (err instanceof AxiosError){
