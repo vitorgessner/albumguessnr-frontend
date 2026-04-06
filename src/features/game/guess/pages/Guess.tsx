@@ -3,7 +3,7 @@ import Form from "../../../auth/components/form/Form";
 import Label from "../../../auth/components/form/Label";
 import Input from "../../../auth/components/form/Input";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "../../../../shared/utils/axios";
 
 type GuessType = {
@@ -51,26 +51,50 @@ type AlbumsState = {
 }
 
 const Guess = () => {
-    const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
+    const { register, handleSubmit, resetField, setFocus, formState } = useForm<GuessType>();
 
     const [albums, setAlbums] = useState<Array<AlbumsState>>([]);
     const [index, setIndex] = useState<number>(48);
+    const [isTitleCorrect, setIsTitleCorrect] = useState<boolean>(false)
+    const [isArtistCorrect, setIsArtistCorrect] = useState<boolean>(false)
+    const [attempted, setAttempted] = useState<boolean>(false);
+    const button = useRef<HTMLButtonElement>(null);
 
-    const onGuess: SubmitHandler<GuessType> = (data) => {
-        console.log(data.album + ' | ' + albums[index].album.normalizedName);
-        console.log(data.artist + ' | ' + albums[index].album.normalizedArtist);
-
-        resetField('album');
-        resetField('artist');
-
-        setFocus('album')
-        if (index < 49) {
-            return setIndex(prev => prev + 1)
-        } 
-        setIndex(0);
+    const compareAlbum = (guess: string) => {
+        guess === albums[index].album.normalizedName ?
+            setIsTitleCorrect(true) :
+            setIsTitleCorrect(false)
     }
 
-    const shuffle = (arr) => {
+    const compareArtist = (guess: string) => {
+        guess === albums[index].album.normalizedArtist ?
+            setIsArtistCorrect(true) :
+            setIsArtistCorrect(false)
+    }
+
+    const onGuess: SubmitHandler<GuessType> = (data) => {
+        if (!attempted) {
+            setAttempted(true);
+            compareAlbum(data.album);
+            compareArtist(data.artist);
+            button.current?.focus();
+        }
+
+        if (attempted) {
+            setAttempted(false);
+            resetField('album');
+            resetField('artist');
+    
+            setFocus('album')
+            if (index < 49) {
+                return setIndex(prev => prev + 1)
+            }
+            setIndex(0);
+        }
+
+    }
+
+    const shuffle = (arr: Array<AlbumsState>) => {
         let currentIndex = arr.length;
 
         while (currentIndex !== 0) {
@@ -124,12 +148,14 @@ const Guess = () => {
                 <p className="flex justify-end items-center py-2"><Timer /> 00</p>
                 <Form className="flex flex-col gap-2" onSubmit={handleSubmit(onGuess)}>
                     <Label>
-                        <Input placeholder="Album" className="w-67" {...register('album')} autoComplete="off"/>
+                        <Input placeholder="Album" className={attempted ? (isTitleCorrect ? "w-67 border-(--success-text)" : "w-67 border-(--error-text)") : "w-67"} {...register('album')} autoComplete="off" />
                     </Label>
+                    {attempted && (!isTitleCorrect && <span className="text-left">{albums[index].album.normalizedName}</span>)}
                     <Label>
-                        <Input placeholder="Artist" className="w-67" {...register('artist')} autoComplete="off"/>
+                        <Input placeholder="Artist" className={attempted ? (isArtistCorrect ? "w-67 border-(--success-text)" : "w-67 border-(--error-text)") : "w-67"} {...register('artist')} autoComplete="off" />
                     </Label>
-                    <Input type="submit" value="Guess" className="w-full" />
+                    {attempted && (!isArtistCorrect && <span className="text-left">{albums[index].album.normalizedArtist}</span>)}
+                    <button ref={button} type="submit" className="w-full">Guess</button>
                 </Form>
             </section>
         </main>
