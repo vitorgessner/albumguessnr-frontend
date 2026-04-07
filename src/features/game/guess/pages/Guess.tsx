@@ -3,105 +3,40 @@ import Form from "../../../auth/components/form/Form";
 import Label from "../../../auth/components/form/Label";
 import Input from "../../../auth/components/form/Input";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import axios from "../../../../shared/utils/axios";
-
-type GuessType = {
-    album: string;
-    artist: string;
-}
-
-type FetchResponse = {
-    status: string,
-    albums: [
-        {
-            album: {
-                cover_url: string,
-                id: string,
-                mbid: string | null,
-                name: string,
-                normalizedArtist: string,
-                normalizedName: string,
-                year: Date
-            },
-            albumId: string,
-            lastfmIntegrationId: string,
-            lastTimeListened: Date,
-            timesListened: number,
-            tracksListened: number,
-        }
-    ]
-}
-
-type AlbumsState = {
-    album: {
-        cover_url: string,
-        id: string,
-        mbid: string | null,
-        name: string,
-        normalizedArtist: string,
-        normalizedName: string,
-        year: Date
-    },
-    albumId: string,
-    lastfmIntegrationId: string,
-    lastTimeListened: Date,
-    timesListened: number,
-    tracksListened: number,
-}
+import type { GuessType } from "../types/guessTypes";
+import type { FetchResponse } from "../types/albumTypes";
+import useGuessStore from "../stores/useGuessStore";
+import useCompare from "../hooks/useCompare";
+import shuffle from "../utils/shuffle";
 
 const Guess = () => {
-    const { register, handleSubmit, resetField, setFocus, formState } = useForm<GuessType>();
+    const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
+    const { compareAlbum, compareArtist, reset } = useCompare(resetField, setFocus);
 
-    const [albums, setAlbums] = useState<Array<AlbumsState>>([]);
-    const [index, setIndex] = useState<number>(48);
-    const [isTitleCorrect, setIsTitleCorrect] = useState<boolean>(false)
-    const [isArtistCorrect, setIsArtistCorrect] = useState<boolean>(false)
-    const [attempted, setAttempted] = useState<boolean>(false);
-    const button = useRef<HTMLButtonElement>(null);
+    const { 
+        albums, 
+        setAlbums, 
+        index, 
+        isTitleCorrect, 
+        isArtistCorrect,  
+        isGuessed, 
+        setIsGuessed 
+    } = useGuessStore();
 
-    const compareAlbum = (guess: string) => {
-        guess === albums[index].album.normalizedName ?
-            setIsTitleCorrect(true) :
-            setIsTitleCorrect(false)
-    }
-
-    const compareArtist = (guess: string) => {
-        guess === albums[index].album.normalizedArtist ?
-            setIsArtistCorrect(true) :
-            setIsArtistCorrect(false)
-    }
+    const currentAlbum = albums[index]
 
     const onGuess: SubmitHandler<GuessType> = (data) => {
-        if (!attempted) {
-            setAttempted(true);
-            compareAlbum(data.album);
-            compareArtist(data.artist);
-            button.current?.focus();
+        if (!isGuessed) {
+            setIsGuessed(true);
+            compareAlbum(data.album.toLowerCase().trim());
+            compareArtist(data.artist.toLowerCase().trim());
+            setFocus('buttonSubmit');
         }
 
-        if (attempted) {
-            setAttempted(false);
-            resetField('album');
-            resetField('artist');
-    
-            setFocus('album')
-            if (index < 49) {
-                return setIndex(prev => prev + 1)
-            }
-            setIndex(0);
-        }
-
-    }
-
-    const shuffle = (arr: Array<AlbumsState>) => {
-        let currentIndex = arr.length;
-
-        while (currentIndex !== 0) {
-            const randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            [arr[currentIndex], arr[randomIndex]] = [arr[randomIndex], arr[currentIndex]];
+        if (isGuessed) {
+            reset();
         }
     }
 
@@ -133,7 +68,9 @@ const Guess = () => {
         if (albums.length === 0) {
             fetchAlbums();
         }
-    }, [albums])
+    }, [albums, setAlbums])
+
+    console.log(currentAlbum);
 
     if (!albums || albums.length === 0) return <span>Loading...</span>
 
@@ -141,21 +78,21 @@ const Guess = () => {
         <main className="flex flex-col items-center h-full lg:h-dvh pt-20 text-center">
             <article>
                 <div className="border-2 border-(--border) overflow-hidden rounded-sm w-67">
-                    <img src={albums[index].album.cover_url} alt="" className="blur-sm" />
+                    <img src={currentAlbum.album.cover_url} alt="" className={!isGuessed ? "blur-md" : ''} />
                 </div>
             </article>
             <section>
                 <p className="flex justify-end items-center py-2"><Timer /> 00</p>
                 <Form className="flex flex-col gap-2" onSubmit={handleSubmit(onGuess)}>
                     <Label>
-                        <Input placeholder="Album" className={attempted ? (isTitleCorrect ? "w-67 border-(--success-text)" : "w-67 border-(--error-text)") : "w-67"} {...register('album')} autoComplete="off" />
+                        <Input placeholder="Album" className={isGuessed ? (isTitleCorrect ? "w-67 border-(--success-text)" : "w-67 border-(--error-text)") : "w-67"} {...register('album')} autoComplete="off" />
                     </Label>
-                    {attempted && (!isTitleCorrect && <span className="text-left">{albums[index].album.normalizedName}</span>)}
+                    {isGuessed && (!isTitleCorrect && <span className="text-left max-w-67">{currentAlbum.album.normalizedName}</span>)}
                     <Label>
-                        <Input placeholder="Artist" className={attempted ? (isArtistCorrect ? "w-67 border-(--success-text)" : "w-67 border-(--error-text)") : "w-67"} {...register('artist')} autoComplete="off" />
+                        <Input placeholder="Artist" className={isGuessed ? (isArtistCorrect ? "w-67 border-(--success-text)" : "w-67 border-(--error-text)") : "w-67"} {...register('artist')} autoComplete="off" />
                     </Label>
-                    {attempted && (!isArtistCorrect && <span className="text-left">{albums[index].album.normalizedArtist}</span>)}
-                    <button ref={button} type="submit" className="w-full">Guess</button>
+                    {isGuessed && (!isArtistCorrect && <span className="text-left max-w-67">{currentAlbum.album.normalizedArtist}</span>)}
+                    <Input {...register('buttonSubmit')} type="submit" value={!isGuessed ? 'Guess' : 'Next'} className="w-full" />
                 </Form>
             </section>
         </main>
