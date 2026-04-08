@@ -10,22 +10,25 @@ import type { FetchResponse } from "../types/albumTypes";
 import useGuessStore from "../stores/useGuessStore";
 import useCompare from "../hooks/useCompare";
 import shuffle from "../utils/shuffle";
+import useAuthStore from "../../../auth/stores/useAuthStore";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 const Guess = () => {
     const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
     const { compareAlbum, compareArtist, reset } = useCompare(resetField, setFocus);
+    const { user } = useAuthStore();
 
-    const { 
-        albums, 
-        setAlbums, 
-        index, 
-        isTitleCorrect, 
-        isArtistCorrect,  
-        isGuessed, 
-        setIsGuessed 
+    const queryClient = useQueryClient();
+
+    const {
+        albums,
+        setAlbums,
+        index,
+        isTitleCorrect,
+        isArtistCorrect,
+        isGuessed,
+        setIsGuessed,
     } = useGuessStore();
-
-    const currentAlbum = albums[index]
 
     const onGuess: SubmitHandler<GuessType> = (data) => {
         if (!isGuessed) {
@@ -41,38 +44,40 @@ const Guess = () => {
     }
 
     useEffect(() => {
+        if (index >= 49) queryClient.invalidateQueries({ queryKey: ['albums', user?.lastfmIntegration.lastfmUsername]});
+    }, [queryClient, user?.lastfmIntegration.lastfmUsername, index])
+
+    useEffect(() => {
+        queryClient.invalidateQueries({queryKey: ['albums', user?.lastfmIntegration.lastfmUsername]});
+    }, [queryClient, user?.lastfmIntegration.lastfmUsername])
+
+    useEffect(() => {
         const syncAlbums = async () => {
             try {
                 await axios.get('/game');
             } catch (err) {
-                console.log(err.response);
+                console.log(err);
             }
         }
 
         syncAlbums();
     }, [])
 
-    useEffect(() => {
-        const fetchAlbums = async () => {
-            try {
-                const response = await axios.get<FetchResponse>('/integration/albums');
-
-                shuffle(response.data.albums);
-
-                setAlbums(response.data.albums);
-            } catch (err) {
-                console.log(err);
-            }
+    const { isPending, error } = useQuery({
+        queryKey: ['albums', user?.lastfmIntegration.lastfmUsername],
+        queryFn: () => axios.get<FetchResponse>('/integration/albums').then((res) => {
+            shuffle(res.data.albums)
+            setAlbums(res.data.albums);
+            return res.data.albums;
         }
+        ),
+    })
 
-        if (albums.length === 0) {
-            fetchAlbums();
-        }
-    }, [albums, setAlbums])
+    if (isPending) return <span className="flex justify-center items-center h-dvh text-xl">Loading...</span>
 
-    console.log(currentAlbum);
+    if (error) return <span className="flex justify-center items-center h-dvh text-xl text-(--error-text)">{error.message}</span>
 
-    if (!albums || albums.length === 0) return <span>Loading...</span>
+    const currentAlbum = albums[index]
 
     return (
         <main className="flex flex-col items-center h-full lg:h-dvh pt-20 text-center">
