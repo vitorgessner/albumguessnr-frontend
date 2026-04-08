@@ -4,20 +4,19 @@ import useAuthStore from "../stores/useAuthStore"
 import { Star } from "lucide-react";
 
 const Profile = () => {
-    const { user} = useAuthStore();
+    const { user } = useAuthStore();
     const fetchUser = useMe();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         fetchUser()
-            .then(response => response)
             .then(() => {
                 setIsLoading(false);
             })
-    }, [fetchUser, setIsLoading]);
+    }, [fetchUser, setIsLoading, user]);
 
     if (isLoading) return <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>
-    
+
     if (!user) return null;
 
     const date = new Date(user.createdAt);
@@ -27,7 +26,7 @@ const Profile = () => {
     return (
         <main className="flex flex-col lg:flex-row justify-center gap-8 h-full lg:h-dvh pt-16 text-center">
             <section className="text-center order-1 lg:order-2">
-                    <img src={user.profile.avatar_url} alt={user.profile.username} className="mx-auto rounded-full w-37.5 h-37.5 object-cover object-center" />
+                <img src={user.profile.avatar_url} alt={user.profile.username} className="mx-auto rounded-full w-37.5 h-37.5 object-cover object-center" />
                 <h1 className="text-3xl font-bold">{user.profile.username}</h1>
                 <p className="flex justify-center items-center opacity-80 text-xl"><Star className="opacity-80" fill="text-(--primary-color)" stroke="text-(--primary-color)" /> 478 pontos</p>
                 <p className="opacity-80">Entrou em {creationDate}</p>

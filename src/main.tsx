@@ -11,13 +11,17 @@ import ProtectedRoute from './shared/components/ProtectedRoute.tsx';
 import UnprotectedRoute from './shared/components/UnprotectedRoute.tsx';
 import EditProfile from './features/auth/pages/EditProfile.tsx';
 import Guess from './features/game/guess/pages/Guess.tsx';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
         <Route element={<Header />}>
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<App />} />D
           <Route element={<UnprotectedRoute />}>
             <Route path='/auth' element={<Index />} />
           </Route>
@@ -30,5 +34,6 @@ createRoot(document.getElementById('root')!).render(
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
+    </QueryClientProvider>
   </StrictMode>,
 )
