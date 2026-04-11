@@ -27,17 +27,15 @@ const useGuessStore = create<IGuessStore>()((set) => ({
 
     incrementIndex: () => set((state) => ({
         index: state.index + 1,
-        currentAlbum: state.albums[state.index],
     })),
 
-    resetIndex: () => set((state) => ({
+    resetIndex: () => set(() => ({
         index: 0,
-        currentAlbum: state.albums[0],
     })),
 
     isTitleCorrect: false,
     isArtistCorrect: false,
-    isGuessed: true,
+    isGuessed: false,
 
     setIsTitleCorrect: (val) => set(() => ({
         isTitleCorrect: val,

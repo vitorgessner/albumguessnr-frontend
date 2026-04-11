@@ -28,6 +28,10 @@
   .achievements {
     flex: 0 0 16.66%;
   }
+
+  .loading {
+    @apply flex justify-center items-center h-dvh text-3xl
+  }
 }
 
 :root {

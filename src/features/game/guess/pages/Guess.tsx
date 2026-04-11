@@ -3,27 +3,79 @@ import Form from "../../../auth/components/form/Form";
 import Label from "../../../auth/components/form/Label";
 import Input from "../../../auth/components/form/Input";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import axios from "../../../../shared/utils/axios";
 import type { GuessType } from "../types/guessTypes";
 import type { FetchResponse } from "../types/albumTypes";
 import useGuessStore from "../stores/useGuessStore";
 import useCompare from "../hooks/useCompare";
 import shuffle from "../utils/shuffle";
-import useAuthStore from "../../../auth/stores/useAuthStore";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import useUser from "../../../auth/hooks/useUser";
+import type { IUser } from "../../../../shared/types/user";
 
 const Guess = () => {
-    const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
-    const { compareAlbum, compareArtist, reset } = useCompare(resetField, setFocus);
-    const { user } = useAuthStore();
+    const { user, isPending, error } = useUser();
 
-    const queryClient = useQueryClient();
+    if (isPending) return <div className="loading">Loading...</div>;
+
+    if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
+
+    return <GuessSync user={user!} />
+}
+
+const GuessSync = ({ user }: { user: IUser }) => {
+    const { albums, setAlbums, resetIndex } = useGuessStore();
+
+    const { isPending, error, isSuccess: isSynced } = useQuery({
+        queryKey: ['sync', user?.lastfmIntegration.lastfmUsername],
+        queryFn: async () => {
+            const res = await axios.get('/game');
+            return res;
+        },
+    })
+
+
+    const { isLoading: isAlbumsLoading, error: albumsErrors, isRefetching, dataUpdatedAt } = useQuery({
+        queryKey: ['albums', user?.lastfmIntegration.lastfmUsername],
+        queryFn: async () => await axios.get<FetchResponse>('/integration/albums').then((res) => {
+            shuffle(res.data.albums)
+            setAlbums(res.data.albums);
+            return res.data.albums;
+        }
+        ),
+        enabled: isSynced,
+        refetchInterval: albums.length <= 0 ? 20000 : false,
+    })
+
+    const isFirstLoad = useRef(true);
+
+    useEffect(() => {
+        if (isFirstLoad.current) {
+            isFirstLoad.current = false;
+            return;
+        }
+        resetIndex();
+    }, [dataUpdatedAt, resetIndex])
+
+    if (isPending) return <span className="loading">Fetching user albums...</span>
+
+    if (isAlbumsLoading) return <span className="loading">Loading albums...</span>
+
+    if (error || albumsErrors) return <span className="loading text-(--error-text)">{error?.message}</span>
+
+    if (albums.length <= 0) return <div className="loading">Preparing your albums, this may take a few minutes...</div>
+
+    if (isRefetching) return <div className="loading">Loading more albums...</div>
+
+    return <GuessContent />
+}
+
+const GuessContent = () => {
+    const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
+    const { currentAlbum, compareAlbum, compareArtist, reset } = useCompare(resetField, setFocus);
 
     const {
-        albums,
-        setAlbums,
-        index,
         isTitleCorrect,
         isArtistCorrect,
         isGuessed,
@@ -33,51 +85,17 @@ const Guess = () => {
     const onGuess: SubmitHandler<GuessType> = (data) => {
         if (!isGuessed) {
             setIsGuessed(true);
-            compareAlbum(data.album.toLowerCase().trim());
-            compareArtist(data.artist.toLowerCase().trim());
+            compareAlbum(data.album);
+            compareArtist(data.artist);
             setFocus('buttonSubmit');
-        }
-
-        if (isGuessed) {
+        } else if (isGuessed) {
             reset();
         }
     }
 
     useEffect(() => {
-        if (index >= 49) queryClient.invalidateQueries({ queryKey: ['albums', user?.lastfmIntegration.lastfmUsername]});
-    }, [queryClient, user?.lastfmIntegration.lastfmUsername, index])
-
-    useEffect(() => {
-        queryClient.invalidateQueries({queryKey: ['albums', user?.lastfmIntegration.lastfmUsername]});
-    }, [queryClient, user?.lastfmIntegration.lastfmUsername])
-
-    useEffect(() => {
-        const syncAlbums = async () => {
-            try {
-                await axios.get('/game');
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
-        syncAlbums();
-    }, [])
-
-    const { isPending, error } = useQuery({
-        queryKey: ['albums', user?.lastfmIntegration.lastfmUsername],
-        queryFn: () => axios.get<FetchResponse>('/integration/albums').then((res) => {
-            shuffle(res.data.albums)
-            setAlbums(res.data.albums);
-            return res.data.albums;
-        }
-        ),
-    })
-
-    if (isPending) return <span className="flex justify-center items-center h-dvh text-xl">Loading...</span>
-
-    if (error) return <span className="flex justify-center items-center h-dvh text-xl text-(--error-text)">{error.message}</span>
-
-    const currentAlbum = albums[index]
+        setFocus('album');
+    }, [setFocus])
 
     return (
         <main className="flex flex-col items-center h-full lg:h-dvh pt-20 text-center">

@@ -1,48 +1,37 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "../utils/axios";
 import useAuthStore from '../../features/auth/stores/useAuthStore';
-import useMe from "../../features/auth/hooks/useMe";
 import { Pencil, Calendar, ShoppingBasket, LogOut } from 'lucide-react';
 import { toast, ToastContainer } from "react-toastify";
+import useUser from "../../features/auth/hooks/useUser";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Header = () => {
-    const { user, isAuthenticated, logout, setIsLoggingOut, isLoading } = useAuthStore();
-    const fetchUser = useMe();
+    const { user } = useUser();
+    const { isAuthenticated, setIsLoggingOut, setIsAuthenticated } = useAuthStore();
+    const queryClient = useQueryClient();
+    const { isModalOpen, setIsModalOpen } = useAuthStore();
 
     const navigate = useNavigate();
     const path = useLocation();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
     useEffect(() => {
-        const fetch = async () => {
-            const response = await fetchUser()
-            
-            if (!response) {
-                setIsLoggingOut(true);    
-                await axios.post('/logout');
-                logout();
-                navigate('/auth', { state: { intentional: true } } );
+        if (path.state){
+            if (path.state?.message) {
+                toast.error(path.state.message);
             }
         }
-
-        fetch();
-    }, [fetchUser, navigate, logout, setIsLoggingOut])
-
-    useEffect(() => {
-        if (path.state?.message) {
-            toast.error(path.state.message);
-        }
-    })
+    }, [path.state])
 
     const handleLogout = async () => {
         setIsModalOpen(false);
         setIsLoggingOut(true);
         try {
             await axios.post('/logout');
+            queryClient.clear();
+            setIsAuthenticated(false);
             navigate('/auth', { state: { intentional: true } });
-            logout();
         } catch (err) {
             console.log(err);
             navigate(path.pathname, { state: { message: 'Logout failed' } });
@@ -58,11 +47,11 @@ const Header = () => {
                 </div>
                 <div className="absolute right-5 flex items-center justify-right gap-5">
                     {isAuthenticated && <Link to={'/guess'}>Guess</Link>}
-                    {isAuthenticated && <button className="cursor-pointer"><img src={user?.profile.avatar_url} className="w-10 h-10 rounded-full object-cover" onClick={() => setIsModalOpen(prev => !prev)} /></button>}
+                    {isAuthenticated && <button className="cursor-pointer"><img src={user?.profile.avatar_url} className="w-10 h-10 rounded-full object-cover" onClick={() => setIsModalOpen(!isModalOpen)} /></button>}
                 </div>
                 {isModalOpen && <aside className="bg-(--primary-color) fixed flex flex-col right-4 top-15 justify-center gap-3 w-55">
                     <div className="flex px-3 pt-3 gap-3">
-                        <Link to={`/profile/${user?.profile.username}`}><img src={user?.profile.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover" /></Link>
+                        <Link to={`/profile/${user?.profile.username}`}><img src={user?.profile.avatar_url} alt="" className="min-w-12 w-12 min-h-12 h-12 rounded-full object-cover" /></Link>
                         <div className="flex flex-col">
                             <span>{user?.profile.username}</span>
                             <span>478 pontos</span>
@@ -81,7 +70,7 @@ const Header = () => {
                 </aside>}
             </header>
             <ToastContainer />
-            {!isLoading ? <Outlet/> : <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>}
+            <Outlet/>
         </>
     )
 }

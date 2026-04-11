@@ -1,35 +1,30 @@
 import { create } from "zustand";
-import type { IUserWithProfileAndLastfmIntegration } from "../../../shared/types/user";
 
 interface IAuthState {
-    user: IUserWithProfileAndLastfmIntegration | undefined;
     isAuthenticated: boolean;
-    isLoading: boolean;
     isLoggingOut: boolean;
+    isModalOpen: boolean;
 
-    setUser: (user: IUserWithProfileAndLastfmIntegration) => void;
-    logout: () => void;
-    setIsLoading: (isLoading: boolean) => void;
     setIsLoggingOut: (isLoggingOut: boolean) => void;
+    setIsAuthenticated: (isAuthenticated: boolean) => void;
+    setIsModalOpen: (isModalOpen: boolean) => void;
 }
 
 const useAuthStore = create<IAuthState>()((set) => ({
-    user: undefined,
     isAuthenticated: false,
-    isLoading: true,
     isLoggingOut: false,
-
-    setUser: (user) => set(() => ({
-        user,
-        isAuthenticated: true,
-    })),
-    logout: () => set(() => ({ user: undefined, isAuthenticated: false })),
-    setIsLoading: (isLoading) => set(() => ({
-        isLoading,
-    })),
+    isModalOpen: false,
 
     setIsLoggingOut: (isLoggingOut) => set(() => ({
         isLoggingOut,
+    })),
+
+    setIsAuthenticated: (isAuthenticated) => set(() => ({
+        isAuthenticated,
+    })),
+
+    setIsModalOpen: (isModalOpen) => set(() => ({
+        isModalOpen,
     }))
 }))
 

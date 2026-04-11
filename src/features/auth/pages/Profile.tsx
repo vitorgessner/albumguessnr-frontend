@@ -1,21 +1,12 @@
-import { useEffect, useState } from "react";
-import useMe from "../hooks/useMe";
-import useAuthStore from "../stores/useAuthStore"
 import { Star } from "lucide-react";
+import useUser from "../hooks/useUser";
 
 const Profile = () => {
-    const { user } = useAuthStore();
-    const fetchUser = useMe();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { user, isPending, error } = useUser();
 
-    useEffect(() => {
-        fetchUser()
-            .then(() => {
-                setIsLoading(false);
-            })
-    }, [fetchUser, setIsLoading, user]);
+    if (isPending) return <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>
 
-    if (isLoading) return <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>
+    if (error) return <div className="text-3xl flex justify-center items-center h-dvh text-(--error-text)">{error.message}</div>
 
     if (!user) return null;
 
