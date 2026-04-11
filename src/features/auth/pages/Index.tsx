@@ -3,82 +3,94 @@ import axios from "../../../shared/utils/axios";
 import Form from "../components/form/Form";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { Navigate } from "react-router";
-import useMe from "../hooks/useMe";
+import { useNavigate } from "react-router";
 import { ToastContainer } from 'react-toastify';
 import useAuthStore from "../stores/useAuthStore";
+import useUser from "../hooks/useUser";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ErrorResponse, FormResponse } from "../types/response";
 
 type FormData = {
     email: string;
     password: string;
 }
 
-type FormResponse = {
-    status: string;
-    message: string;
-}
-
-type ErrorResponse = {
-    status: string;
-    name: string;
-    message: string;
-    statusCode: number;
-}
-
 const Index = () => {
-    const fetchUser = useMe();
+    const { user, isPending } = useUser();
     const { setIsLoggingOut } = useAuthStore();
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     useEffect(() => {
         setIsLoggingOut(false);
     }, [setIsLoggingOut]);
 
-    const [loginErrors, setloginErrors] = useState<ErrorResponse | string | Error | null>();
-    const [registerErrors, setregisterErrors] = useState<ErrorResponse | null>();
     const [registerResponse, setRegisterResponse] = useState<{ status: string, message: string } | null>();
     const [loginResponse, setLoginResponse] = useState<{ status: string, message: string } | null>();
 
     const loginFormMethods = useForm<FormData>();
     const registerFormMethods = useForm<FormData>();
 
-    const onLoginSubmit: SubmitHandler<FormData> = async (data) => {
-        setloginErrors(null);
-        setLoginResponse(null);
-        try {
-            await axios.post<FormResponse>('/login', data);
-            const user = await fetchUser()
-            if (!user) return null;
-            return <Navigate to={`/profile/${user?.profile.username}`} />;
-        } catch (err) {
-            if (err instanceof Error) {
-                setloginErrors(err);
-            }
+    const { mutate: mutateLogin, isPending: isLoginPending, error: loginError } = useMutation<FormResponse, AxiosError<ErrorResponse>, FormData>({
+        mutationFn: (data: FormData) => axios.post('/login', data).then(res => res.data),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+            setLoginResponse(data)
+            return navigate(`/profile/${user?.profile.username}`);
+        },
+        onError: (err) => {
+            console.log(err.response);
             if (err instanceof AxiosError && err.response?.data) {
-                setloginErrors({ ...err.response.data });
                 console.error(err.response.data);
                 loginFormMethods.resetField('password')
             }
         }
+    })
+
+    const onLoginSubmit: SubmitHandler<FormData> = async (data) => {
+        mutateLogin(data);
     }
 
-    const onRegisterSubmit: SubmitHandler<FormData> = async (data) => {
-        setregisterErrors(null);
-        setRegisterResponse(null);
-        try {
-            const response = await axios.post<FormResponse>('/register', data);
-            const responseData = response.data;
-            setRegisterResponse(responseData);
-        } catch (err) {
+    const { mutate: mutateRegister, isPending: isRegisterPending, error: registerError } = useMutation<FormResponse, AxiosError<ErrorResponse>, FormData>({
+        mutationFn: (data) => axios.post('/register', data).then(res => res.data),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+            setRegisterResponse(data)
+        },
+        onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
-                setregisterErrors({ ...err.response.data });
-                console.error(err.response.data);
-                registerFormMethods.resetField('password');
+                console.error(err);
+                loginFormMethods.resetField('password')
             }
         }
+    })
+
+    const onRegisterSubmit: SubmitHandler<FormData> = async (data) => {
+        mutateRegister(data);
+    }
+
+    const { mutate: mutateResend, isPending: isResendPending, error: resendError } = useMutation<FormResponse, AxiosError<ErrorResponse>, {email: string}>({
+        mutationFn: (data: Omit<FormData, 'password'>) => axios.post(`/resendVerification/`, data).then(res => res.data),
+        onSuccess: (data) => {
+            setLoginResponse(data);
+        },
+        onError: (err) => {
+            if (err instanceof AxiosError && err.response?.data) {
+                console.error(err.response.data);
+                loginFormMethods.resetField('password')
+            }
+        }
+    });
+
+    const onResendVerification = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        mutateResend({ email: loginFormMethods.getValues('email') })
     }
 
     const loginFormErrors = loginFormMethods.formState.errors;
     const registerFormErrors = registerFormMethods.formState.errors;
+
+    if (isPending) return <div className="loading">Loading...</div>
 
     return (
         <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
@@ -111,26 +123,13 @@ const Index = () => {
 
                     <Form.Input type="submit" value="Login" className="cursor-pointer" />
 
-                    {loginErrors &&
-                        <span className="text-(--error-text) text-center">{loginErrors.message || loginErrors}</span>}
-                    {loginErrors && loginErrors.message === 'Email not verified' && <button className="text-(--loading-text) max-w-fit mx-auto" onClick={async (e) => {
-                        e.preventDefault();
-                        try {
-                            const response = await axios.post(`/resendVerification/`, {email: loginFormMethods.getValues('email')});
-                            setLoginResponse(response.data);
-                        } catch (err) {
-                            if (err instanceof Error) {
-                                setloginErrors(err);
-                            }
-                            if (err instanceof AxiosError && err.response?.data) {
-                                setloginErrors({ ...err.response.data });
-                                console.error(err.response.data);
-                                loginFormMethods.resetField('password')
-                            }
-                            console.log(err);
-                        }
-                    }}>Resend email</button>}
-                    {loginFormMethods.formState.isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
+                    {isLoginPending && <span>Loading...</span>}
+                    {isResendPending && <span>Loading...</span>}
+                    {loginError &&
+                        <span className="text-(--error-text) text-center">{loginError.response?.data.message}</span>}
+                    {loginError && loginError.response?.data.message === 'Email not verified' && <button className="text-(--loading-text) max-w-fit mx-auto" onClick={(e) => onResendVerification(e)}>Resend email</button>}
+                    {resendError &&
+                        <span className="text-(--error-text) text-center">{resendError.message}</span>}
                     {loginResponse && <span className="text-center text-(--success-text)">{loginResponse.status + ': ' + loginResponse.message}</span>}
 
                 </Form>
@@ -160,8 +159,8 @@ const Index = () => {
 
                     <Form.Input type="submit" value="Create account" className="cursor-pointer" />
 
-                    {registerErrors && <span className="text-(--error-text) text-center">{registerErrors.message}</span>}
-                    {registerFormMethods.formState.isSubmitting && <span className="text-center text-(--loading-text)">Loading...</span>}
+                    {isRegisterPending && <span>Loading...</span>}
+                    {registerError && <span className="text-(--error-text) text-center">{registerError.response?.data.message}</span>}
                     {registerResponse && <span className="text-center text-(--success-text)">{registerResponse.status + ': ' + registerResponse.message}</span>}
 
                 </Form>

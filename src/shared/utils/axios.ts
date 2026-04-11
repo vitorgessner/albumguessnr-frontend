@@ -6,21 +6,25 @@ const axiosInstance = axios.create({
 
 axiosInstance.defaults.withCredentials = true;
 
-axios.interceptors.response.use((response) => {
+axiosInstance.interceptors.response.use((response) => {
     return response;
 }, async (error) => {
-    if (error instanceof AxiosError){
+    if (error instanceof AxiosError) {
         if (!error.config) return null;
-        if (error.status === 401 && error.response?.data.message === "Expired token" && error.config?.url !== 'http://localhost:3000/refresh') {
-            await axios.post('/refresh');
+        if (error.status === 401 && error.response?.data.message === "Expired token" && error.config?.url !== `${import.meta.env.VITE_API_URL}/refresh`) {
             try {
-                return axios(error.config);
+                await axiosInstance.post('/refresh');
+                return axiosInstance(error.config);
             } catch (err) {
+                if (err instanceof AxiosError) {
+                    if (err.status === 401) return window.location.href = `${window.location.origin}/auth`;
+                    return err.response?.data.message;
+                }
                 console.log(err);
-                window.location.href = `${window.location.origin}/auth`;
             }
         }
     }
+    return Promise.reject(error);
 })
 
 export default axiosInstance;
