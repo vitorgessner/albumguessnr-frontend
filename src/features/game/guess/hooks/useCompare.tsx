@@ -3,32 +3,75 @@ import useGuessStore from "../stores/useGuessStore";
 import type { GuessType } from "../types/guessTypes";
 import { useQueryClient } from "@tanstack/react-query";
 import useUser from "../../../auth/hooks/useUser";
+import useTrackStore from "../stores/useTrackStore";
 
 const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormSetFocus<GuessType>) => {
-    const { albums, index, setIsTitleCorrect, setIsArtistCorrect, setIsGuessed, incrementIndex } = useGuessStore();
+    const { albums, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
+    const { addGuess, remaining, decrementRemaining, setRemainig, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished } = useTrackStore();
     const currentAlbum = albums[index];
     const { user } = useUser();
     const queryClient = useQueryClient();
 
     const compareAlbum = (guess: string = '') => {
-        if (guess.toLowerCase().trim() === currentAlbum.album.normalizedName) return setIsTitleCorrect(true);
-        return setIsTitleCorrect(false);
+        return guess.toLowerCase().trim() === currentAlbum.album.normalizedName
     }
 
     const compareArtist = (guess: string = '') => {
-        if (guess.toLowerCase().trim() === currentAlbum.album.normalizedArtist) return setIsArtistCorrect(true);
-        return setIsArtistCorrect(false);
+        return guess.toLowerCase().trim() === currentAlbum.album.normalizedArtist
+    }
+
+    const compareTag = (guess: string = '') => {
+        const tag = currentAlbum.album.genres.filter(genre => genre.genre.name === guess.toLowerCase().trim());
+
+        return tag.length > 0 ? true : false;
+    }
+
+    const compareTrack = (guess: string = '') => {
+        if (remaining <= 1) setIsFinished(true);
+        const tracks = currentAlbum.album.tracks.map(track => track.normalizedName);
+
+        const includes = tracks.includes(guess.toLowerCase().trim());
+
+        addGuess({ name: guess.toLowerCase().trim(), isCorrect: includes ? true : false  });
+        decrementRemaining();
+    }
+
+    const compareYear = (guess: string = '') => {
+        return String(guess).toLocaleLowerCase().trim() === String(currentAlbum.album.year);
+    }
+
+    const guess = (album: string, artist: string, tag: string, year: string) => {
+        setIsGuessed(true);
+        const isAlbumCorrect = compareAlbum(album);
+        const isArtistCorrect = compareArtist(artist);
+        const isTagCorrect = compareTag(tag);
+        const isYearCorrect = compareYear(year);
+
+        setRemainig(0);
+
+        getRightAnswersCount();
+
+        setCorrectAnswers({
+            album: isAlbumCorrect,
+            artist: isArtistCorrect,
+            genre: isTagCorrect,
+            year: isYearCorrect,
+            tracklist: rightAnswersCount
+        })
     }
 
     const reset = () => {
         setIsGuessed(false);
+        setIsFinished(false);
         if (resetField) {
             resetField('album');
             resetField('artist');
+            resetField('genre')
+            resetField('year')
         }
 
-        setIsTitleCorrect(false);
-        setIsArtistCorrect(false);
+        resetAnswers();
+        resetTracksState();
         if (setFocus) setFocus('album');
         if (index < albums.length - 1) {
             return incrementIndex();
@@ -36,7 +79,7 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
         queryClient.invalidateQueries({ queryKey: ['albums', user?.lastfmIntegration.lastfmUsername] })
     }
 
-    return { currentAlbum, compareAlbum, compareArtist, reset };
+    return { currentAlbum, guess, compareTrack, reset };
 }
 
 export default useCompare;

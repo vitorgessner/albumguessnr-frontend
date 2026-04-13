@@ -40,7 +40,7 @@ const Header = () => {
 
     return (
         <>
-            <header className="bg-(--primary-color) p-3 fixed w-full flex items-center">
+            <header className="bg-(--primary-color) p-3 fixed w-full flex items-center z-10">
                 <div className="flex justify-center grow">
                     <Link to={'/'}><h1 className="uppercase text-(--text) text-xl text-center font-semibold">AlbumGuessnr</h1></Link>
                     {!isAuthenticated && !(path.pathname === '/auth') && <Link to={'/auth'} className="absolute right-5 underline">Log in or create an account</Link>}

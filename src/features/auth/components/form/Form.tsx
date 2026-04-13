@@ -4,7 +4,8 @@ import Textfield from "./Textfield";
 
 interface IFormProps extends React.FormHTMLAttributes<HTMLFormElement> {
     className?: string;
-    children: React.ReactNode
+    children: React.ReactNode,
+    ref?: React.RefObject<HTMLFormElement | null>
 }
 
 type FormComponent = React.FC<IFormProps> & {
@@ -13,10 +14,10 @@ type FormComponent = React.FC<IFormProps> & {
     Textfield: typeof Textfield;
 }
 
-const Form: FormComponent = ({className, children, ...props}: IFormProps) => {
+const Form: FormComponent = ({className, children, ref, ...props}: IFormProps) => {
     return (
         <>
-            <form method="post" className={className} {...props}>
+            <form ref={ref} method="post" className={className} {...props}>
                 {children}
             </form>
         </>

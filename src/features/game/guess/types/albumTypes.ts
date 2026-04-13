@@ -1,11 +1,27 @@
+type Genre = {
+    genre: {
+        id: string,
+        name: string,
+    }
+}
+
+type Track = {
+    id: string,
+    albumId: string,
+    name: string,
+    normalizedName: string,
+}
+
 export type Album = {
     album: {
         cover_url: string,
+        genres: Array<Genre>,
         id: string,
         mbid: string | null,
         name: string,
         normalizedArtist: string,
         normalizedName: string,
+        tracks: Array<Track>,
         year: Date
     },
     albumId: string,
@@ -17,22 +33,5 @@ export type Album = {
 
 export type FetchResponse = {
     status: string,
-    albums: [
-        {
-            album: {
-                cover_url: string,
-                id: string,
-                mbid: string | null,
-                name: string,
-                normalizedArtist: string,
-                normalizedName: string,
-                year: Date
-            },
-            albumId: string,
-            lastfmIntegrationId: string,
-            lastTimeListened: Date,
-            timesListened: number,
-            tracksListened: number,
-        }
-    ]
+    albums: Array<Album>
 }
