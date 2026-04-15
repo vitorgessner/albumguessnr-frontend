@@ -148,7 +148,7 @@ const GuessContent = () => {
                                 {config.year && <Form.Label className="w-21">
                                     <Form.Input disabled={!currentAlbum.album.year} placeholder="Year" type="number" className={`w-full disabled:opacity-40 ${config.year && currentAlbum.album.year && (isGuessed ? correctAnswers.year ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('year')} autoComplete="off" />
                                 </Form.Label>}
-                                {currentAlbum.album.year && config.year && isGuessed && (!correctAnswers.year && <span className="text-left max-w-67">{currentAlbum.album.year.toDateString()}</span>)}
+                                {currentAlbum.album.year && config.year && isGuessed && (!correctAnswers.year && <span className="text-left max-w-67">{currentAlbum.album.year}</span>)}
                             </div>
                         </div>
                         <Form.Input {...register('buttonSubmit')} type="submit" value={!isGuessed ? 'Guess' : 'Next'} className="w-full" />

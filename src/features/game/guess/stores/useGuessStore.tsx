@@ -16,8 +16,6 @@ type Answers = Omit<IConfig, 'tracklist'> & {
 interface IGuessStore {
     albums: Array<Album>;
     index: number;
-    // isTitleCorrect: boolean;
-    // isArtistCorrect: boolean;
     isGuessed: boolean;
     config: IConfig;
     correctAnswers: Partial<Answers>;
@@ -25,8 +23,6 @@ interface IGuessStore {
     setAlbums: (albums: Array<Album>) => void;
     incrementIndex: () => void;
     resetIndex: () => void;
-    // setIsTitleCorrect: (val: boolean) => void;
-    // setIsArtistCorrect: (val: boolean) => void;
     setIsGuessed: (val: boolean) => void;
     setConfig: (config: IConfig) => void;
     setCorrectAnswers: (correctAnswers: Partial<Answers>) => void;
@@ -50,17 +46,7 @@ const useGuessStore = create<IGuessStore>()((set) => ({
         index: 0,
     })),
 
-    // isTitleCorrect: false,
-    // isArtistCorrect: false,
     isGuessed: false,
-
-    // setIsTitleCorrect: (val) => set(() => ({
-    //     isTitleCorrect: val,
-    // })),
-
-    // setIsArtistCorrect: (val) => set(() => ({
-    //     isArtistCorrect: val,
-    // })),
 
     setIsGuessed: (val) => set(() => ({
         isGuessed: val,
