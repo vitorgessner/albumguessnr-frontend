@@ -37,7 +37,7 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     }
 
     const compareYear = (guess: string = '') => {
-        return String(guess).toLocaleLowerCase().trim() === String(currentAlbum.album.year);
+        return guess.toLocaleLowerCase().trim() === currentAlbum.album.year;
     }
 
     const guess = (album: string, artist: string, tag: string, year: string) => {

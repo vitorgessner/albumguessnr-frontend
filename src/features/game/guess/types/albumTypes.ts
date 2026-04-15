@@ -22,7 +22,7 @@ export type Album = {
         normalizedArtist: string,
         normalizedName: string,
         tracks: Array<Track>,
-        year: Date
+        year: string
     },
     albumId: string,
     lastfmIntegrationId: string,
