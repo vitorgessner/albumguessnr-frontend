@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import useUser from "../../../auth/hooks/useUser";
 import type { IUser } from "../../../../shared/types/user";
 import useTrackStore from "../stores/useTrackStore";
+import useTimer from "../hooks/useTimer";
 
 const Guess = () => {
     const { user, isPending, error } = useUser();
@@ -75,6 +76,7 @@ const GuessContent = () => {
     const { register: trackRegister, handleSubmit: trackHandleSubmit, resetField: resetTrack } = useForm<TrackType>();
     const { currentAlbum, guess, reset, compareTrack } = useCompare(resetField, setFocus);
     const formRef = useRef<HTMLFormElement>(null);
+    const { startTimer, pauseTimer, clearTimer, seconds } = useTimer();
 
     const {
         correctAnswers,
@@ -83,37 +85,48 @@ const GuessContent = () => {
         config,
     } = useGuessStore();
 
-    const { guessed, setRemainig, setIsFinished, isFinished } = useTrackStore();
+    const { guessed, setIsFinished, isFinished } = useTrackStore();
 
     const onGuess: SubmitHandler<GuessType> = (data) => {
         if (!isGuessed) {
             setIsGuessed(true);
             setIsFinished(true);
             guess(data.album, data.artist, data.genre, data.year);
-            setRemainig(0);
 
             setFocus('buttonSubmit');
         } else if (isGuessed) {
             reset();
+
             resetTrack('track');
         }
     }
 
     const onTrackTry: SubmitHandler<TrackType> = (data) => {
+        if (data.track === '' || !data.track) {
+            console.log('foi aqui?');
+            setIsFinished(true);
+        }
+        console.log(data.track);
         compareTrack(data.track);
         resetTrack('track');
     }
 
     useEffect(() => {
         setFocus('album');
-        setRemainig(currentAlbum.album.tracks.length);
-    }, [setFocus, setRemainig, currentAlbum.album.tracks.length])
+    }, [setFocus])
+
+    useEffect(() => {
+        clearTimer();
+        startTimer();
+    }, [startTimer, clearTimer, currentAlbum.album.cover_url])
 
     useEffect(() => {
         if (isFinished) {
+            console.log('foi isso? (isFinished)')
             formRef.current?.requestSubmit();
+            pauseTimer();
         }
-    }, [isFinished])
+    }, [isFinished, pauseTimer])
 
     const guessedTracks = guessed.map(g => g.name);
 
@@ -128,7 +141,7 @@ const GuessContent = () => {
                 </article>
                 <section>
                     <Form ref={formRef} className="flex flex-col gap-2" onSubmit={handleSubmit(onGuess)}>
-                        <p className="flex justify-end items-center py-2"><Timer /> 00</p>
+                        <p className="flex justify-end items-center py-2"><Timer/> <span className="w-7">{seconds < 10 ? 0 + '' + seconds : seconds}</span></p>
                         {config.album && <Form.Label>
                             <Form.Input placeholder="Album" className={`w-67 disabled:opacity-40 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? correctAnswers.album ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('album')} autoComplete="off" />
                         </Form.Label>}

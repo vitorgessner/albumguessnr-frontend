@@ -7,7 +7,7 @@ import useTrackStore from "../stores/useTrackStore";
 
 const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormSetFocus<GuessType>) => {
     const { albums, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
-    const { addGuess, remaining, decrementRemaining, setRemainig, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished } = useTrackStore();
+    const { addGuess, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished, guessed } = useTrackStore();
     const currentAlbum = albums[index];
     const { user } = useUser();
     const queryClient = useQueryClient();
@@ -27,13 +27,12 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     }
 
     const compareTrack = (guess: string = '') => {
-        if (remaining <= 1) setIsFinished(true);
+        if (guessed.length >= currentAlbum.album.tracks.length) return setIsFinished(true);
         const tracks = currentAlbum.album.tracks.map(track => track.normalizedName);
 
         const includes = tracks.includes(guess.toLowerCase().trim());
 
         addGuess({ name: guess.toLowerCase().trim(), isCorrect: includes ? true : false  });
-        decrementRemaining();
     }
 
     const compareYear = (guess: string = '') => {
@@ -46,8 +45,6 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
         const isArtistCorrect = compareArtist(artist);
         const isTagCorrect = compareTag(tag);
         const isYearCorrect = compareYear(year);
-
-        setRemainig(0);
 
         getRightAnswersCount();
 
