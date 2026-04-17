@@ -12,6 +12,17 @@ type Track = {
     normalizedName: string,
 }
 
+type Artist = {
+    albumId: string;
+    artistId: string;
+    artist: {
+        id: string;
+        mbid: string;
+        name: string;
+        normalizedName: string;
+    }
+}
+
 export type Album = {
     album: {
         cover_url: string,
@@ -22,6 +33,7 @@ export type Album = {
         normalizedArtist: string,
         normalizedName: string,
         tracks: Array<Track>,
+        artists: Array<Artist>,
         year: string
     },
     albumId: string,

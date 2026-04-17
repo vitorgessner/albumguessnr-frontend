@@ -17,7 +17,10 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     }
 
     const compareArtist = (guess: string = '') => {
-        return guess.toLowerCase().trim() === currentAlbum.album.normalizedArtist
+        const artist = currentAlbum.album.artists.filter((a) => {
+            return a.artist.normalizedName.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") === guess.toLowerCase().trim()
+    })
+        return artist.length > 0 ? true : false;
     }
 
     const compareTag = (guess: string = '') => {

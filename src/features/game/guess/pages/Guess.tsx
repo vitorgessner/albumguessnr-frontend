@@ -147,9 +147,9 @@ const GuessContent = () => {
                         </Form.Label>}
                         {config.album && isGuessed && (!correctAnswers.album && <span className="text-left max-w-67">{currentAlbum.album.normalizedName}</span>)}
                         {config.artist && <Form.Label>
-                            <Form.Input placeholder="Artist" className={`w-67 disabled:opacity-40 ${config.artist && currentAlbum.album.normalizedArtist && (isGuessed ? correctAnswers.artist ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('artist')} autoComplete="off" />
+                            <Form.Input placeholder="Artist" className={`w-67 disabled:opacity-40 ${config.artist && currentAlbum.album.artists && (isGuessed ? correctAnswers.artist ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('artist')} autoComplete="off" />
                         </Form.Label>}
-                        {config.artist && isGuessed && (!correctAnswers.artist && <span className="text-left max-w-67">{currentAlbum.album.normalizedArtist}</span>)}
+                        {config.artist && isGuessed && (!correctAnswers.artist && <span className="text-left max-w-67">{currentAlbum.album.artists.map((a) => a.artist.normalizedName + ', ')}</span>)}
                         <div className="flex justify-between max-w-67 w-67 gap-2">
                             <div className="flex flex-col">
                                 {config.genre && <Form.Label>
