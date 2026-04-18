@@ -55,35 +55,23 @@ const useGuessStore = create<IGuessStore>()((set) => ({
     config: {
         album: true,
         artist: true,
-        genre: true,
-        year: true,
-        tracklist: true
+        genre: false,
+        year: false,
+        tracklist: false
     },
 
     setConfig: (config) => set(() => ({
         config,
     })),
 
-    correctAnswers: {
-        album: false,
-        artist: false,
-        genre: false,
-        year: false,
-        tracklist: 0,
-    },
+    correctAnswers: {},
 
     setCorrectAnswers: (correctAnswers) => set(() => ({
         correctAnswers,
     })),
 
     resetAnswers: () => set(() => ({
-        correctAnswers: {
-            album: false,
-            artist: false,
-            genre: false,
-            year: false,
-            tracklist: 0
-        }
+        correctAnswers: {}
     }))
 }))
 

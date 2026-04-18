@@ -6,7 +6,7 @@ import useUser from "../../../auth/hooks/useUser";
 import useTrackStore from "../stores/useTrackStore";
 
 const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormSetFocus<GuessType>) => {
-    const { albums, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
+    const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
     const { addGuess, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished, guessed } = useTrackStore();
     const currentAlbum = albums[index];
     const { user } = useUser();
@@ -35,6 +35,7 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
         const index = tracks.indexOf(guess.toLowerCase().trim());
         
         addGuess({ name: guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false  });
+        getRightAnswersCount();
         if (guessed.length >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
         if (index) return index;
     }
@@ -43,21 +44,29 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
         return guess.toLocaleLowerCase().trim() === currentAlbum.album.year;
     }
 
-    const guess = (album: string, artist: string, tag: string, year: string) => {
+    const guess = (guess: {
+        album: string;
+        artist?: string;
+        tag?: string;
+        year?: string;
+    }) => {
         setIsGuessed(true);
+
+        const { album, artist, tag, year } = guess;
+        
         const isAlbumCorrect = compareAlbum(album);
         const isArtistCorrect = compareArtist(artist);
         const isTagCorrect = compareTag(tag);
         const isYearCorrect = compareYear(year);
 
-        getRightAnswersCount();
+        if (config.tracklist) getRightAnswersCount();
 
         setCorrectAnswers({
             album: isAlbumCorrect,
-            artist: isArtistCorrect,
-            genre: isTagCorrect,
-            year: isYearCorrect,
-            tracklist: rightAnswersCount
+            artist: artist !== undefined ? isArtistCorrect : undefined,
+            genre: artist !== undefined ? isTagCorrect : undefined,
+            year: artist !== undefined ? isYearCorrect : undefined,
+            tracklist: config.tracklist ? rightAnswersCount : undefined
         })
     }
 
