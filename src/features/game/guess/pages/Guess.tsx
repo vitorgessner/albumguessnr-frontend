@@ -76,6 +76,7 @@ const GuessContent = () => {
     const { register: trackRegister, handleSubmit: trackHandleSubmit, resetField: resetTrack } = useForm<TrackType>();
     const { currentAlbum, guess, reset, compareTrack } = useCompare(resetField, setFocus);
     const formRef = useRef<HTMLFormElement>(null);
+    const tracksRef = useRef<HTMLUListElement>(null);
     const { startTimer, pauseTimer, clearTimer, seconds } = useTimer();
 
     const {
@@ -103,12 +104,21 @@ const GuessContent = () => {
 
     const onTrackTry: SubmitHandler<TrackType> = (data) => {
         if (data.track === '' || !data.track) {
-            console.log('foi aqui?');
             setIsFinished(true);
         }
-        console.log(data.track);
-        compareTrack(data.track);
         resetTrack('track');
+        if (tracksRef.current) {
+            const index = compareTrack(data.track);
+            const tracks = tracksRef.current?.querySelector('ul')?.querySelectorAll('li');
+            if (!tracks) return;
+            if (index) {
+                const track = tracks.item(index);
+                track.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                })
+            }
+        }
     }
 
     useEffect(() => {
@@ -121,8 +131,11 @@ const GuessContent = () => {
     }, [startTimer, clearTimer, currentAlbum.album.cover_url])
 
     useEffect(() => {
+
+    })
+
+    useEffect(() => {
         if (isFinished) {
-            console.log('foi isso? (isFinished)')
             formRef.current?.requestSubmit();
             pauseTimer();
         }
@@ -141,7 +154,7 @@ const GuessContent = () => {
                 </article>
                 <section>
                     <Form ref={formRef} className="flex flex-col gap-2" onSubmit={handleSubmit(onGuess)}>
-                        <p className="flex justify-end items-center py-2"><Timer/> <span className="w-7">{seconds < 10 ? 0 + '' + seconds : seconds}</span></p>
+                        <p className="flex justify-end items-center py-2"><Timer /> <span className="w-7">{seconds < 10 ? 0 + '' + seconds : seconds}</span></p>
                         {config.album && <Form.Label>
                             <Form.Input placeholder="Album" className={`w-67 disabled:opacity-40 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? correctAnswers.album ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('album')} autoComplete="off" />
                         </Form.Label>}
@@ -149,13 +162,18 @@ const GuessContent = () => {
                         {config.artist && <Form.Label>
                             <Form.Input placeholder="Artist" className={`w-67 disabled:opacity-40 ${config.artist && currentAlbum.album.artists && (isGuessed ? correctAnswers.artist ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('artist')} autoComplete="off" />
                         </Form.Label>}
-                        {config.artist && isGuessed && (!correctAnswers.artist && <span className="text-left max-w-67">{currentAlbum.album.artists.map((a) => a.artist.normalizedName + ', ')}</span>)}
+                        {config.artist && isGuessed && (!correctAnswers.artist && <span className="text-left max-w-67">{currentAlbum.album.artists.map((a, i, arr) => i !== arr.length - 1 ? a.artist.normalizedName + ', ' : a.artist.normalizedName)}</span>)}
                         <div className="flex justify-between max-w-67 w-67 gap-2">
                             <div className="flex flex-col">
                                 {config.genre && <Form.Label>
-                                    <Form.Input disabled={currentAlbum.album.genres.length <= 0} placeholder="Any tags" className={`w-full disabled:opacity-40 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? correctAnswers.genre ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('genre')} autoComplete="off" />
+                                    <Form.Input disabled={currentAlbum.album.genres.length <= 0} placeholder="Any tag" className={`w-44 disabled:opacity-40 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? correctAnswers.genre ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('genre')} autoComplete="off" />
                                 </Form.Label>}
-                                {config.genre && isGuessed && (<span className="text-left max-w-67">{currentAlbum.album.genres.map(genre => genre.genre.name + ', ')}</span>)}
+                                {config.genre && isGuessed && (<span className="text-left max-w-44 text-nowrap overflow-x-scroll pb-3 scroll-smooth" onWheel={(e: React.WheelEvent<HTMLSpanElement>) => {
+                                    if (e.deltaY !== 0) {
+                                        e.preventDefault();
+                                        e.target.scrollLeft += e.deltaY;
+                                    }
+                                }}>{currentAlbum.album.genres.map((g, i, arr) => i !== arr.length - 1 ? g.genre.name + ', ' : g.genre.name)}</span>)}
                             </div>
                             <div className="flex flex-col">
                                 {config.year && <Form.Label className="w-21">
@@ -169,16 +187,16 @@ const GuessContent = () => {
                 </section>
             </div>
             <div className='flex flex-col items-center text-center w-[301px] aria-disabled:opacity-40 h-fit'>
-                {config.tracklist && <section className={`w-full border-2 border-(--border) bg-(--primary-color) max-h-[538px] overflow-scroll relative ${currentAlbum.album.tracks.length === 0 && 'pb-3'}`}>
+                {config.tracklist && <section ref={tracksRef} className={`w-full border-2 border-(--border) bg-(--primary-color) max-h-[538px] overflow-scroll relative ${currentAlbum.album.tracks.length === 0 && 'pb-3'}`}>
                     <div className="flex items-center text-xl pt-3 px-3 justify-between sticky top-0 bg-(--primary-color) p-3 border-b-2 border-(--border)">
                         <div className="opacity-0">0/{currentAlbum.album.tracks.length}</div>
                         <h3>Tracklist</h3>
                         <span>{guessed.length}/{currentAlbum.album.tracks.length}</span>
                     </div>
-                    <ul className="flex flex-col gap-2 my-2 px-3 overflow-hidden">
+                    <ul className="flex flex-col gap-2 my-2 px-3 overflow-hidden scroll-smooth">
                         {currentAlbum.album.tracks.map((t) => {
-                            return <li key={t.id} 
-                            className={`bg-(--secondary-color) p-1 border-2 ${!isFinished ? (guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--border)') : guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--error-text)'}`}
+                            return <li key={t.id} id={t.id}
+                                className={`bg-(--secondary-color) p-1 border-2 ${!isFinished ? (guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--border)') : guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--error-text)'}`}
                             >{(guessedTracks.includes(t.normalizedName) || isFinished) && t.normalizedName}</li>
                         })}
                     </ul>
