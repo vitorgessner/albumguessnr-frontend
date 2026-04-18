@@ -13,7 +13,7 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     const queryClient = useQueryClient();
 
     const compareAlbum = (guess: string = '') => {
-        return guess.toLowerCase().trim() === currentAlbum.album.normalizedName
+        return currentAlbum.album.normalizedName.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") === guess.toLowerCase().trim()
     }
 
     const compareArtist = (guess: string = '') => {
@@ -24,18 +24,19 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     }
 
     const compareTag = (guess: string = '') => {
-        const tag = currentAlbum.album.genres.filter(genre => genre.genre.name === guess.toLowerCase().trim());
+        const tag = currentAlbum.album.genres.filter(genre => genre.genre.name.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") === guess.toLowerCase().trim());
 
         return tag.length > 0 ? true : false;
     }
 
     const compareTrack = (guess: string = '') => {
-        if (guessed.length >= currentAlbum.album.tracks.length) return setIsFinished(true);
-        const tracks = currentAlbum.album.tracks.map(track => track.normalizedName);
-
-        const includes = tracks.includes(guess.toLowerCase().trim());
-
-        addGuess({ name: guess.toLowerCase().trim(), isCorrect: includes ? true : false  });
+        const tracks = currentAlbum.album.tracks.map(track => track.normalizedName.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-"));
+        
+        const index = tracks.indexOf(guess.toLowerCase().trim());
+        
+        addGuess({ name: guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false  });
+        if (guessed.length >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
+        if (index) return index;
     }
 
     const compareYear = (guess: string = '') => {
