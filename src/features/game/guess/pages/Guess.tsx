@@ -1,7 +1,7 @@
 import { Timer } from "lucide-react";
 import Form from "../../../auth/components/form/Form";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "../../../../shared/utils/axios";
 import type { GuessType, TrackType } from "../types/guessTypes";
 import type { FetchResponse } from "../types/albumTypes";
@@ -13,6 +13,7 @@ import useUser from "../../../auth/hooks/useUser";
 import type { IUser } from "../../../../shared/types/user";
 import useTrackStore from "../stores/useTrackStore";
 import useTimer from "../hooks/useTimer";
+import ConfigComponent from "../../config/components/Config";
 
 const Guess = () => {
     const { user, isPending, error } = useUser();
@@ -78,6 +79,7 @@ const GuessContent = () => {
     const formRef = useRef<HTMLFormElement>(null);
     const tracksRef = useRef<HTMLUListElement>(null);
     const { startTimer, pauseTimer, clearTimer, seconds } = useTimer();
+    const [index, setIndex] = useState<number | undefined>();
 
     const {
         correctAnswers,
@@ -86,13 +88,22 @@ const GuessContent = () => {
         config,
     } = useGuessStore();
 
-    const { guessed, setIsFinished, isFinished } = useTrackStore();
+    const { guessed, setIsFinished, isFinished, rightAnswersCount } = useTrackStore();
 
     const onGuess: SubmitHandler<GuessType> = (data) => {
         if (!isGuessed) {
             setIsGuessed(true);
             setIsFinished(true);
-            guess(data.album, data.artist, data.genre, data.year);
+            const guessObj: {
+                album: string;
+                artist?: string;
+                tag?: string;
+                year?: string;
+            } = { album: data.album };
+            if (config.artist) guessObj.artist = data.artist ?? '';
+            if (config.genre) guessObj.tag = data.genre ?? '';
+            if (config.year) guessObj.year = data.year ?? '';
+            guess(guessObj);
 
             setFocus('buttonSubmit');
         } else if (isGuessed) {
@@ -102,28 +113,33 @@ const GuessContent = () => {
         }
     }
 
-    const onTrackTry: SubmitHandler<TrackType> = (data) => {
-        if (data.track === '' || !data.track) {
-            setIsFinished(true);
-        }
-        resetTrack('track');
+    useEffect(() => {
         if (tracksRef.current) {
-            const index = compareTrack(data.track);
             const tracks = tracksRef.current?.querySelector('ul')?.querySelectorAll('li');
             if (!tracks) return;
             if (index) {
                 const track = tracks.item(index);
+                if (!track) return;
                 track.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start',
                 })
             }
         }
+    }, [tracksRef, index])
+
+    const onTrackTry: SubmitHandler<TrackType> = (data) => {
+        if (data.track === '' || !data.track) {
+            setIsFinished(true);
+        }
+        resetTrack('track');
+        setIndex(compareTrack(data.track));
     }
 
     useEffect(() => {
+        console.log(correctAnswers);
         setFocus('album');
-    }, [setFocus])
+    }, [setFocus, correctAnswers])
 
     useEffect(() => {
         clearTimer();
@@ -145,6 +161,7 @@ const GuessContent = () => {
 
     return (
         <main className="flex justify-center gap-5 h-full lg:h-dvh py-20">
+            <ConfigComponent />
             <div className="w-[301px] p-3 h-fit"></div>
             <div className="flex flex-col items-center text-center h-fit">
                 <article>
@@ -154,33 +171,39 @@ const GuessContent = () => {
                 </article>
                 <section>
                     <Form ref={formRef} className="flex flex-col gap-2" onSubmit={handleSubmit(onGuess)}>
+                        
                         <p className="flex justify-end items-center py-2"><Timer /> <span className="w-7">{seconds < 10 ? 0 + '' + seconds : seconds}</span></p>
+
                         {config.album && <Form.Label>
-                            <Form.Input placeholder="Album" className={`w-67 disabled:opacity-40 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? correctAnswers.album ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('album')} autoComplete="off" />
+                            <Form.Input placeholder="Album" disabled={!currentAlbum.album.normalizedName || isGuessed} className={`w-67 disabled:opacity-40 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? correctAnswers.album ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-border')}`} {...register('album')} autoComplete="off" />
                         </Form.Label>}
                         {config.album && isGuessed && (!correctAnswers.album && <span className="text-left max-w-67">{currentAlbum.album.normalizedName}</span>)}
+                        
                         {config.artist && <Form.Label>
-                            <Form.Input placeholder="Artist" className={`w-67 disabled:opacity-40 ${config.artist && currentAlbum.album.artists && (isGuessed ? correctAnswers.artist ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('artist')} autoComplete="off" />
+                            <Form.Input placeholder="Artist" disabled={currentAlbum.album.artists.length <= 0 || isGuessed} className={`w-67 disabled:opacity-40 ${config.artist && currentAlbum.album.artists && (isGuessed ? correctAnswers.artist ? 'border-(--success-text)' : correctAnswers.artist === false && 'border-(--error-text)' : 'border-border')}`} {...register('artist')} autoComplete="off" />
                         </Form.Label>}
-                        {config.artist && isGuessed && (!correctAnswers.artist && <span className="text-left max-w-67">{currentAlbum.album.artists.map((a, i, arr) => i !== arr.length - 1 ? a.artist.normalizedName + ', ' : a.artist.normalizedName)}</span>)}
+                        {config.artist && isGuessed && (correctAnswers.artist === false && <span className="text-left max-w-67">{currentAlbum.album.artists.map((a, i, arr) => i !== arr.length - 1 ? a.artist.normalizedName + ', ' : a.artist.normalizedName)}</span>)}
+
                         <div className="flex justify-between max-w-67 w-67 gap-2">
                             <div className="flex flex-col">
                                 {config.genre && <Form.Label>
-                                    <Form.Input disabled={currentAlbum.album.genres.length <= 0} placeholder="Any tag" className={`w-44 disabled:opacity-40 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? correctAnswers.genre ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('genre')} autoComplete="off" />
+                                    <Form.Input disabled={currentAlbum.album.genres.length <= 0 || isGuessed} placeholder="Any tag" className={`w-44 disabled:opacity-40 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? correctAnswers.genre ? 'border-(--success-text)' : correctAnswers.genre === false && 'border-(--error-text)' : 'border-border)')}`} {...register('genre')} autoComplete="off" />
                                 </Form.Label>}
-                                {config.genre && isGuessed && (<span className="text-left max-w-44 text-nowrap overflow-x-scroll pb-3 scroll-smooth" onWheel={(e: React.WheelEvent<HTMLSpanElement>) => {
+                                {config.genre && isGuessed && (<div className="text-left max-w-44 text-nowrap overflow-x-scroll pb-3 scroll-smooth" onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
                                     if (e.deltaY !== 0) {
                                         e.preventDefault();
-                                        e.target.scrollLeft += e.deltaY;
+                                        e.currentTarget.scrollLeft += e.deltaY;
                                     }
-                                }}>{currentAlbum.album.genres.map((g, i, arr) => i !== arr.length - 1 ? g.genre.name + ', ' : g.genre.name)}</span>)}
+                                }}>{(correctAnswers.genre === true || correctAnswers.genre === false) && currentAlbum.album.genres.map((g, i, arr) => i !== arr.length - 1 ? g.genre.name + ', ' : g.genre.name)}</div>)}
                             </div>
+
                             <div className="flex flex-col">
                                 {config.year && <Form.Label className="w-21">
-                                    <Form.Input disabled={!currentAlbum.album.year} placeholder="Year" type="number" className={`w-full disabled:opacity-40 ${config.year && currentAlbum.album.year && (isGuessed ? correctAnswers.year ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-(--border)')}`} {...register('year')} autoComplete="off" />
+                                    <Form.Input disabled={!currentAlbum.album.year || isGuessed} placeholder="Year" type="number" className={`w-full disabled:opacity-40 ${config.year && currentAlbum.album.year && (isGuessed ? correctAnswers.year ? 'border-(--success-text)' : correctAnswers.year === false && 'border-(--error-text)' : 'border-border)')}`} {...register('year')} autoComplete="off" />
                                 </Form.Label>}
-                                {currentAlbum.album.year && config.year && isGuessed && (!correctAnswers.year && <span className="text-left max-w-67">{currentAlbum.album.year}</span>)}
+                                {currentAlbum.album.year && config.year && isGuessed && (correctAnswers.year === false && <span className="text-left max-w-67">{currentAlbum.album.year}</span>)}
                             </div>
+
                         </div>
                         <Form.Input {...register('buttonSubmit')} type="submit" value={!isGuessed ? 'Guess' : 'Next'} className="w-full" />
                     </Form>
@@ -196,8 +219,8 @@ const GuessContent = () => {
                     <ul className="flex flex-col gap-2 my-2 px-3 overflow-hidden scroll-smooth">
                         {currentAlbum.album.tracks.map((t) => {
                             return <li key={t.id} id={t.id}
-                                className={`bg-(--secondary-color) p-1 border-2 ${!isFinished ? (guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--border)') : guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--error-text)'}`}
-                            >{(guessedTracks.includes(t.normalizedName) || isFinished) && t.normalizedName}</li>
+                                className={`bg-(--secondary-color) p-1 border-2 ${!isFinished ? (guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-border)') : typeof rightAnswersCount === 'number' ? (guessedTracks.includes(t.normalizedName) ? 'border-(--success-text)' : 'border-(--error-text)') : 'border-border'}`}
+                            >{typeof rightAnswersCount === 'number' ? (guessedTracks.includes(t.normalizedName) || isFinished) && t.normalizedName : ''}</li>
                         })}
                     </ul>
                     {currentAlbum.album.tracks.length > 0 ?
