@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import useUser from "../../../auth/hooks/useUser";
 import useTrackStore from "../stores/useTrackStore";
 import { fuzzy } from 'fast-fuzzy';
+import { WORD_REPLACEMENTS } from "../utils/removeWords";
 // import Fuse from 'fuse.js';
 
 const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormSetFocus<GuessType>) => {
@@ -48,18 +49,23 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
 
     const compareTrack = (guess: string = '') => {
         const track = currentAlbum.album.tracks.filter((t) => {
-            const result = getScore(t.normalizedName, guess);
+            const isGuessed = guessed.findIndex((g) => g.name === t.normalizedName && g.isCorrect)
+            if (isGuessed !== -1) return null;
+
+            const result = getScore(t.normalizedName, guess) > getScoreWithoutSpaces(t.normalizedName, guess)
+                ? getScore(t.normalizedName, guess) : getScoreWithoutSpaces(t.normalizedName, guess);
 
             const wordsQtd = getWordsQtd(t.normalizedName);
 
             return wordsQtd <= 8 ? result > 0.97 + (Number(wordsQtd) - 2) * (0.94 - 0.97) / (8 - 2) : result > 0.94;
         })
 
-        const index = currentAlbum.album.tracks.findIndex((t) => t.normalizedName === track[0].normalizedName);
+        const index = currentAlbum.album.tracks.findIndex((t) => t.normalizedName === track[0]?.normalizedName) ?? -1;
 
-        addGuess({ name: track[0].normalizedName ?? guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false });
+        addGuess({ name: track[0]?.normalizedName ?? guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false });
         getRightAnswersCount();
         if (guessed.length >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
+
         if (index >= 0) return index;
     }
 
@@ -113,18 +119,38 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     }
 
     const normalizeData = (data: string) => {
-        return data
+        return applyReplacements(data
             .toLowerCase()
             .trim()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[.,/#!$%^&*;:{}=\-_`'"/|~()]/g, " ")
+            .replace(/'`"]/g, "")
+            .replace(/[.,/#!$%^*;:{}=\-_`'"/|~()]/g, " ")
+            .replace(/[\u2010-\u2015]/g, ' '))
+    }
+
+    const applyReplacements = (data: string) => {
+        return WORD_REPLACEMENTS.reduce((acc, [regex, replacement]) => {
+            return acc.replace(regex, replacement);
+        }, data);
     }
 
     const getScore = (data: string, guess: string) => {
         const result = fuzzy(
             normalizeData(data),
             normalizeData(guess), {
+            ignoreCase: true,
+            ignoreSymbols: true,
+            normalizeWhitespace: true,
+        });
+
+        return result;
+    }
+
+    const getScoreWithoutSpaces = (data: string, guess: string) => {
+        const result = fuzzy(
+            normalizeData(data).replace(/\s/g, ''),
+            normalizeData(guess).replace(/\s/g, ''), {
             ignoreCase: true,
             ignoreSymbols: true,
             normalizeWhitespace: true,
