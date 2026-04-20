@@ -117,7 +117,7 @@ const GuessContent = () => {
         if (tracksRef.current) {
             const tracks = tracksRef.current?.querySelector('ul')?.querySelectorAll('li');
             if (!tracks) return;
-            if (index) {
+            if (index && index >= 0) {
                 const track = tracks.item(index);
                 if (!track) return;
                 track.scrollIntoView({
@@ -137,7 +137,6 @@ const GuessContent = () => {
     }
 
     useEffect(() => {
-        console.log(correctAnswers);
         setFocus('album');
     }, [setFocus, correctAnswers])
 
@@ -145,10 +144,6 @@ const GuessContent = () => {
         clearTimer();
         startTimer();
     }, [startTimer, clearTimer, currentAlbum.album.cover_url])
-
-    useEffect(() => {
-
-    })
 
     useEffect(() => {
         if (isFinished) {

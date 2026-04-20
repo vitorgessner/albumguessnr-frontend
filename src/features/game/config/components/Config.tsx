@@ -5,7 +5,7 @@ import useGuessStore from "../../guess/stores/useGuessStore";
 import { ChevronsRight } from 'lucide-react';
 
 const ConfigComponent = () => {
-    const [isExpanded, setIsExpanded] = useState<boolean>(true);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const { config, setConfig } = useGuessStore();
     const { isGuessed } = useGuessStore();
     return (

@@ -4,6 +4,8 @@ import type { GuessType } from "../types/guessTypes";
 import { useQueryClient } from "@tanstack/react-query";
 import useUser from "../../../auth/hooks/useUser";
 import useTrackStore from "../stores/useTrackStore";
+import { fuzzy } from 'fast-fuzzy';
+// import Fuse from 'fuse.js';
 
 const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormSetFocus<GuessType>) => {
     const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
@@ -13,31 +15,52 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     const queryClient = useQueryClient();
 
     const compareAlbum = (guess: string = '') => {
-        return currentAlbum.album.normalizedName.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") === guess.toLowerCase().trim()
+        const result = getScore(currentAlbum.album.normalizedName, guess);
+
+        const wordsQtd = getWordsQtd(currentAlbum.album.normalizedName);
+
+        return wordsQtd <= 8 ? result > 0.97 + (Number(wordsQtd) - 2) * (0.94 - 0.97) / (8 - 2) : result > 0.94
     }
 
     const compareArtist = (guess: string = '') => {
         const artist = currentAlbum.album.artists.filter((a) => {
-            return a.artist.normalizedName.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") === guess.toLowerCase().trim()
-    })
+            const result = getScore(a.artist.normalizedName, guess);
+
+            const wordsQtd = getWordsQtd(a.artist.normalizedName);
+
+            return wordsQtd <= 8 ? result > 0.97 + (Number(wordsQtd) - 2) * (0.94 - 0.97) / (8 - 2) : result > 0.94
+        })
+
         return artist.length > 0 ? true : false;
     }
 
     const compareTag = (guess: string = '') => {
-        const tag = currentAlbum.album.genres.filter(genre => genre.genre.name.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-") === guess.toLowerCase().trim());
+        const tag = currentAlbum.album.genres.filter((g) => {
+            const result = getScore(g.genre.name, guess);
+
+            const wordsQtd = getWordsQtd(g.genre.name);
+
+            return wordsQtd <= 8 ? result > 0.97 + (Number(wordsQtd) - 2) * (0.94 - 0.97) / (8 - 2) : result > 0.94
+        })
 
         return tag.length > 0 ? true : false;
     }
 
     const compareTrack = (guess: string = '') => {
-        const tracks = currentAlbum.album.tracks.map(track => track.normalizedName.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015]/g, "-"));
-        
-        const index = tracks.indexOf(guess.toLowerCase().trim());
-        
-        addGuess({ name: guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false  });
+        const track = currentAlbum.album.tracks.filter((t) => {
+            const result = getScore(t.normalizedName, guess);
+
+            const wordsQtd = getWordsQtd(t.normalizedName);
+
+            return wordsQtd <= 8 ? result > 0.97 + (Number(wordsQtd) - 2) * (0.94 - 0.97) / (8 - 2) : result > 0.94;
+        })
+
+        const index = currentAlbum.album.tracks.findIndex((t) => t.normalizedName === track[0].normalizedName);
+
+        addGuess({ name: track[0].normalizedName ?? guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false });
         getRightAnswersCount();
         if (guessed.length >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
-        if (index) return index;
+        if (index >= 0) return index;
     }
 
     const compareYear = (guess: string = '') => {
@@ -53,7 +76,7 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
         setIsGuessed(true);
 
         const { album, artist, tag, year } = guess;
-        
+
         const isAlbumCorrect = compareAlbum(album);
         const isArtistCorrect = compareArtist(artist);
         const isTagCorrect = compareTag(tag);
@@ -87,6 +110,35 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
             return incrementIndex();
         }
         queryClient.invalidateQueries({ queryKey: ['albums', user?.lastfmIntegration.lastfmUsername] })
+    }
+
+    const normalizeData = (data: string) => {
+        return data
+            .toLowerCase()
+            .trim()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[.,/#!$%^&*;:{}=\-_`'"/|~()]/g, " ")
+    }
+
+    const getScore = (data: string, guess: string) => {
+        const result = fuzzy(
+            normalizeData(data),
+            normalizeData(guess), {
+            ignoreCase: true,
+            ignoreSymbols: true,
+            normalizeWhitespace: true,
+        });
+
+        return result;
+    }
+
+    const getWordsQtd = (data: string) => {
+        return data
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[.,/#!$%^&*;:{}=\-_`'"/|~()]/g, " ")
+            .split(' ').length;
     }
 
     return { currentAlbum, guess, compareTrack, reset };
