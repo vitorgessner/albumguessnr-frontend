@@ -124,9 +124,11 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
             .trim()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, '')
-            .replace(/'`"]/g, "")
-            .replace(/[.,/#!$%^*;:{}=\-_`'"/|~()]/g, " ")
+            .replace(/['"`‘’“”]/g, "")
+            .replace(/[.,/#!$%^&*;:{}=\-_`~()|…\u2026]/g, " ")
             .replace(/[\u2010-\u2015]/g, ' '))
+            .replace(/\s+/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '')    ; 
     }
 
     const applyReplacements = (data: string) => {

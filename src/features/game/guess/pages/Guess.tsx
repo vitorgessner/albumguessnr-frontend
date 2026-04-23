@@ -8,7 +8,7 @@ import type { FetchResponse } from "../types/albumTypes";
 import useGuessStore from "../stores/useGuessStore";
 import useCompare from "../hooks/useCompare";
 import shuffle from "../utils/shuffle";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useUser from "../../../auth/hooks/useUser";
 import type { IUser } from "../../../../shared/types/user";
 import useTrackStore from "../stores/useTrackStore";
@@ -90,6 +90,20 @@ const GuessContent = () => {
 
     const { guessed, setIsFinished, isFinished, rightAnswersCount } = useTrackStore();
 
+    const { data: timesGuessed, isSuccess, isLoading } = useQuery({
+        queryKey: ['stats', currentAlbum?.albumId],
+        queryFn: async () => {
+            const res = await axios.get<{ timesGuessed: number }>(`/guess/${currentAlbum?.albumId}`);
+            return res.data.timesGuessed
+        }
+    })
+
+    const mutation = useMutation({
+        mutationFn: (albumId: string) => {
+            return axios.put('/guess', { albumId });
+        }
+    })
+
     const onGuess: SubmitHandler<GuessType> = (data) => {
         if (!isGuessed) {
             setIsGuessed(true);
@@ -106,6 +120,8 @@ const GuessContent = () => {
             guess(guessObj);
 
             setFocus('buttonSubmit');
+
+            mutation.mutate(currentAlbum.albumId);
         } else if (isGuessed) {
             reset();
 
@@ -165,15 +181,20 @@ const GuessContent = () => {
                     </div>
                 </article>
                 <section>
+                    {isSuccess && timesGuessed >= 1 &&
+                        <div className="text-sm text-left opacity-70">You've guessed this album
+                            {
+                                timesGuessed === 1 ? ' 1 time' : ` ${timesGuessed} times`
+                            }!</div>}
                     <Form ref={formRef} className="flex flex-col gap-2" onSubmit={handleSubmit(onGuess)}>
-                        
+
                         <p className="flex justify-end items-center py-2"><Timer /> <span className="w-7">{seconds < 10 ? 0 + '' + seconds : seconds}</span></p>
 
                         {config.album && <Form.Label>
                             <Form.Input placeholder="Album" disabled={!currentAlbum.album.normalizedName || isGuessed} className={`w-67 disabled:opacity-40 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? correctAnswers.album ? 'border-(--success-text)' : 'border-(--error-text)' : 'border-border')}`} {...register('album')} autoComplete="off" />
                         </Form.Label>}
                         {config.album && isGuessed && (!correctAnswers.album && <span className="text-left max-w-67">{currentAlbum.album.normalizedName}</span>)}
-                        
+
                         {config.artist && <Form.Label>
                             <Form.Input placeholder="Artist" disabled={currentAlbum.album.artists.length <= 0 || isGuessed} className={`w-67 disabled:opacity-40 ${config.artist && currentAlbum.album.artists && (isGuessed ? correctAnswers.artist ? 'border-(--success-text)' : correctAnswers.artist === false && 'border-(--error-text)' : 'border-border')}`} {...register('artist')} autoComplete="off" />
                         </Form.Label>}
