@@ -90,7 +90,7 @@ const GuessContent = () => {
 
     const { guessed, setIsFinished, isFinished, rightAnswersCount } = useTrackStore();
 
-    const { data: timesGuessed, isSuccess, isLoading } = useQuery({
+    const { data: timesGuessed, isSuccess } = useQuery({
         queryKey: ['stats', currentAlbum?.albumId],
         queryFn: async () => {
             const res = await axios.get<{ timesGuessed: number }>(`/guess/${currentAlbum?.albumId}`);
@@ -177,7 +177,7 @@ const GuessContent = () => {
             <div className="flex flex-col items-center text-center h-fit">
                 <article>
                     <div className="border-2 border-(--border) overflow-hidden rounded-sm w-67">
-                        <img src={currentAlbum.album.cover_url} alt="" className={!isGuessed ? "blur-md" : ''} />
+                        <img src={currentAlbum.album.cover_url} alt="" onContextMenu={(e) => e.preventDefault()} draggable={false} className={!isGuessed ? "blur-md" : ''} />
                     </div>
                 </article>
                 <section>

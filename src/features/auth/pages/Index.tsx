@@ -3,7 +3,7 @@ import axios from "../../../shared/utils/axios";
 import Form from "../components/form/Form";
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ToastContainer } from 'react-toastify';
 import useAuthStore from "../stores/useAuthStore";
 import useUser from "../hooks/useUser";
@@ -121,6 +121,7 @@ const Index = () => {
                     {loginFormErrors.password &&
                         <span className="text-(--error-text) text-right text-sm">{loginFormErrors.password.message}</span>}
 
+                    <Link to='/auth/forgot' className="text-(--loading-text)">Forgot your password?</Link>
                     <Form.Input type="submit" value="Login" className="cursor-pointer" />
 
                     {isLoginPending && <span>Loading...</span>}

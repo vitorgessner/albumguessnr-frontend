@@ -12,6 +12,8 @@ import UnprotectedRoute from './shared/components/UnprotectedRoute.tsx';
 import EditProfile from './features/auth/pages/EditProfile.tsx';
 import Guess from './features/game/guess/pages/Guess.tsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import Forgot from './features/auth/pages/Forgot.tsx';
+import PasswordChange from './features/auth/pages/PasswordChange.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,9 +30,11 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route element={<Header />}>
-          <Route path="/" element={<App />} />D
+          <Route path="/" element={<App />} />
           <Route element={<UnprotectedRoute />}>
             <Route path='/auth' element={<Index />} />
+            <Route path='/auth/forgot' element={<Forgot />} />
+            <Route path='/auth/:username/passwordChange' element={<PasswordChange />} />
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path='/profile/:username' element={<Profile />} />
