@@ -5,6 +5,11 @@ import axios from "@/shared/utils/axios";
 import { useState } from "react";
 import { AxiosError } from "axios";
 import type { ErrorResponse, FormResponse } from "../types/response";
+import * as z from "zod";
+import { forgotPasswordSchema } from "../schemas/formSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 
 const Forgot = () => {
   const [response, setResponse] = useState<FormResponse>();
@@ -14,9 +19,15 @@ const Forgot = () => {
     handleSubmit,
     formState: { errors },
     resetField,
-  } = useForm<{ email: string }>();
+  } = useForm<ForgotPasswordData>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
 
-  const { mutate, isPending, error } = useMutation<FormResponse, AxiosError<ErrorResponse>, {email: string}>({
+  const { mutate, isPending, error } = useMutation<
+    FormResponse,
+    AxiosError<ErrorResponse>,
+    ForgotPasswordData
+  >({
     mutationFn: (data) => axios.post(`/forgot`, data).then((res) => res.data),
     onSuccess: (data) => {
       setResponse(data);
@@ -29,14 +40,14 @@ const Forgot = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<{email: string}> = (data) => {
+  const onSubmit: SubmitHandler<{ email: string }> = (data) => {
     mutate(data);
   };
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
       <article
-        className={"border-2 border-(--border) p-5 bg-(--primary-color)"}
+        className={"border-2 border-border p-5 bg-(--primary-color)"}
         aria-label="login-form"
         data-testid="login-section"
       >
@@ -50,9 +61,7 @@ const Forgot = () => {
             <Form.Input
               data-testid="inputEmail"
               type="email"
-              {...register("email", {
-                required: "Email is required",
-              })}
+              {...register("email")}
             />
           </Form.Label>
 
@@ -64,8 +73,16 @@ const Forgot = () => {
 
           <Form.Input type="submit" value="Send" className="cursor-pointer" />
           {isPending && <div className="loading">Loading...</div>}
-          {error && <span className="text-(--error-text) text-center">{error.response?.data.message}</span>}
-          {response && <span className="text-(--success-text) text-center">{response.message}</span>}
+          {error && (
+            <span className="text-(--error-text) text-center">
+              {error.response?.data.message}
+            </span>
+          )}
+          {response && (
+            <span className="text-(--success-text) text-center">
+              {response.message}
+            </span>
+          )}
         </Form>
       </article>
     </div>
