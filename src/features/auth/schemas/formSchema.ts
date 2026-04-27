@@ -6,7 +6,7 @@ export const formSchema = z.object({
 });
 
 const passwordConfirmSchema = formSchema.extend({
-    confirm: z.string().min(8, 'This field must be at least 8 characters'),
+    'confirm': z.string().min(8, 'This field must be at least 8 characters'),
 })
 
 export const registerSchema = passwordConfirmSchema
