@@ -176,7 +176,7 @@ const GuessContent = () => {
             <div className="w-[301px] p-3 h-fit"></div>
             <div className="flex flex-col items-center text-center h-fit">
                 <article>
-                    <div className="border-2 border-(--border) overflow-hidden rounded-sm w-67">
+                    <div className="border-2 border-border overflow-hidden rounded-sm w-67">
                         <img src={currentAlbum.album.cover_url} alt="" onContextMenu={(e) => e.preventDefault()} draggable={false} className={!isGuessed ? "blur-md" : ''} />
                     </div>
                 </article>
@@ -226,8 +226,8 @@ const GuessContent = () => {
                 </section>
             </div>
             <div className='flex flex-col items-center text-center w-[301px] aria-disabled:opacity-40 h-fit'>
-                {config.tracklist && <section ref={tracksRef} className={`w-full border-2 border-(--border) bg-(--primary-color) max-h-[538px] overflow-scroll relative ${currentAlbum.album.tracks.length === 0 && 'pb-3'}`}>
-                    <div className="flex items-center text-xl pt-3 px-3 justify-between sticky top-0 bg-(--primary-color) p-3 border-b-2 border-(--border)">
+                {config.tracklist && <section ref={tracksRef} className={`w-full border-2 border-border bg-(--primary-color) max-h-[538px] overflow-scroll relative ${currentAlbum.album.tracks.length === 0 && 'pb-3'}`}>
+                    <div className="flex items-center text-xl pt-3 px-3 justify-between sticky top-0 bg-(--primary-color) p-3 border-b-2 border-border">
                         <div className="opacity-0">0/{currentAlbum.album.tracks.length}</div>
                         <h3>Tracklist</h3>
                         <span>{guessed.length}/{currentAlbum.album.tracks.length}</span>

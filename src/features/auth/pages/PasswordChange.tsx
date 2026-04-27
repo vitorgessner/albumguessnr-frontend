@@ -6,6 +6,11 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "@/shared/utils/axios";
 import Form from "../components/form/Form";
 import { useParams } from "react-router";
+import * as z from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { changePasswordSchema } from "../schemas/formSchema";
+
+type ChangePasswordData = z.infer<typeof changePasswordSchema>
 
 const PasswordChange = () => {
   const [response, setResponse] = useState<FormResponse>();
@@ -16,13 +21,15 @@ const PasswordChange = () => {
     handleSubmit,
     formState: { errors },
     resetField,
-    getValues,
-  } = useForm<{ password: string; confirm: string }>({mode: "onChange"});
+  } = useForm<ChangePasswordData>({
+    mode: 'onChange',
+    resolver: zodResolver(changePasswordSchema)
+  });
 
   const { mutate, isPending, error } = useMutation<
     FormResponse,
     AxiosError<ErrorResponse>,
-    { password: string; confirm: string }
+    ChangePasswordData
   >({
     mutationFn: (data) => axios.put(`/${username}/passwordChange/`, data).then((res) => res.data),
     onSuccess: (data) => {
@@ -37,7 +44,7 @@ const PasswordChange = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<{ password: string; confirm: string }> = (
+  const onSubmit: SubmitHandler<ChangePasswordData> = (
     data,
   ) => {
     mutate(data);
@@ -46,21 +53,19 @@ const PasswordChange = () => {
   return (
     <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
       <article
-        className={"border-2 border-(--border) p-5 bg-(--primary-color)"}
+        className={"border-2 border-border p-5 bg-(--primary-color)"}
         aria-label="login-form"
         data-testid="login-section"
       >
         <h1 className="text-xl mb-10">Change your password</h1>
         <Form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
           <Form.Label>
-            Password*:{" "}
+            Password*:
             <Form.Input
               data-testid="inputPassword"
               type="password"
               className={`${errors.password && 'border-(--error-text)'}`}
-              {...register("password", {
-                required: "Password is required",
-              })}
+              {...register("password")}
             />
           </Form.Label>
 
@@ -71,15 +76,12 @@ const PasswordChange = () => {
           )}
 
           <Form.Label>
-            Confirm password*:{" "}
+            Confirm password*:
             <Form.Input
               data-testid="inputConfirm"
               type="password"
               className={`${errors.confirm && 'border-(--error-text)'}`}
-              {...register("confirm", {
-                required: "This field is required",
-                validate: (value) => value === getValues('password') || 'Passwords do not match',
-              })}
+              {...register("confirm")}
             />
           </Form.Label>
 

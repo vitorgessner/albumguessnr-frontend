@@ -83,20 +83,19 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 - [x] Adivinhação de gênero/tag
 - [x] Adivinhação de tracklist (fluxo iterativo: digita uma track por vez, feedback imediato, "Guess" revela o restante)
 - [x] Refatoração do `useGuessStore` com `config` (quais campos o usuário quer adivinhar) e `answersState` (resultado de cada campo)
+- [x] Forgot/reset password
+- [x] Adivinhação de ano (input numérico, desabilitado se `album.year === null`)
+- [x] Timer in-game
 
 ## O que está aberto / falta fazer
 
-- [ ] Forgot/reset password
 - [ ] Responsividade
-- [ ] Perfil do usuário
-
-### Até 21/04
-- [ ] Adivinhação de ano (input numérico, desabilitado se `album.year === null`)
-- [ ] Timer in-game
+- [ ] Redirecionamento quando sessão expirar
+- [ ] Validação com Zod
+- [ ] Melhorias de UX e correção de bugs
 
 ### Até 28/04
-- [ ] Exibir quantas vezes o usuário adivinhou o álbum
-- [ ] Melhorias de UX e correção de bugs
+- [x] Exibir quantas vezes o usuário adivinhou o álbum
 
 ## Decisões de design
 

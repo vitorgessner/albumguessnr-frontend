@@ -9,11 +9,13 @@ import useAuthStore from "../stores/useAuthStore";
 import useUser from "../hooks/useUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ErrorResponse, FormResponse } from "../types/response";
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {forgotPasswordSchema, formSchema, registerSchema} from "../schemas/formSchema";
 
-type FormData = {
-    email: string;
-    password: string;
-}
+type LoginFormData = z.infer<typeof formSchema>
+type RegisterFormData = z.infer<typeof registerSchema>
+type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>
 
 const Index = () => {
     const { user, isPending } = useUser();
@@ -28,11 +30,15 @@ const Index = () => {
     const [registerResponse, setRegisterResponse] = useState<{ status: string, message: string } | null>();
     const [loginResponse, setLoginResponse] = useState<{ status: string, message: string } | null>();
 
-    const loginFormMethods = useForm<FormData>();
-    const registerFormMethods = useForm<FormData>();
+    const loginFormMethods = useForm<LoginFormData>({
+        resolver: zodResolver(formSchema),
+    });
+    const registerFormMethods = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+    });
 
-    const { mutate: mutateLogin, isPending: isLoginPending, error: loginError } = useMutation<FormResponse, AxiosError<ErrorResponse>, FormData>({
-        mutationFn: (data: FormData) => axios.post('/login', data).then(res => res.data),
+    const { mutate: mutateLogin, isPending: isLoginPending, error: loginError } = useMutation<FormResponse, AxiosError<ErrorResponse>, LoginFormData>({
+        mutationFn: (data: LoginFormData) => axios.post('/login', data).then(res => res.data),
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
             setLoginResponse(data)
@@ -47,11 +53,11 @@ const Index = () => {
         }
     })
 
-    const onLoginSubmit: SubmitHandler<FormData> = async (data) => {
+    const onLoginSubmit: SubmitHandler<LoginFormData> = async (data) => {
         mutateLogin(data);
     }
 
-    const { mutate: mutateRegister, isPending: isRegisterPending, error: registerError } = useMutation<FormResponse, AxiosError<ErrorResponse>, FormData>({
+    const { mutate: mutateRegister, isPending: isRegisterPending, error: registerError } = useMutation<FormResponse, AxiosError<ErrorResponse>, RegisterFormData>({
         mutationFn: (data) => axios.post('/register', data).then(res => res.data),
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
@@ -65,12 +71,12 @@ const Index = () => {
         }
     })
 
-    const onRegisterSubmit: SubmitHandler<FormData> = async (data) => {
+    const onRegisterSubmit: SubmitHandler<RegisterFormData> = async (data) => {
         mutateRegister(data);
     }
 
-    const { mutate: mutateResend, isPending: isResendPending, error: resendError } = useMutation<FormResponse, AxiosError<ErrorResponse>, {email: string}>({
-        mutationFn: (data: Omit<FormData, 'password'>) => axios.post(`/resendVerification/`, data).then(res => res.data),
+    const { mutate: mutateResend, isPending: isResendPending, error: resendError } = useMutation<FormResponse, AxiosError<ErrorResponse>, ForgotPasswordData>({
+        mutationFn: (data) => axios.post(`/resendVerification/`, data).then(res => res.data),
         onSuccess: (data) => {
             setLoginResponse(data);
         },
@@ -94,28 +100,20 @@ const Index = () => {
 
     return (
         <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
-            <article className={"border-2 border-(--border) p-5 bg-(--primary-color)"}
+            <article className={"border-2 border-border p-5 bg-(--primary-color)"}
                 aria-label="login-form"
                 data-testid="login-section">
                 <h1 className="text-xl mb-2">Login</h1>
                 <Form className="flex flex-col gap-2" onSubmit={loginFormMethods.handleSubmit(onLoginSubmit)}>
                     <Form.Label>
-                        Email*: <Form.Input data-testid="inputEmail" type="email" {...loginFormMethods.register('email',
-                            {
-                                required: "Email is required",
-                            }
-                        )} />
+                        Email*: <Form.Input data-testid="inputEmail" type="email" {...loginFormMethods.register('email')} />
                     </Form.Label>
 
                     {loginFormErrors.email &&
                         <span className="text-(--error-text) text-right text-sm">{loginFormErrors.email.message}</span>}
 
                     <Form.Label>
-                        Password*: <Form.Input type="password" {...loginFormMethods.register('password',
-                            {
-                                required: "Password is required",
-                            }
-                        )} />
+                        Password*: <Form.Input type="password" {...loginFormMethods.register('password')} />
                     </Form.Label>
 
                     {loginFormErrors.password &&
@@ -135,28 +133,29 @@ const Index = () => {
 
                 </Form>
             </article>
-            <article className="border-2 border-(--border) p-5 bg-(--primary-color)"
+            <article className="border-2 border-border p-5 bg-(--primary-color)"
                 aria-label="register-form"
                 data-testid="register-section">
                 <h1 className="text-xl mb-2">Create an account</h1>
                 <Form className="flex flex-col gap-2" onSubmit={registerFormMethods.handleSubmit(onRegisterSubmit)}>
                     <Form.Label>
-                        Email*: <Form.Input type="email" {...registerFormMethods.register('email', {
-                            required: "Email is required",
-                        })} />
+                        Email*: <Form.Input type="email" {...registerFormMethods.register('email')} />
                     </Form.Label>
 
                     {registerFormErrors.email &&
                         <span className="text-(--error-text) text-right text-sm">{registerFormErrors.email.message}</span>}
 
                     <Form.Label>
-                        Password*: <Form.Input type="password" {...registerFormMethods.register('password', {
-                            required: "Password is required",
-                        })} />
+                        Password*: <Form.Input type="password" {...registerFormMethods.register('password')} />
                     </Form.Label>
-
                     {registerFormErrors.password &&
                         <span className="text-(--error-text) text-right text-sm">{registerFormErrors.password.message}</span>}
+                    
+                    <Form.Label>
+                        Confirm Password*: <Form.Input type="password" {...registerFormMethods.register('confirm')} />
+                    </Form.Label>
+                    {registerFormErrors.confirm &&
+                        <span className="text-(--error-text) text-right text-sm">{registerFormErrors.confirm.message}</span>}
 
                     <Form.Input type="submit" value="Create account" className="cursor-pointer" />
 
