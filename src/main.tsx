@@ -11,18 +11,10 @@ import ProtectedRoute from './shared/components/ProtectedRoute.tsx';
 import UnprotectedRoute from './shared/components/UnprotectedRoute.tsx';
 import EditProfile from './features/auth/pages/EditProfile.tsx';
 import Guess from './features/game/guess/pages/Guess.tsx';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import Forgot from './features/auth/pages/Forgot.tsx';
 import PasswordChange from './features/auth/pages/PasswordChange.tsx';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5,
-    }
-  }
-});
+import queryClient from './shared/utils/queryClient.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
