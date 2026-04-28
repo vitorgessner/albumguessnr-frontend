@@ -86,12 +86,11 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 - [x] Forgot/reset password
 - [x] Adivinhação de ano (input numérico, desabilitado se `album.year === null`)
 - [x] Timer in-game
+- [x] Validação com Zod
 
 ## O que está aberto / falta fazer
 
 - [ ] Responsividade
-- [ ] Redirecionamento quando sessão expirar
-- [ ] Validação com Zod
 - [ ] Melhorias de UX e correção de bugs
 
 ### Até 28/04
