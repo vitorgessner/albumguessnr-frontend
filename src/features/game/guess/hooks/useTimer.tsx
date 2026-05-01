@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 
 const useTimer = () => {
     const [seconds, setSeconds] = useState(0);
+    const [minutes, setMinutes] = useState(0);
     const timeRef = useRef<number>(null);
 
     const startTimer = useCallback(() => {
@@ -20,6 +21,11 @@ const useTimer = () => {
         }
     }, [setSeconds, timeRef])
 
+    if (seconds >= 60) {
+        setSeconds(0);
+        setMinutes(m => m + 1);
+    }
+
     const pauseTimer = useCallback(() => {
         if (timeRef.current) {
             clearInterval(timeRef.current);
@@ -29,9 +35,10 @@ const useTimer = () => {
 
     const clearTimer = useCallback(() => {
         setSeconds(0);
+        setMinutes(0);
     }, [setSeconds])
 
-    return { startTimer, pauseTimer, clearTimer, seconds };
+    return { startTimer, pauseTimer, clearTimer, seconds, minutes };
 }
 
 export default useTimer;
