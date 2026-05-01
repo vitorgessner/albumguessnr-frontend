@@ -16,10 +16,13 @@ axiosInstance.interceptors.response.use(
     },
     async (error) => {
         if (error instanceof AxiosError) {
+            const { isLoggingOut } = useAuthStore.getState();
+            console.log(isLoggingOut);
+            if (isLoggingOut) return null;
             if (!error.config) return null;
             if (
                 error.status === 401 &&
-                error.response?.data.message === 'Invalid or expired token' &&
+                (error.response?.data.message === 'Invalid or expired token') &&
                 error.config?.url !== `${import.meta.env.VITE_API_URL}/refresh`
             ) {
                 try {
@@ -34,7 +37,7 @@ axiosInstance.interceptors.response.use(
                         if (err.status === 401) {
                             queryClient.clear();
                             setIsAuthenticated(false);
-                            return (window.location.href = `${window.location.origin}/auth`);
+                            return (window.location.href = `${window.location.origin}/auth/login`);
                         }
                         return err.response?.data.message;
                     }

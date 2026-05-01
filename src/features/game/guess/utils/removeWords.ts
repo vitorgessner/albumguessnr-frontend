@@ -39,6 +39,7 @@ export const WORD_REPLACEMENTS: [RegExp, string][] = [
     [/\u0026/g, 'and'],
     [/\uFE60/g, 'and'],
     [/\uFE06/g, 'and'],
+    [/\uFF06/g, 'and'],
     [/\band\b/gi, 'and'],
     [/\be\b/gi, 'and'],
     [/\by\b/gi, 'and'],

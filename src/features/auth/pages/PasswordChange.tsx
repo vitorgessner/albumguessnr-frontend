@@ -51,7 +51,7 @@ const PasswordChange = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
+    <div className="flex flex-col md:flex-row justify-center items-center main-height gap-2">
       <article
         className={"border-2 border-border p-5 bg-(--primary-color)"}
         aria-label="login-form"
@@ -60,7 +60,7 @@ const PasswordChange = () => {
         <h1 className="text-xl mb-10">Change your password</h1>
         <Form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
           <Form.Label>
-            Password*:
+            Password:
             <Form.Input
               data-testid="inputPassword"
               type="password"
@@ -76,7 +76,7 @@ const PasswordChange = () => {
           )}
 
           <Form.Label>
-            Confirm password*:
+            Confirm password:
             <Form.Input
               data-testid="inputConfirm"
               type="password"
@@ -91,7 +91,7 @@ const PasswordChange = () => {
             </span>
           )}
 
-          <Form.Input type="submit" value="Change Password" className="cursor-pointer" />
+          <Form.Input type="submit" value="Change Password" className="cursor-pointer primary-component" />
           {isPending && <div>Loading...</div>}
           {error && (
             <span className="text-(--error-text) text-center">
