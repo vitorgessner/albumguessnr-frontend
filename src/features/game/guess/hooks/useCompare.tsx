@@ -93,8 +93,8 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
         setCorrectAnswers({
             album: isAlbumCorrect,
             artist: artist !== undefined ? isArtistCorrect : undefined,
-            genre: artist !== undefined ? isTagCorrect : undefined,
-            year: artist !== undefined ? isYearCorrect : undefined,
+            genre: tag !== undefined ? isTagCorrect : undefined,
+            year: year !== undefined ? isYearCorrect : undefined,
             tracklist: config.tracklist ? rightAnswersCount : undefined
         })
     }
