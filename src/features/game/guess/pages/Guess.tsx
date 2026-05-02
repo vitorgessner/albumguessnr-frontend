@@ -140,39 +140,27 @@ const GuessContent = () => {
         }
     };
 
-    // useEffect(() => {
-    //     if (tracksRef.current) {
-    //         const tracks = tracksRef.current?.querySelector('ul')?.querySelectorAll('li');
-    //         if (!tracks) return;
-    //         if (index && index >= 0) {
-    //             const track = tracks.item(index);
-    //             if (!track) return;
-    //             track.scrollIntoView({
-    //                 behavior: 'smooth',
-    //                 block: 'start',
-    //             });
-    //         }
-    //     }
-    // }, [tracksRef, index]);
+    useEffect(() => {
+        if (tracksRef.current) {
+            const tracks = tracksRef.current?.querySelector('ul')?.querySelectorAll('li');
+            if (!tracks) return;
+            if (index && index >= 0) {
+                const track = tracks.item(index);
+                if (!track) return;
+                track.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }
+        }
+    }, [tracksRef, index]);
 
     const onTrackTry: SubmitHandler<TrackType> = (data) => {
         if (data.track === '' || !data.track) {
             setIsFinished(true);
         }
         resetTrack('track');
-        // setIndex(compareTrack(data.track));
-        const idx = compareTrack(data.track);
-        if (!idx) return;
-        if (tracksRef.current) {
-            const tracks = tracksRef.current.querySelector('ul')?.querySelectorAll('li');
-            if (!tracks) return;
-            const track = tracks.item(idx);
-            if (!track) return;
-            track.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-            })
-        }
+        setIndex(compareTrack(data.track));
     };
 
     useEffect(() => {
@@ -198,8 +186,10 @@ const GuessContent = () => {
             <ConfigComponent />
             <div className="h-fit lg:w-75.25"></div>
             <div className="h-fit flex-col items-center text-center min-w-62 max-w-62">
-                <article className='flex justify-center w-full'>
-                    <div className={`flex overflow-hidden w-full min-w-62 max-w-62 rounded-sm border-2 border-border`}>
+                <article className="flex justify-center w-full">
+                    <div
+                        className={`flex overflow-hidden w-full min-w-62 max-w-62 rounded-sm border-2 border-border`}
+                    >
                         <img
                             src={currentAlbum.album.cover_url}
                             alt=""
@@ -229,7 +219,9 @@ const GuessContent = () => {
                         className="flex flex-col gap-2"
                         onSubmit={handleSubmit(onGuess)}
                     >
-                        <div className={`mt-1 flex w-full flex-col gap-1 rounded-sm border-2 bg-(--card-light) p-3 ${isGuessed && 'pb-1'}`}>
+                        <div
+                            className={`mt-1 flex w-full flex-col gap-1 rounded-sm border-2 bg-(--card-light) p-3 ${isGuessed && 'pb-1'}`}
+                        >
                             {config.album && (
                                 <Form.Label>
                                     <Form.Input
@@ -277,7 +269,7 @@ const GuessContent = () => {
                             )}
 
                             <div className="flex justify-between h-lg:-max-w-38">
-                                <div className="flex flex-col">
+                                <div className="flex flex-col ">
                                     {config.genre && (
                                         <Form.Label>
                                             <Form.Input
@@ -286,7 +278,7 @@ const GuessContent = () => {
                                                     isGuessed
                                                 }
                                                 placeholder="Any tag"
-                                                className={`w-32 disabled:opacity-90 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? (correctAnswers.genre ? 'border-success' : correctAnswers.genre === false && 'border-error') : 'border-border)')}`}
+                                                className={`max-w-32 disabled:opacity-90 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? (correctAnswers.genre ? 'border-success' : correctAnswers.genre === false && 'border-error') : 'border-border')}`}
                                                 {...register('genre')}
                                                 autoComplete="off"
                                             />
@@ -294,7 +286,7 @@ const GuessContent = () => {
                                     )}
                                     {config.genre && isGuessed && (
                                         <div
-                                            className="max-w-32 h-lg:max-w-45 overflow-x-scroll scroll-smooth pb-3 text-left text-nowrap"
+                                            className="max-w-32 overflow-x-scroll scroll-smooth pb-3 text-left text-nowrap"
                                             onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
                                                 if (e.deltaY !== 0) {
                                                     e.preventDefault();
@@ -320,7 +312,7 @@ const GuessContent = () => {
                                                 disabled={!currentAlbum.album.year || isGuessed}
                                                 placeholder="Year"
                                                 type="number"
-                                                className={`w-full disabled:opacity-90 ${config.year && currentAlbum.album.year && (isGuessed ? (correctAnswers.year ? 'border-success' : correctAnswers.year === false && 'border-error') : 'border-border)')}`}
+                                                className={`w-full disabled:opacity-90 ${config.year && currentAlbum.album.year && (isGuessed ? (correctAnswers.year ? 'border-success' : correctAnswers.year === false && 'border-error') : 'border-border')}`}
                                                 {...register('year')}
                                                 autoComplete="off"
                                             />
