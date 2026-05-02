@@ -45,7 +45,7 @@ const Forgot = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center h-dvh gap-2">
+    <div className="flex flex-col justify-center items-center main-height max-w-75.25 mx-auto gap-2">
       <article
         className={"border-2 border-border p-5 bg-(--primary-color)"}
         aria-label="login-form"
@@ -57,7 +57,7 @@ const Forgot = () => {
         </p>
         <Form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
           <Form.Label>
-            Email*:{" "}
+            Email:{" "}
             <Form.Input
               data-testid="inputEmail"
               type="email"
@@ -71,7 +71,7 @@ const Forgot = () => {
             </span>
           )}
 
-          <Form.Input type="submit" value="Send" className="cursor-pointer" />
+          <Form.Input type="submit" value="Send" className="cursor-pointer primary-component" />
           {isPending && <div className="loading">Loading...</div>}
           {error && (
             <span className="text-(--error-text) text-center">
