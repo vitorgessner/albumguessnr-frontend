@@ -4,7 +4,7 @@ interface ILabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
 }
 
 const Label = ({children, className, ...props}: ILabelProps) => {
-    return <label {...props} className={`flex justify-between items-center gap-2 ${className}`}>{children}</label>;
+    return <label {...props} className={`flex flex-col items-start justify-start gap-2 ${className}`}>{children}</label>;
 }
 
 export default Label;
