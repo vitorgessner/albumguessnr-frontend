@@ -6,9 +6,10 @@ import { Pencil, Calendar, ShoppingBasket, LogOut, Menu } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import useUser from '../../features/auth/hooks/useUser';
 import { useQueryClient } from '@tanstack/react-query';
+import Skeleton from 'react-loading-skeleton';
 
 const Header = () => {
-    const { user } = useUser();
+    const { data: user, isPending } = useUser();
     const { isAuthenticated, setIsLoggingOut, setIsAuthenticated } = useAuthStore();
     const queryClient = useQueryClient();
     const { isModalOpen, setIsModalOpen } = useAuthStore();
@@ -47,7 +48,8 @@ const Header = () => {
                             AlbumGuessnr
                         </h1>
                     </Link>
-                    {!isAuthenticated &&
+                    {!isPending &&
+                        !isAuthenticated &&
                         !(
                             path.pathname === '/auth/login' || path.pathname === '/auth/register'
                         ) && (
@@ -56,24 +58,28 @@ const Header = () => {
                                     size={28}
                                     className="sm:hidden absolute right-5 rounded-sm p-1 bg-(--secondary-color)"
                                 />
-                               <Link to="/auth/login" className="hidden sm:block absolute right-5">Login</Link>
+                                <Link to="/auth/login" className="hidden sm:block absolute right-5">
+                                    Login
+                                </Link>
                             </>
                         )}
                 </div>
                 <div></div>
-                <div className="absolute right-5 flex items-center justify-right gap-5">
-                    {isAuthenticated && <Link to={'/guess'}>Guess</Link>}
-                    {isAuthenticated && (
-                        <button className="cursor-pointer">
-                            <img
-                                src={user?.profile.avatar_url}
-                                className="w-10 h-10 rounded-full object-cover"
-                                onClick={() => setIsModalOpen(!isModalOpen)}
-                            />
-                        </button>
-                    )}
-                </div>
-                {isModalOpen && (
+                {!isPending && (
+                    <div className="absolute right-5 flex items-center justify-right gap-5">
+                        {isAuthenticated && <Link to={'/guess'}>Guess</Link>}
+                        {isAuthenticated && (
+                            <button className="cursor-pointer">
+                                <img
+                                    src={user?.profile.avatar_url}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                    onClick={() => setIsModalOpen(!isModalOpen)}
+                                />
+                            </button>
+                        )}
+                    </div>
+                )}
+                {!isPending && isModalOpen && (
                     <aside className="bg-(--primary-color) border-2 border-border rounded-lg fixed flex flex-col right-4 top-15 justify-center gap-3 w-55">
                         <div className="flex px-3 pt-3 gap-3">
                             <Link to={`/profile/${user?.profile.username}`}>
@@ -112,6 +118,7 @@ const Header = () => {
                         </div>
                     </aside>
                 )}
+                {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
             <ToastContainer />
             <main className="main-height">

@@ -12,7 +12,7 @@ const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormS
     const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
     const { addGuess, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished, guessed } = useTrackStore();
     const currentAlbum = albums[index];
-    const { user } = useUser();
+    const { data: user } = useUser();
     const queryClient = useQueryClient();
 
     const compareAlbum = (guess: string = '') => {

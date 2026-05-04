@@ -1,22 +1,32 @@
 import { Star, StarIcon } from 'lucide-react';
 import useUser from '../hooks/useUser';
+import useProfile from '../hooks/useProfile';
+import ProfileSkeleton from '../components/ProfileSkeleton';
 
 const Profile = () => {
-    const { user, isPending, error } = useUser();
+    const { data: authenticatedUser } = useUser();
+    const { data: user, isPending: isUserPending, error: userError } = useProfile();
 
-    if (isPending)
-        return <div className="text-3xl flex justify-center items-center h-dvh">Loading...</div>;
-
-    if (error)
+    if (userError)
         return (
             <div className="text-3xl flex justify-center items-center h-dvh text-(--error-text)">
-                {error.message}
+                {userError.message}
             </div>
         );
 
-    if (!user) return null;
+    if (isUserPending) return <ProfileSkeleton />;
 
-    const date = new Date(user.createdAt);
+    const userProfile =
+        user?.user.username === authenticatedUser?.profile.username
+            ? authenticatedUser
+            : user?.user.user;
+    const profile =
+        user?.user.username === authenticatedUser?.profile.username
+            ? authenticatedUser?.profile
+            : user?.user;
+    if (!profile || !userProfile) return null;
+
+    const date = new Date(userProfile.createdAt);
     const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`;
 
@@ -26,26 +36,31 @@ const Profile = () => {
                 <section className="grow h-full z-1 order-1 lg:order-2 text-center">
                     <article className="w-fit mx-auto p-3 px-7 bg-(--card-light) border-2 border-border rounded-lg">
                         <img
-                            src={user.profile.avatar_url}
-                            alt={user.profile.username}
+                            src={profile.avatar_url}
+                            alt={profile.username}
                             className="mx-auto rounded-full size-37.5 object-cover object-center"
                         />
-                        <h1 className="text-3xl font-bold">{user.profile.username}</h1>
+                        <h1 className="text-3xl font-bold">{profile.username}</h1>
                         <h2 className="text-xs mb-2 opacity-70">
-                            {user.lastfmIntegration.lastfmUsername}
+                            {userProfile.lastfmIntegration.lastfmUsername}
                             <span className="text-xs"> on lastfm</span>
                         </h2>
                         <p className="relative w-65 h-21 pt-5 px-3 pb-1 text-left bg-sidebar-border border-2 border-border rounded-lg opacity-80 hover:max-h-none multi-line-ellipsis">
                             <span className="absolute text-sm left-1 top-0">Bio:</span>{' '}
-                            {user.profile.bio.length > 71 && (
+                            {profile.bio.length > 71 && (
                                 <span className="absolute right-1 top-0 text-xs">
                                     Hover to read more
                                 </span>
                             )}
-                            <p>{user.profile.bio}</p>
+                            <span>{profile.bio}</span>
                         </p>
                         <p className="flex justify-center items-center mt-2 text-xl opacity-80">
-                            <StarIcon fill='#d47358' stroke='#d47358' className='drop-terra-ambar' />{' '} 478 pontos
+                            <StarIcon
+                                fill="#d47358"
+                                stroke="#d47358"
+                                className="drop-terra-ambar"
+                            />{' '}
+                            478 pontos
                         </p>
                         <p className="opacity-80">Guessed 400 albums</p>
                         <p className="opacity-80">Joined {creationDate}</p>
@@ -53,10 +68,12 @@ const Profile = () => {
                 </section>
                 <section className="order-2 lg:order-1 mx-auto lg:mx-0">
                     <article className="max-h-99 px-2 pb-1 text-center bg-(--card-light) border-2 border-border overflow-scroll rounded-lg">
-                        <h2 className="sticky top-0 py-2 text-2xl font-bold bg-(--card-light)">Achievements</h2>
+                        <h2 className="sticky top-0 py-2 text-2xl font-bold bg-(--card-light)">
+                            Achievements
+                        </h2>
                         <ul className="flex flex-wrap w-75">
-                            {Array.from({ length: 100 }).map(() => {
-                                return <li className="text-3xl py-1 achievements">😭</li>;
+                            {Array.from({ length: 100 }).map((_, i) => {
+                                return <li key={i} className="text-3xl py-1 achievements">😭</li>;
                             })}
                         </ul>
                     </article>
@@ -67,7 +84,7 @@ const Profile = () => {
                         <ul className="flex flex-col w-79">
                             {Array.from({ length: 16 }).map((_, i) => {
                                 return (
-                                    <li className="flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2">
+                                    <li key={i} className="flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2">
                                         <div className="flex items-center w-full">
                                             <span className="grow pl-2 text-3xl text-left">
                                                 {i + 1}

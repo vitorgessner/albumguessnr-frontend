@@ -42,6 +42,16 @@ export interface IUser {
     }
 }
 
+export interface IUserWithUsername {
+    createdAt: Date;
+    email: string;
+    emailVerified: true;
+    id: string;
+    profile: {
+        username: string;
+    },
+}
+
 export interface IUserWithProfileAndLastfmIntegration {
     createdAt: Date;
     email: string;

@@ -16,14 +16,14 @@ axiosInstance.interceptors.response.use(
     },
     async (error) => {
         if (error instanceof AxiosError) {
+            console.log(error.config?.url)
             const { isLoggingOut } = useAuthStore.getState();
-            console.log(isLoggingOut);
-            if (isLoggingOut) return null;
-            if (!error.config) return null;
+            if (isLoggingOut) return Promise.reject(error);
+            if (!error.config) return Promise.reject(error);
             if (
                 error.status === 401 &&
-                (error.response?.data.message === 'Invalid or expired token') &&
-                error.config?.url !== `${import.meta.env.VITE_API_URL}/refresh`
+                (error.response?.data.message === 'Invalid or expired token' || error.response?.data.message === 'Invalid token format') &&
+                error.config?.url !== `/refresh`
             ) {
                 try {
                     if (!refreshPromise) refreshPromise = axiosInstance.post('/refresh');
@@ -32,16 +32,19 @@ axiosInstance.interceptors.response.use(
                     return axiosInstance(error.config);
                 } catch (err) {
                     const { setIsAuthenticated } = useAuthStore.getState();
+                    refreshPromise = null;
                     if (err instanceof AxiosError) {
-                        refreshPromise = null;
                         if (err.status === 401) {
-                            queryClient.clear();
-                            setIsAuthenticated(false);
-                            return (window.location.href = `${window.location.origin}/auth/login`);
+                            if (error.response.data.message === 'Invalid or expired token') {
+                                setIsAuthenticated(false);
+                                queryClient.clear();
+                                return (window.location.href = `${window.location.origin}/auth/login`);
+                            }
                         }
-                        return err.response?.data.message;
+                        return Promise.reject(err);
                     }
                     console.log(err);
+                    return Promise.reject(err);
                 }
             }
         }
