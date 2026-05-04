@@ -9,12 +9,12 @@ import useAuthStore from '../stores/useAuthStore';
 import type { ErrorResponse } from '../types/response';
 import type { AllowedData } from '../types/editProfileResponse';
 import appendToFormData from '../utils/appendToFormData';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const EditProfile = () => {
-    const { user, isPending: isUserPending, error } = useUser();
+    const { data: user, isPending: isUserPending, error } = useUser();
 
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState<string | null>(null);
 
     const {

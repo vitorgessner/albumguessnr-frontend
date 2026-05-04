@@ -6,10 +6,9 @@ import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { FormResponse, ErrorResponse } from '../types/response';
+import type { ErrorResponse, FormResponseWithUser } from '../types/response';
 import { AxiosError } from 'axios';
 import axios from '@/shared/utils/axios';
-import useUser from '../hooks/useUser';
 import ResendEmailButton from '../components/ResendEmailButton';
 import useAuthStore from '../stores/useAuthStore';
 import { ToastContainer } from 'react-toastify';
@@ -28,7 +27,6 @@ const Login = () => {
         message: string;
     } | null>();
 
-    const { user } = useUser();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
@@ -43,15 +41,16 @@ const Login = () => {
     });
 
     const { mutate, isPending, error } = useMutation<
-        FormResponse,
+        FormResponseWithUser,
         AxiosError<ErrorResponse>,
         LoginFormData
     >({
         mutationFn: (data: LoginFormData) => axios.post('/login', data).then((res) => res.data),
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ['user'] });
+        onSuccess: async (data) => {
+            console.log(data.user.profile.username);
             setResponse(data);
-            return navigate(`/profile/${user?.profile.username}`);
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+            return navigate(`/profile/${data.user.profile.username}`)
         },
         onError: (err) => {
             console.log(err.response);

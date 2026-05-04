@@ -87,14 +87,13 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 - [x] Adivinhação de ano (input numérico, desabilitado se `album.year === null`)
 - [x] Timer in-game
 - [x] Validação com Zod
+- [x] Exibir quantas vezes o usuário adivinhou o álbum
 
 ## O que está aberto / falta fazer
 
 - [ ] Responsividade
 - [ ] Melhorias de UX e correção de bugs
-
-### Até 28/04
-- [x] Exibir quantas vezes o usuário adivinhou o álbum
+- [ ] Zod Schemas na edição de perfil
 
 ## Decisões de design
 

@@ -1,4 +1,3 @@
-import { Timer } from 'lucide-react';
 import Form from '../../../auth/components/form/Form';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
@@ -16,7 +15,7 @@ import useTimer from '../hooks/useTimer';
 import ConfigComponent from '../../config/components/Config';
 
 const Guess = () => {
-    const { user, isPending, error } = useUser();
+    const { data: user, isPending, error } = useUser();
 
     if (isPending) return <div className="loading">Loading...</div>;
 
