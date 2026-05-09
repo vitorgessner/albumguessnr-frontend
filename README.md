@@ -91,9 +91,25 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 
 ## O que está aberto / falta fazer
 
-- [ ] Responsividade
+- [ ] Melhorar Responsividade
+- [ ] Trancar os inputs no loading da imagem do álbum
+- [ ] Preloading da imagem do próximo álbum
+- [ ] Gerar nova lista de álbuns ao sair da página de Guess
 - [ ] Melhorias de UX e correção de bugs
 - [ ] Zod Schemas na edição de perfil
+
+## Até 26/05
+
+- [x] Ver perfil de outros usuários
+- [x] Adicionar outros usuários, como amigos
+- [x] Ao adivinhar um álbum, exibir amigos que adivinharam também
+- [ ] Ganhar pontos ao acertar características do álbum
+- [ ] Ganhar pontos de acordo com a velocidade da tentativa
+- [ ] Leaderboard de pontos entre amigos
+- [ ] Leaderboard global
+- [ ] Visualização de estatísticas no perfil do usuário
+- [ ] Exibir histórico de adivinhações
+- [ ] Filtros para o histórico de adivinhações
 
 ## Decisões de design
 

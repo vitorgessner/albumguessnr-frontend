@@ -13,6 +13,7 @@ import type { IUser } from '../../../../shared/types/user';
 import useTrackStore from '../stores/useTrackStore';
 import useTimer from '../hooks/useTimer';
 import ConfigComponent from '../../config/components/Config';
+import Friends from '../../config/components/Friends';
 
 const Guess = () => {
     const { data: user, isPending, error } = useUser();
@@ -183,8 +184,7 @@ const GuessContent = () => {
     return (
         <main className="flex flex-col lg:flex-row items-center lg:items-start main-height justify-center gap-5 py-2 pb-16 lg:pb-2">
             <ConfigComponent />
-            <div className="h-fit lg:w-75.25"></div>
-            <div className="h-fit flex-col items-center text-center min-w-62 max-w-62">
+            <div className="h-fit flex-col items-center text-center min-w-62 max-w-62 order-2">
                 <article className="flex justify-center w-full">
                     <div
                         className={`flex overflow-hidden w-full min-w-62 max-w-62 rounded-sm border-2 border-border`}
@@ -337,7 +337,7 @@ const GuessContent = () => {
                     </Form>
                 </section>
             </div>
-            <div className="flex flex-col items-center w-75.25 text-center aria-disabled:opacity-90">
+            <div className="flex flex-col items-center w-[355.5px] text-center aria-disabled:opacity-90 order-3">
                 {config.tracklist && (
                     <section
                         ref={tracksRef}
@@ -387,6 +387,9 @@ const GuessContent = () => {
                         )}
                     </section>
                 )}
+            </div>
+            <div className="h-fit order-1 min-w-[355.5px]">
+                <Friends />
             </div>
         </main>
     );

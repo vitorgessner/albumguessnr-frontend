@@ -8,7 +8,7 @@ import { fuzzy } from 'fast-fuzzy';
 import { WORD_REPLACEMENTS } from "../utils/removeWords";
 // import Fuse from 'fuse.js';
 
-const useCompare = (resetField: UseFormResetField<GuessType>, setFocus: UseFormSetFocus<GuessType>) => {
+const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFormSetFocus<GuessType>) => {
     const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
     const { addGuess, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished, guessed } = useTrackStore();
     const currentAlbum = albums[index];

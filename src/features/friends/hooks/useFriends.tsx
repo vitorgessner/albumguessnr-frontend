@@ -24,6 +24,20 @@ interface IFriends {
     };
 }
 
+interface IUseFriendsAlbumsResponse {
+    status: string;
+    message: string;
+    friends: Array<IFriendsAlbums>
+}
+
+interface IFriendsAlbums {
+    id: string;
+    profile: {
+        avatar_url: string;
+        username: string
+    }
+}
+
 const useFriends = (username: string | undefined) => {
     const {
         data: friends,
@@ -37,5 +51,19 @@ const useFriends = (username: string | undefined) => {
 
     return { friends, isPending, error };
 };
+
+export const useFriendsAlbums = (albumId: string | undefined) => {
+    const {
+        data: friendsGuessed,
+        isPending,
+        error,
+    } = useQuery({
+        queryKey: ['friends', albumId],
+        queryFn: () => axios.get<IUseFriendsAlbumsResponse>(`/friend/album/${albumId}`).then(res => res.data.friends),
+        enabled: !!albumId,
+    });
+
+    return { friendsGuessed, isPending, error };
+}
 
 export default useFriends;

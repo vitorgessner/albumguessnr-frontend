@@ -1,15 +1,13 @@
-import { Star, StarIcon } from 'lucide-react';
+import { StarIcon } from 'lucide-react';
 import useUser from '../hooks/useUser';
 import useProfile from '../hooks/useProfile';
 import ProfileSkeleton from '../components/ProfileSkeleton';
 import RequestButton from '@/features/friends/components/RequestButton';
-import useFriends from '@/features/friends/hooks/useFriends';
-import { Link } from 'react-router';
+import FriendsLeaderboard from '../components/FriendsLeaderboard';
 
 const Profile = () => {
     const { data: authenticatedUser } = useUser();
     const { data: user, isPending: isUserPending, error: userError } = useProfile();
-    const { friends } = useFriends(user?.username);
 
     if (userError)
         return (
@@ -84,43 +82,7 @@ const Profile = () => {
                     </article>
                 </section>
                 <section className="order-3 mx-auto lg:mx-0">
-                    <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
-                        <h2 className="text-2xl font-bold py-2">Friends' Leaderboard</h2>
-                        <ul className="flex flex-col w-79">
-                            {friends?.map((friend, i) => {
-                                return (
-                                    <Link
-                                        key={i}
-                                        to={`/profile/${friend.receivedRequests.profile.username}`}
-                                        className="last-of-type:border-b-2"
-                                    >
-                                        <li className={`flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2 ${friend.receivedRequestsId === authenticatedUser?.id && 'bg-(--amber-50)'}`}>
-                                            <div className="flex items-center w-full">
-                                                <span className="pl-2 text-3xl mr-3 text-left number">
-                                                    {i + 1}
-                                                </span>
-                                                <div className="flex items-center gap-2">
-                                                    <img
-                                                        src={
-                                                            friend.receivedRequests.profile
-                                                                .avatar_url
-                                                        }
-                                                        className="text-3xl size-14 rounded-full"
-                                                    />
-                                                    <h3 className="text-xl pr-4">
-                                                        {friend.receivedRequests.profile.username}
-                                                    </h3>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-1 text-xl">
-                                                <Star /> <span>400</span>
-                                            </div>
-                                        </li>
-                                    </Link>
-                                );
-                            })}
-                        </ul>
-                    </article>
+                    <FriendsLeaderboard />
                 </section>
             </div>
             {/* <h2 className="m-4 text-2xl text-center font-bold">Favorite albums</h2>
