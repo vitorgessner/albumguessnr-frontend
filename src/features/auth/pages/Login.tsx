@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ErrorResponse, FormResponseWithUser } from '../types/response';
+import type { ErrorResponse, FormResponseWithUsername} from '../types/response';
 import { AxiosError } from 'axios';
 import axios from '@/shared/utils/axios';
 import ResendEmailButton from '../components/ResendEmailButton';
@@ -41,16 +41,15 @@ const Login = () => {
     });
 
     const { mutate, isPending, error } = useMutation<
-        FormResponseWithUser,
+        FormResponseWithUsername,
         AxiosError<ErrorResponse>,
         LoginFormData
     >({
         mutationFn: (data: LoginFormData) => axios.post('/login', data).then((res) => res.data),
         onSuccess: async (data) => {
-            console.log(data.user.profile.username);
             setResponse(data);
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            return navigate(`/profile/${data.user.profile.username}`)
+            return navigate(`/profile/${data.username}`)
         },
         onError: (err) => {
             console.log(err.response);
@@ -64,8 +63,6 @@ const Login = () => {
     const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
         mutate(data);
     };
-
-    // if (isUserPending) return <div className="loading">Loading...</div>
 
     return (
         <div className="flex flex-col md:flex-row justify-center items-center main-height gap-2">

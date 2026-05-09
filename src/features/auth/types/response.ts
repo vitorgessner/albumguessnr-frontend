@@ -1,13 +1,11 @@
-import type { IUserWithUsername } from "@/shared/types/user";
-
 export type FormResponse = {
     status: string;
     message: string;
 }
-export type FormResponseWithUser = {
+export type FormResponseWithUsername = {
     status: string;
     message: string;
-    user: IUserWithUsername;
+    username: string;
 }
 
 export type ErrorResponse = {
