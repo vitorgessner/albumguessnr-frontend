@@ -37,6 +37,11 @@
 }
 
 @layer utilities {
+  .number {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
   .achievements {
     flex: 0 0 16.66%;
   }
@@ -110,6 +115,16 @@
   .drop-terra-ambar {
     filter: drop-shadow(0px 0px 5px var(--amber));
   }
+
+  @layer components {
+    .addFriendButton {
+      @apply w-full mt-2 py-2 border-2 border-sage-dark rounded-lg bg-sage shadow-[3px_3px_0_var(--sage-dark)] hover:bg-(--sage-light) hover:border-sage hover:shadow-[3px_3px_0_var(--sage)]
+    }
+
+    .removeFriendButton {
+      @apply w-full mt-2 py-2 border-2 border-terra-dark rounded-lg bg-primary shadow-[3px_3px_0_var(--accent)] hover:bg-(--primary-light) hover:border-primary hover:shadow-[3px_3px_0_var(--accent)]
+    }
+  }
 }
  
 /* ============================================================
@@ -129,9 +144,14 @@
   --sage-dark:      #5d8f7a;
   --sage-light:     #abddc5;
   --amber:          #f2cc8f;
+  --amber-50:       #f2cc8fa5;
   --amber-dark:     #d4a843;
   --navy:           #3d405b;
   --navy-light:     #6b6fa0;
+  --navy-extra-light: #9ea2d2;
+
+  --toastify-color-light: var(--card-light);
+  --toastify-color-error: var(--terra-light);
  
   /* --- Semânticas (mapeiam pras cores do projeto) --- */
   --primary-color:          var(--cream);
@@ -164,10 +184,12 @@
   --popover-foreground:     var(--navy);
  
   --primary:                var(--terra);
+  --primary-light:          var(--terra-light);
   --accent-primary:         var(--terra-dark)
   --primary-foreground:     #ffffff;
  
   --secondary:              var(--amber);
+  --secondary-light:        var(--amber-light);
   --secondary-foreground:   var(--navy);
  
   --muted:                  #efe3d5;
@@ -230,12 +252,17 @@
   --terra:          #C4614A;
   --terra-dark:     #704232;
   --terra-light:    #D9755A;
+  --sage-light:     #81b29a;
   --sage:           #5D8F7A;
   --sage-dark:      #444A3C;
   --amber:          #B3915A;
   --amber-dark:     #5E4B32;
   --navy:           #f0e4d4;
   --navy-light:     #b09a86;
+
+  --toastify-color-dark: var(--card-light);
+  --toastify-color-error: var(--terra-light);
+  --toastify-text-color-light: #fff;
   
   /* --- Semânticas (dark) --- */
   --primary-color:          #231F1D;

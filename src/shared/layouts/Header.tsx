@@ -29,7 +29,7 @@ const Header = () => {
         setIsModalOpen(false);
         setIsLoggingOut(true);
         try {
-            await axios.post('/logout');
+            await axios.delete('/logout');
             queryClient.clear();
             setIsAuthenticated(false);
             navigate('/auth/login', { state: { intentional: true } });

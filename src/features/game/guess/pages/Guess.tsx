@@ -208,7 +208,7 @@ const GuessContent = () => {
                                 {timesGuessed === 1 ? ' 1 time' : ` ${timesGuessed} times`}!
                             </div>
                         )}
-                        <span className="border-border w-17 rounded-full border-2 bg-(--card-light) px-2 py-1 text-center">
+                        <span className="border-border rounded-full border-2 bg-(--card-light) px-2 py-1 text-center number">
                             {minutes < 10 ? 0 + '' + minutes : minutes}:
                             {seconds < 10 ? 0 + '' + seconds : seconds}
                         </span>

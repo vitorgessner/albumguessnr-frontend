@@ -16,7 +16,7 @@ axiosInstance.interceptors.response.use(
     },
     async (error) => {
         if (error instanceof AxiosError) {
-            console.log(error.config?.url)
+            console.log(error.config?.url, error.response?.data.message)
             const { isLoggingOut } = useAuthStore.getState();
             if (isLoggingOut) return Promise.reject(error);
             if (!error.config) return Promise.reject(error);

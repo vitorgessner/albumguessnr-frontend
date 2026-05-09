@@ -2,10 +2,14 @@ import { Star, StarIcon } from 'lucide-react';
 import useUser from '../hooks/useUser';
 import useProfile from '../hooks/useProfile';
 import ProfileSkeleton from '../components/ProfileSkeleton';
+import RequestButton from '@/features/friends/components/RequestButton';
+import useFriends from '@/features/friends/hooks/useFriends';
+import { Link } from 'react-router';
 
 const Profile = () => {
     const { data: authenticatedUser } = useUser();
     const { data: user, isPending: isUserPending, error: userError } = useProfile();
+    const { friends } = useFriends(user?.username);
 
     if (userError)
         return (
@@ -17,13 +21,9 @@ const Profile = () => {
     if (isUserPending) return <ProfileSkeleton />;
 
     const userProfile =
-        user?.user.username === authenticatedUser?.profile.username
-            ? authenticatedUser
-            : user?.user.user;
+        user?.username === authenticatedUser?.profile.username ? authenticatedUser : user?.user;
     const profile =
-        user?.user.username === authenticatedUser?.profile.username
-            ? authenticatedUser?.profile
-            : user?.user;
+        user?.username === authenticatedUser?.profile.username ? authenticatedUser?.profile : user;
     if (!profile || !userProfile) return null;
 
     const date = new Date(userProfile.createdAt);
@@ -54,6 +54,7 @@ const Profile = () => {
                             )}
                             <span>{profile.bio}</span>
                         </p>
+                        <RequestButton />
                         <p className="flex justify-center items-center mt-2 text-xl opacity-80">
                             <StarIcon
                                 fill="#d47358"
@@ -73,7 +74,11 @@ const Profile = () => {
                         </h2>
                         <ul className="flex flex-wrap w-75">
                             {Array.from({ length: 100 }).map((_, i) => {
-                                return <li key={i} className="text-3xl py-1 achievements">😭</li>;
+                                return (
+                                    <li key={i} className="text-3xl py-1 achievements">
+                                        😭
+                                    </li>
+                                );
                             })}
                         </ul>
                     </article>
@@ -82,22 +87,36 @@ const Profile = () => {
                     <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
                         <h2 className="text-2xl font-bold py-2">Friends' Leaderboard</h2>
                         <ul className="flex flex-col w-79">
-                            {Array.from({ length: 16 }).map((_, i) => {
+                            {friends?.map((friend, i) => {
                                 return (
-                                    <li key={i} className="flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2">
-                                        <div className="flex items-center w-full">
-                                            <span className="grow pl-2 text-3xl text-left">
-                                                {i + 1}
-                                            </span>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-3xl">😎</span>
-                                                <h3 className="text-xl pr-4">FriendName</h3>
+                                    <Link
+                                        key={i}
+                                        to={`/profile/${friend.receivedRequests.profile.username}`}
+                                        className="last-of-type:border-b-2"
+                                    >
+                                        <li className={`flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2 ${friend.receivedRequestsId === authenticatedUser?.id && 'bg-(--amber-50)'}`}>
+                                            <div className="flex items-center w-full">
+                                                <span className="pl-2 text-3xl mr-3 text-left number">
+                                                    {i + 1}
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <img
+                                                        src={
+                                                            friend.receivedRequests.profile
+                                                                .avatar_url
+                                                        }
+                                                        className="text-3xl size-14 rounded-full"
+                                                    />
+                                                    <h3 className="text-xl pr-4">
+                                                        {friend.receivedRequests.profile.username}
+                                                    </h3>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-xl">
-                                            <Star /> <span>400</span>
-                                        </div>
-                                    </li>
+                                            <div className="flex items-center gap-1 text-xl">
+                                                <Star /> <span>400</span>
+                                            </div>
+                                        </li>
+                                    </Link>
                                 );
                             })}
                         </ul>
