@@ -19,13 +19,14 @@ export interface IProfile {
         };
         createdAt: Date;
         id: string;
+        totalScore: number;
     };
 };
 
 const useProfile = () => {
     const { username } = useParams();
 
-    const { data, isPending, error, isSuccess } = useQuery<IProfile>({
+    const { data, isPending, error, isSuccess } = useQuery({
         queryKey: ['profile', username],
         queryFn: () => axios.get<IProfileResponse>(`/profile/${username}`).then((res) => res.data.profile),
         enabled: !!username,

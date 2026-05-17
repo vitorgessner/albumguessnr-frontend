@@ -17,6 +17,7 @@ interface IFriends {
     receivedRequests: {
         id: string;
         createdAt: Date;
+        totalScore: number;
         profile: {
             username: string;
             avatar_url: string;
@@ -35,12 +36,13 @@ interface IFriendsAlbums {
     profile: {
         avatar_url: string;
         username: string
-    }
+    },
+    bestScore: number;
 }
 
 const useFriends = (username: string | undefined) => {
     const {
-        data: friends,
+        data: related,
         isPending,
         error,
     } = useQuery({
@@ -48,6 +50,8 @@ const useFriends = (username: string | undefined) => {
         queryFn: () => axios.get<IUseFriendsResponse>(`/friend/${username}`).then(res => res.data.friends),
         enabled: !!username,
     });
+
+    const friends = related?.filter(r => r.stat === 'FRIEND');
 
     return { friends, isPending, error };
 };

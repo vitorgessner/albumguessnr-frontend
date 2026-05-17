@@ -91,11 +91,11 @@ const Header = () => {
                             </Link>
                             <div className="flex flex-col">
                                 <span>{user?.profile.username}</span>
-                                <span>478 pontos</span>
+                                <span>{user?.totalScore} points</span>
                             </div>
                         </div>
                         <button className="bg-(--card-light) rounded-md py-1 border border-terra text-center mx-auto px-8 shadow-terra-ambar">
-                            Benefícios pro
+                            Benefits pro
                         </button>
                         <div className="bg-(--card-light) rounded-b-lg flex justify-around py-2 w-full">
                             <button

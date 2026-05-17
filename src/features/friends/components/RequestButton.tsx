@@ -29,8 +29,10 @@ const RequestButton = () => {
 
     const { mutate: request } = useMutation<IFriendRequestResponse, ErrorResponse, void>({
         mutationFn: () => axios.post(`/friend/${profile?.user.id}`).then((res) => res.data),
-        onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] }),
+        onSuccess: () => {
+            console.log(profile?.username)
+            return queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] })
+        },
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
@@ -41,8 +43,10 @@ const RequestButton = () => {
 
     const { mutate: unfriend } = useMutation<FormResponse, ErrorResponse, void>({
         mutationFn: () => axios.delete(`/friend/${profile?.user.id}`).then((res) => res.data),
-        onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] })
+            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] })
+        },
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
@@ -52,8 +56,10 @@ const RequestButton = () => {
 
     const { mutate: accept } = useMutation<FormResponse, ErrorResponse, void>({
         mutationFn: () => axios.post(`/friend/accept/${profile?.user.id}`).then((res) => res.data),
-        onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] })
+            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] })
+        },
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
@@ -64,7 +70,7 @@ const RequestButton = () => {
     const { mutate: dismiss } = useMutation<FormResponse, ErrorResponse, void>({
         mutationFn: () => axios.post(`/friend/deny/${profile?.user.id}`).then((res) => res.data),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] }),
+            queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] }),
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
@@ -75,7 +81,7 @@ const RequestButton = () => {
     const { mutate: cancel } = useMutation<FormResponse, ErrorResponse, void>({
         mutationFn: () => axios.patch(`/friend/${profile?.user.id}`).then((res) => res.data),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] }),
+            queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] }),
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);

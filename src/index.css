@@ -150,8 +150,9 @@
   --navy-light:     #6b6fa0;
   --navy-extra-light: #9ea2d2;
 
-  --toastify-color-light: var(--card-light);
+  --toastify-color-light: var(--sidebar-border);
   --toastify-color-error: var(--terra-light);
+  --toastify-color-success: var(--sage);
  
   /* --- Semânticas (mapeiam pras cores do projeto) --- */
   --primary-color:          var(--cream);
@@ -262,6 +263,7 @@
 
   --toastify-color-dark: var(--card-light);
   --toastify-color-error: var(--terra-light);
+  --toastify-color-success: var(--sage);
   --toastify-text-color-light: #fff;
   
   /* --- Semânticas (dark) --- */
