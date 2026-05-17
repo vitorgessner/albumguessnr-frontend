@@ -9,11 +9,14 @@ const FriendsLeaderboard = () => {
     const { data: profile } = useProfile();
     const { friends } = useFriends(profile?.username)
 
+    if (!friends) return null;
+
     return (
         <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
             <h2 className="text-2xl font-bold py-2">Friends' Leaderboard</h2>
             <ul className="flex flex-col w-79">
-                {friends?.map((friend, i) => {
+                {friends.length < 1 && <div>No friends</div>}
+                {friends.map((friend, i) => {
                     return (
                         <Link
                             key={i}
@@ -38,7 +41,7 @@ const FriendsLeaderboard = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 text-xl">
-                                    <Star /> <span>400</span>
+                                    <Star /> <span>{friend.receivedRequests.totalScore}</span>
                                 </div>
                             </li>
                         </Link>

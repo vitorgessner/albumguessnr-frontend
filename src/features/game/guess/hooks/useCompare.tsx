@@ -35,8 +35,8 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
         return artist.length > 0 ? true : false;
     }
 
-    const compareTag = (guess: string = '') => {
-        const tag = currentAlbum.album.genres.filter((g) => {
+    const compareGenre = (guess: string = '') => {
+        const genre = currentAlbum.album.genres.filter((g) => {
             const result = getScore(g.genre.name, guess);
 
             const wordsQtd = getWordsQtd(g.genre.name);
@@ -44,7 +44,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
             return wordsQtd <= 8 ? result > 0.97 + (Number(wordsQtd) - 2) * (0.94 - 0.97) / (8 - 2) : result > 0.94
         })
 
-        return tag.length > 0 ? true : false;
+        return genre.length > 0 ? true : false;
     }
 
     const compareTrack = (guess: string = '') => {
@@ -76,27 +76,31 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
     const guess = (guess: {
         album: string;
         artist?: string;
-        tag?: string;
+        genre?: string;
         year?: string;
     }) => {
         setIsGuessed(true);
 
-        const { album, artist, tag, year } = guess;
+        const { album, artist, genre, year } = guess;
 
         const isAlbumCorrect = compareAlbum(album);
         const isArtistCorrect = compareArtist(artist);
-        const isTagCorrect = compareTag(tag);
+        const isGenreCorrect = compareGenre(genre);
         const isYearCorrect = compareYear(year);
 
         if (config.tracklist) getRightAnswersCount();
 
-        setCorrectAnswers({
+        const correctAnswers = {
             album: isAlbumCorrect,
             artist: artist !== undefined ? isArtistCorrect : undefined,
-            genre: tag !== undefined ? isTagCorrect : undefined,
+            genre: genre !== undefined ? isGenreCorrect : undefined,
             year: year !== undefined ? isYearCorrect : undefined,
             tracklist: config.tracklist ? rightAnswersCount : undefined
-        })
+        }
+
+        setCorrectAnswers(correctAnswers);
+
+        return correctAnswers;
     }
 
     const reset = () => {
@@ -125,7 +129,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, '')
             .replace(/['"`‘’“”]/g, "")
-            .replace(/[.,/#!$%^&*;:{}=\-_`~()|…\u2026]/g, " ")
+            .replace(/[.,/#!$%^*;:{}=\-_`~()|…\u2026]/g, " ")
             .replace(/[\u2010-\u2015]/g, ' '))
             .replace(/\s+/g, '')
             .replace(/[^a-zA-Z0-9]/g, '')    ; 

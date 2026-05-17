@@ -53,13 +53,13 @@ const Profile = () => {
                             <span>{profile.bio}</span>
                         </p>
                         <RequestButton />
-                        <p className="flex justify-center items-center mt-2 text-xl opacity-80">
+                        <p className="flex justify-center gap-1 items-center mt-2 text-xl opacity-80">
                             <StarIcon
                                 fill="#d47358"
                                 stroke="#d47358"
                                 className="drop-terra-ambar"
                             />{' '}
-                            478 pontos
+                            {userProfile.totalScore}
                         </p>
                         <p className="opacity-80">Guessed 400 albums</p>
                         <p className="opacity-80">Joined {creationDate}</p>

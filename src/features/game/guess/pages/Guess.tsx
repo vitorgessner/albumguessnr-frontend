@@ -14,6 +14,10 @@ import useTrackStore from '../stores/useTrackStore';
 import useTimer from '../hooks/useTimer';
 import ConfigComponent from '../../config/components/Config';
 import Friends from '../../config/components/Friends';
+import useScoring from '../../scoring/hooks/useScoring';
+import { toast, ToastContainer } from 'react-toastify';
+import queryClient from '@/shared/utils/queryClient';
+import { useFriendsAlbums } from '@/features/friends/hooks/useFriends';
 
 const Guess = () => {
     const { data: user, isPending, error } = useUser();
@@ -99,13 +103,16 @@ const GuessContent = () => {
 
     const { guessed, setIsFinished, isFinished, rightAnswersCount } = useTrackStore();
 
+    const { isPending: isFriendsPending } = useFriendsAlbums(currentAlbum.albumId);
+    const { setScore, setAnswers, isPending } = useScoring(minutes * 60 + seconds)
+
     const { data: timesGuessed, isSuccess } = useQuery({
         queryKey: ['stats', currentAlbum?.albumId],
         queryFn: async () => {
             const res = await axios.get<{ timesGuessed: number }>(
                 `/guess/${currentAlbum?.albumId}`
             );
-            return res.data.timesGuessed;
+            return res.data.timesGuessed ?? -1;
         },
     });
 
@@ -115,29 +122,33 @@ const GuessContent = () => {
         },
     });
 
-    const onGuess: SubmitHandler<GuessType> = (data) => {
+    const onGuess: SubmitHandler<GuessType> = async (data) => {
         if (!isGuessed) {
             setIsGuessed(true);
             setIsFinished(true);
+
             const guessObj: {
                 album: string;
                 artist?: string;
-                tag?: string;
+                genre?: string;
                 year?: string;
             } = { album: data.album };
             if (config.artist) guessObj.artist = data.artist ?? '';
-            if (config.genre) guessObj.tag = data.genre ?? '';
+            if (config.genre) guessObj.genre = data.genre ?? '';
             if (config.year) guessObj.year = data.year ?? '';
-            guess(guessObj);
+            const answers = guess(guessObj);
+            setAnswers(answers);
+            const response = await setScore();
+            toast.success(response.totalScore + ' points')
 
             setFocus('buttonSubmit');
-
-            mutation.mutate(currentAlbum.albumId);
-        } else if (isGuessed) {
-            reset();
-
-            resetTrack('track');
+            
+            await mutation.mutateAsync(currentAlbum.albumId);
+            return queryClient.invalidateQueries({ queryKey: ['friends', currentAlbum.albumId] })
         }
+        
+        reset();
+        resetTrack('track');
     };
 
     useEffect(() => {
@@ -331,8 +342,9 @@ const GuessContent = () => {
                         <Form.Input
                             {...register('buttonSubmit')}
                             type="submit"
+                            disabled={isPending || isFriendsPending}
                             value={!isGuessed ? 'Guess' : 'Next'}
-                            className={`sage-component w-full`}
+                            className={`sage-component w-full disabled:opacity-50`}
                         />
                     </Form>
                 </section>
@@ -389,8 +401,9 @@ const GuessContent = () => {
                 )}
             </div>
             <div className="h-fit order-1 min-w-[355.5px]">
-                <Friends />
+                <Friends isPending={isPending}/>
             </div>
+            <ToastContainer position='bottom-center' limit={1} autoClose={300}/>
         </main>
     );
 };

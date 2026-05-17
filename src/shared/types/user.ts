@@ -4,6 +4,7 @@ export interface IMeResponse {
         email: string;
         emailVerified: true;
         id: string;
+        totalScore: number;
         profile: {
             avatar_url: string;
             bio: string;
@@ -26,6 +27,7 @@ export interface IUser {
     email: string;
     emailVerified: true;
     id: string;
+    totalScore: number;
     profile: {
         avatar_url: string;
         bio: string;

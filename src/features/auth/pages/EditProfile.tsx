@@ -21,6 +21,7 @@ const EditProfile = () => {
         register,
         handleSubmit,
         formState: { errors },
+        setError,
     } = useForm<AllowedData>({ mode: 'onChange' });
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -28,23 +29,27 @@ const EditProfile = () => {
 
     const { mutate, isPending } = useMutation<FormData, AxiosError<ErrorResponse>, FormData>({
         mutationFn: async (data) => {
+            await axios.put(`/integration`, { lastfmUsername: data.get('lastfmUsername') });
+            
             await axios.patch(`/profile/${user?.profile.username}/edit`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            await axios.put(`/integration`, { lastfmUsername: data.get('lastfmUsername') });
-
             return data;
         },
         onSuccess: async (data) => {
             navigate(`/profile/${data.get('username')}`);
             queryClient.invalidateQueries({ queryKey: ['user'] });
+            queryClient.removeQueries({ queryKey: ['profile', user?.profile.username] });
+            queryClient.invalidateQueries({ queryKey: ['friends'] });
         },
         onError: (err) => {
-            if (err instanceof AxiosError) {
-                console.log(err.response?.data.message);
+            if (err instanceof AxiosError && err.response) {
+                err.message = err.response.data.message;
+                setError('lastfmUsername', err)
+                return console.log(err.response);
             }
             console.log(err);
         },
@@ -57,7 +62,6 @@ const EditProfile = () => {
         appendToFormData(formData, 'lastfmUsername', data.lastfmUsername);
         appendToFormData(formData, 'bio', data.bio);
         appendToFormData(formData, 'pfp', data.pfp[0]);
-        console.log(formData);
 
         mutate(formData);
         if (preview) URL.revokeObjectURL(preview);
@@ -108,7 +112,7 @@ const EditProfile = () => {
                                     acceptedFormats: (files) => {
                                         if (files.length === 0) return true;
                                         return (
-                                            ['image/jpeg', 'image/png', 'image/svg'].includes(
+                                            ['image/jpeg', 'image/png', 'image/svg', 'image/gif'].includes(
                                                 files[0]?.type
                                             ) || 'File format must be JPEG or PNG'
                                         );
@@ -144,6 +148,12 @@ const EditProfile = () => {
                         />
                     </Form.Label>
 
+                    {errors.username && (
+                        <span className="text-(--error-text) text-right text-sm">
+                            {errors.username.message}
+                        </span>
+                    )}
+
                     <Form.Label>
                         LastFm Username:{' '}
                         <Form.Input
@@ -155,9 +165,9 @@ const EditProfile = () => {
                         />
                     </Form.Label>
 
-                    {errors.username && (
+                    {errors.lastfmUsername && (
                         <span className="text-(--error-text) text-right text-sm">
-                            {errors.username.message}
+                            {errors.lastfmUsername.message}
                         </span>
                     )}
 
