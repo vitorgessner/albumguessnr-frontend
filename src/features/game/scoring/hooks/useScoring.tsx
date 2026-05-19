@@ -22,7 +22,10 @@ const useScoring = (timeSpent: number) => {
         artist?: boolean | undefined;
         genre?: boolean | undefined;
         year?: boolean | undefined;
-        tracklist?: number | undefined;
+        tracklist?: {
+            trackId: string;
+            isCorrect: boolean;
+        }[] | undefined;
     }>({ album: undefined });
 
 
@@ -45,7 +48,7 @@ const useScoring = (timeSpent: number) => {
         },
     });
 
-    return { setScore: mutateAsync, setAnswers, isPending };
+    return { setScore: mutateAsync, answers, setAnswers, isPending };
 };
 
 export default useScoring;

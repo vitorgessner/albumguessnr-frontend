@@ -6,11 +6,12 @@ import useUser from "../../../auth/hooks/useUser";
 import useTrackStore from "../stores/useTrackStore";
 import { fuzzy } from 'fast-fuzzy';
 import { WORD_REPLACEMENTS } from "../utils/removeWords";
-// import Fuse from 'fuse.js';
+import { useState } from "react";
 
 const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFormSetFocus<GuessType>) => {
     const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
-    const { addGuess, getRightAnswersCount, rightAnswersCount, resetTracksState, setIsFinished, guessed } = useTrackStore();
+    const { addGuess, resetTracksState, setIsFinished, guessed } = useTrackStore();
+    const [tries, setTries] = useState(0);
     const currentAlbum = albums[index];
     const { data: user } = useUser();
     const queryClient = useQueryClient();
@@ -62,9 +63,11 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
 
         const index = currentAlbum.album.tracks.findIndex((t) => t.normalizedName === track[0]?.normalizedName) ?? -1;
 
-        addGuess({ name: track[0]?.normalizedName ?? guess.toLowerCase().trim(), isCorrect: index >= 0 ? true : false });
-        getRightAnswersCount();
-        if (guessed.length >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
+        if (index >= 0) {
+            addGuess({ trackId: track[0].id, name: track[0].normalizedName ?? guess.toLowerCase().trim(), isCorrect: true });
+        }
+        // getRightAnswers();
+        if (tries >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
 
         if (index >= 0) return index;
     }
@@ -88,24 +91,37 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
         const isGenreCorrect = compareGenre(genre);
         const isYearCorrect = compareYear(year);
 
-        if (config.tracklist) getRightAnswersCount();
-
-        const correctAnswers = {
+        const answers = {
             album: isAlbumCorrect,
             artist: artist !== undefined ? isArtistCorrect : undefined,
             genre: genre !== undefined ? isGenreCorrect : undefined,
             year: year !== undefined ? isYearCorrect : undefined,
-            tracklist: config.tracklist ? rightAnswersCount : undefined
+            tracklist: config.tracklist ? guessed.map(g => {
+                return {
+                    trackId: g.trackId,
+                    isCorrect: g.isCorrect,
+                }
+            }) : undefined
         }
 
-        setCorrectAnswers(correctAnswers);
+        if (config.tracklist) {
+            const guessedNames = new Set(guessed.map(g => g.name))
+            currentAlbum.album.tracks.forEach(t => {
+                if (!guessedNames.has(t.normalizedName)) {
+                    answers.tracklist?.push({ trackId: t.id, isCorrect: false })
+                }
+            })
+        }
 
-        return correctAnswers;
+        setCorrectAnswers(answers);
+
+        return answers;
     }
 
     const reset = () => {
         setIsGuessed(false);
         setIsFinished(false);
+        setTries(0)
         if (resetField) {
             resetField('album');
             resetField('artist');
@@ -173,7 +189,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
             .split(' ').length;
     }
 
-    return { currentAlbum, guess, compareTrack, reset };
+    return { currentAlbum, guess, compareTrack, reset, tries, setTries };
 }
 
 export default useCompare;

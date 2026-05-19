@@ -55,11 +55,11 @@ const Friends = ({isPending}: {isPending: boolean}) => {
                                 </div>
                                 <div className="flex items-center gap-1 text-xl">
                                     <Star />{' '}
-                                    <span className={`${!isGuessed ? 'blur-xs' : 'blur-none'}`}>
-                                        {!isPending && !isFriendsPending ? friend.bestScore : <Skeleton height={20} width={20}/>}
+                                    <span className={`${!isGuessed || isPending ? 'blur-xs' : 'blur-none'}`}>
+                                        {!isPending && !isFriendsPending ? <span className='number'>{friend.bestScore}</span> : <Skeleton width={25} height={20}/>}
                                     </span>
                                 </div>
-                                {!isFriendsPending && friend.id === user?.id && isNewBestScore && <span className='absolute bottom-0 right-1 text-sm text-(--sage-dark)'>New Best Score!</span>}
+                                {!isFriendsPending && !isPending && friend.id === user?.id && isNewBestScore && <span className='absolute bottom-0 right-1 text-sm text-(--sage-dark)'>New Best Score!</span>}
                             </li>
                         </Link>
                     );

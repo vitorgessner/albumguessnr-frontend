@@ -10,7 +10,7 @@ interface IConfig {
 }
 
 type Answers = Omit<IConfig, 'tracklist'> & {
-    tracklist: number
+    tracklist: Array<{ trackId: string, isCorrect: boolean }>
 }
 
 interface IGuessStore {

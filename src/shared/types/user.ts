@@ -4,7 +4,6 @@ export interface IMeResponse {
         email: string;
         emailVerified: true;
         id: string;
-        totalScore: number;
         profile: {
             avatar_url: string;
             bio: string;
@@ -19,6 +18,21 @@ export interface IMeResponse {
             lastfmUsername: string,
             lastSyncedAt: Date,
         }
+        userStats: {
+            id: string,
+            userId: string,
+            totalScore: number,
+            guessedAlbums: number,
+            rightGuessedAlbums: number,
+            guessedArtists: number,
+            rightGuessedArtist: number,
+            guessedGenres: number,
+            rightGuessedGenres: number,
+            guessedYears: number,
+            rightGuessedYears: number,
+            guessedTracks: number,
+            rightGuessedTracks: number
+        }
     } | undefined;
 }
 
@@ -27,7 +41,21 @@ export interface IUser {
     email: string;
     emailVerified: true;
     id: string;
-    totalScore: number;
+    userStats: {
+        id: string,
+        userId: string,
+        totalScore: number,
+        guessedAlbums: number,
+        rightGuessedAlbums: number,
+        guessedArtists: number,
+        rightGuessedArtist: number,
+        guessedGenres: number,
+        rightGuessedGenres: number,
+        guessedYears: number,
+        rightGuessedYears: number,
+        guessedTracks: number,
+        rightGuessedTracks: number
+    }
     profile: {
         avatar_url: string;
         bio: string;

@@ -14,6 +14,21 @@ export interface IProfile {
     bio: string;
     avatar_url: string;
     user: {
+        userStats: {
+            id: string,
+            userId: string,
+            totalScore: number,
+            guessedAlbums: number,
+            rightGuessedAlbums: number,
+            guessedArtists: number,
+            rightGuessedArtist: number,
+            guessedGenres: number,
+            rightGuessedGenres: number,
+            guessedYears: number,
+            rightGuessedYears: number,
+            guessedTracks: number,
+            rightGuessedTracks: number
+        }
         lastfmIntegration: {
             lastfmUsername: string;
         };
