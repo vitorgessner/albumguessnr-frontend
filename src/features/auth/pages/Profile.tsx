@@ -59,9 +59,9 @@ const Profile = () => {
                                 stroke="#d47358"
                                 className="drop-terra-ambar"
                             />{' '}
-                            {userProfile.totalScore}
+                            {userProfile.userStats.totalScore}
                         </p>
-                        <p className="opacity-80">Guessed 400 albums</p>
+                        <p className="opacity-80">Guessed {userProfile.userStats.guessedAlbums} times</p>
                         <p className="opacity-80">Joined {creationDate}</p>
                     </article>
                 </section>

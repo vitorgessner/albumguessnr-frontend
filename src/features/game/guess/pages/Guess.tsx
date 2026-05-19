@@ -17,7 +17,10 @@ import Friends from '../../config/components/Friends';
 import useScoring from '../../scoring/hooks/useScoring';
 import { toast, ToastContainer } from 'react-toastify';
 import queryClient from '@/shared/utils/queryClient';
-import { useFriendsAlbums } from '@/features/friends/hooks/useFriends';
+import {
+    useFriendsAlbums,
+    type IFriendsAlbums,
+} from '@/features/friends/hooks/useFriends';
 
 const Guess = () => {
     const { data: user, isPending, error } = useUser();
@@ -83,17 +86,20 @@ const GuessSync = ({ user }: { user: IUser }) => {
 
     if (isRefetching) return <div className="loading">Loading more albums...</div>;
 
-    return <GuessContent />;
+    return <GuessContent user={user} />;
 };
 
-const GuessContent = () => {
+const GuessContent = ({ user }: { user: IUser }) => {
     const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
     const {
         register: trackRegister,
         handleSubmit: trackHandleSubmit,
         resetField: resetTrack,
     } = useForm<TrackType>();
-    const { currentAlbum, guess, reset, compareTrack } = useCompare(resetField, setFocus);
+    const { currentAlbum, guess, reset, compareTrack, tries, setTries } = useCompare(
+        resetField,
+        setFocus
+    );
     const formRef = useRef<HTMLFormElement>(null);
     const tracksRef = useRef<HTMLUListElement>(null);
     const { startTimer, pauseTimer, clearTimer, seconds, minutes } = useTimer();
@@ -101,10 +107,10 @@ const GuessContent = () => {
 
     const { correctAnswers, isGuessed, setIsGuessed, config } = useGuessStore();
 
-    const { guessed, setIsFinished, isFinished, rightAnswersCount } = useTrackStore();
+    const { guessed, setIsFinished, isFinished } = useTrackStore();
 
     const { isPending: isFriendsPending } = useFriendsAlbums(currentAlbum.albumId);
-    const { setScore, setAnswers, isPending } = useScoring(minutes * 60 + seconds)
+    const { setScore, setAnswers, answers, isPending } = useScoring(minutes * 60 + seconds);
 
     const { data: timesGuessed, isSuccess } = useQuery({
         queryKey: ['stats', currentAlbum?.albumId],
@@ -136,17 +142,35 @@ const GuessContent = () => {
             if (config.artist) guessObj.artist = data.artist ?? '';
             if (config.genre) guessObj.genre = data.genre ?? '';
             if (config.year) guessObj.year = data.year ?? '';
+
             const answers = guess(guessObj);
             setAnswers(answers);
-            const response = await setScore();
-            toast.success(response.totalScore + ' points')
 
+            const [response] = await Promise.all([
+                setScore(),
+                mutation.mutateAsync(currentAlbum.albumId),
+            ]);
+
+            toast.success(response.totalScore + ' points');
             setFocus('buttonSubmit');
-            
-            await mutation.mutateAsync(currentAlbum.albumId);
-            return queryClient.invalidateQueries({ queryKey: ['friends', currentAlbum.albumId] })
+
+            queryClient.setQueryData(
+                ['friends', currentAlbum.albumId],
+                (oldData: IFriendsAlbums[]) => {
+                    if (response.isNewBestScore) {
+                        return oldData.map((f) => {
+                            if (f.id === user.id) {
+                                return { ...f, bestScore: response.totalScore }
+                            }
+                            return f
+                        })
+                    }
+                    return oldData
+                }
+            )
+            return queryClient.invalidateQueries({ queryKey: ['friends', currentAlbum.albumId] });
         }
-        
+
         reset();
         resetTrack('track');
     };
@@ -167,6 +191,7 @@ const GuessContent = () => {
     }, [tracksRef, index]);
 
     const onTrackTry: SubmitHandler<TrackType> = (data) => {
+        setTries((prev) => prev + 1);
         if (data.track === '' || !data.track) {
             setIsFinished(true);
         }
@@ -359,7 +384,7 @@ const GuessContent = () => {
                             <div className="opacity-0">0/{currentAlbum.album.tracks.length}</div>
                             <h3>Tracklist</h3>
                             <span>
-                                {guessed.length}/{currentAlbum.album.tracks.length}
+                                {tries}/{currentAlbum.album.tracks.length}
                             </span>
                         </div>
                         <ul className="my-1 flex flex-col gap-2 overflow-hidden scroll-smooth px-3">
@@ -368,13 +393,26 @@ const GuessContent = () => {
                                     <li
                                         key={t.id}
                                         id={t.id}
-                                        className={`rounded-sm border-2 bg-sidebar-border p-1 ${!isFinished ? (guessedTracks.includes(t.normalizedName) ? 'border-success' : 'border-border)') : typeof rightAnswersCount === 'number' ? (guessedTracks.includes(t.normalizedName) ? 'border-success' : 'border-error') : 'border-border'}`}
+                                        className={`rounded-sm border-2 bg-sidebar-border p-1 
+                                            ${
+                                                !isFinished
+                                                    ? guessedTracks.includes(t.normalizedName)
+                                                        ? 'border-success'
+                                                        : 'border-border)'
+                                                    : answers.tracklist
+                                                      ? guessedTracks.includes(t.normalizedName)
+                                                          ? 'border-success'
+                                                          : 'border-error'
+                                                      : 'border-border'
+                                            }`}
                                     >
-                                        {typeof rightAnswersCount === 'number'
-                                            ? guessedTracks.includes(t.normalizedName) || isFinished
+                                        {!isFinished
+                                            ? guessedTracks.includes(t.normalizedName)
                                                 ? t.normalizedName
                                                 : '...'
-                                            : '...'}
+                                            : isFinished && answers.tracklist
+                                              ? t.normalizedName
+                                              : '...'}
                                     </li>
                                 );
                             })}
@@ -401,9 +439,9 @@ const GuessContent = () => {
                 )}
             </div>
             <div className="h-fit order-1 min-w-[355.5px]">
-                <Friends isPending={isPending}/>
+                <Friends isPending={isPending} />
             </div>
-            <ToastContainer position='bottom-center' limit={1} autoClose={300}/>
+            <ToastContainer position="bottom-center" limit={1} autoClose={300} />
         </main>
     );
 };

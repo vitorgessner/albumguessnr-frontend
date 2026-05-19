@@ -25,6 +25,12 @@ const Header = () => {
         }
     }, [path.state]);
 
+    useEffect(() => {
+        if (isModalOpen) {
+            queryClient.invalidateQueries({ queryKey: ['user'] })
+        }
+    }, [queryClient, isModalOpen])
+
     const handleLogout = async () => {
         setIsModalOpen(false);
         setIsLoggingOut(true);
@@ -91,7 +97,7 @@ const Header = () => {
                             </Link>
                             <div className="flex flex-col">
                                 <span>{user?.profile.username}</span>
-                                <span>{user?.totalScore} points</span>
+                                <span>{user?.userStats.totalScore} points</span>
                             </div>
                         </div>
                         <button className="bg-(--card-light) rounded-md py-1 border border-terra text-center mx-auto px-8 shadow-terra-ambar">

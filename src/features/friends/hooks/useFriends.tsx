@@ -25,13 +25,13 @@ interface IFriends {
     };
 }
 
-interface IUseFriendsAlbumsResponse {
+export interface IUseFriendsAlbumsResponse {
     status: string;
     message: string;
     friends: Array<IFriendsAlbums>
 }
 
-interface IFriendsAlbums {
+export interface IFriendsAlbums {
     id: string;
     profile: {
         avatar_url: string;

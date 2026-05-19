@@ -2,13 +2,13 @@ import { create } from "zustand";
 
 interface ITrackStore {
     tracks: Array<string>;
-    guessed: Array<{ name: string, isCorrect: boolean }>;
-    rightAnswersCount: number | undefined;
+    guessed: Array<{ trackId: string, name: string, isCorrect: boolean }>;
+    // rightAnswers: Array<{ trackId: string, isCorrect: boolean }>;
     isFinished: boolean;
 
     setTracks: (tracks: Array<string>) => void;
-    addGuess: (guess: { name: string, isCorrect: boolean }) => void;
-    getRightAnswersCount: () => void;
+    addGuess: (guess: { trackId: string, name: string, isCorrect: boolean }) => void;
+    // getRightAnswers: () => void;
     resetTracksState: () => void;
     setIsFinished: (isFinished: boolean) => void;
 }
@@ -16,7 +16,7 @@ interface ITrackStore {
 const useTrackStore = create<ITrackStore>()((set) => ({
     tracks: [],
     guessed: [],
-    rightAnswersCount: undefined,
+    // rightAnswers: [],
     isFinished: false,
 
     setTracks: (tracks) => set(() => ({
@@ -27,9 +27,9 @@ const useTrackStore = create<ITrackStore>()((set) => ({
         guessed: [...state.guessed, guess]
     })),
 
-    getRightAnswersCount: () => set((state) => ({
-        rightAnswersCount: state.guessed.filter(g => g.isCorrect).length ?? 0
-    })),
+    // getRightAnswers: () => set((state) => ({
+    //     rightAnswers: state.guessed.filter(g => g.isCorrect)
+    // })),
 
     resetTracksState: () => set(() => ({
         guessed: [],
