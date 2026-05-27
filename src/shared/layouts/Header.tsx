@@ -48,7 +48,7 @@ const Header = () => {
     return (
         <>
             <header className="sticky top-0 flex items-center z-10 p-3 w-full bg-(--card-light)">
-                <div className="flex justify-center items-center grow">
+                <div className="flex justify-left lg:justify-center items-center grow pl-4 lg:pl-0">
                     <Link to={'/'}>
                         <h1 className="uppercase text-(--text) text-xl text-center font-semibold">
                             AlbumGuessnr

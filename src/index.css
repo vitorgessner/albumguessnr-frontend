@@ -117,6 +117,10 @@
   }
 
   @layer components {
+    .button {
+      @apply w-full mt-2 py-2 rounded-lg
+    }
+
     .addFriendButton {
       @apply w-full mt-2 py-2 border-2 border-sage-dark rounded-lg bg-sage shadow-[3px_3px_0_var(--sage-dark)] hover:bg-(--sage-light) hover:border-sage hover:shadow-[3px_3px_0_var(--sage)]
     }

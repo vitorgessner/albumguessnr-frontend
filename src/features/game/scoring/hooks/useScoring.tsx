@@ -13,28 +13,27 @@ interface IScoringResponse {
     isNewBestScore: boolean;
 }
 
+export type Answers = {
+    album: boolean | undefined;
+    artist?: boolean | undefined;
+    genre?: boolean | undefined;
+    year?: boolean | undefined;
+    tracklist?: {
+        trackId: string;
+        isCorrect: boolean;
+    }[] | undefined;
+}
+
 const useScoring = (timeSpent: number) => {
     const { currentAlbum } = useCompare();
     const { setIsNewBestScore } = useScoringStore();
 
-    const [answers, setAnswers] = useState<{
-        album: boolean | undefined;
-        artist?: boolean | undefined;
-        genre?: boolean | undefined;
-        year?: boolean | undefined;
-        tracklist?: {
-            trackId: string;
-            isCorrect: boolean;
-        }[] | undefined;
-    }>({ album: undefined });
+    const [answers, setAnswers] = useState<Answers>({ album: undefined });
 
 
     const finalAnswers = Object.fromEntries(
         Object.entries(answers).filter(([, value]) => value !== undefined)
     )
-
-    // const queryClient = useQueryClient();
-    // const { data: user } = useUser();
 
     const { mutateAsync, isPending } = useMutation<IScoringResponse, ErrorResponse>({
         mutationKey: ['scoring'],

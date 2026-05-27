@@ -17,18 +17,19 @@ import Friends from '../../config/components/Friends';
 import useScoring from '../../scoring/hooks/useScoring';
 import { toast, ToastContainer } from 'react-toastify';
 import queryClient from '@/shared/utils/queryClient';
-import {
-    useFriendsAlbums,
-    type IFriendsAlbums,
-} from '@/features/friends/hooks/useFriends';
+import { type IFriendsAlbums } from '@/features/friends/hooks/useFriends';
+import AlbumCover from '../components/AlbumCover';
+import BottomSheet from '../components/BottomSheet';
+import BottomNav from '../components/BottomNav';
+import TracklistSection from '../components/TracklistSection';
+
+export type Sheet = 'config' | 'friends' | 'tracklist' | null;
 
 const Guess = () => {
     const { data: user, isPending, error } = useUser();
 
     if (isPending) return <div className="loading">Loading...</div>;
-
     if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
-
     return <GuessSync user={user!} />;
 };
 
@@ -41,10 +42,7 @@ const GuessSync = ({ user }: { user: IUser }) => {
         isSuccess: isSynced,
     } = useQuery({
         queryKey: ['sync', user?.lastfmIntegration.lastfmUsername],
-        queryFn: async () => {
-            const res = await axios.get('/game');
-            return res;
-        },
+        queryFn: async () => axios.get('/game'),
     });
 
     const {
@@ -55,7 +53,7 @@ const GuessSync = ({ user }: { user: IUser }) => {
     } = useQuery({
         queryKey: ['albums', user?.lastfmIntegration.lastfmUsername],
         queryFn: async () =>
-            await axios.get<FetchResponse>('/integration/albums').then((res) => {
+            axios.get<FetchResponse>('/integration/albums').then((res) => {
                 shuffle(res.data.albums);
                 setAlbums(res.data.albums);
                 return res.data.albums;
@@ -65,7 +63,6 @@ const GuessSync = ({ user }: { user: IUser }) => {
     });
 
     const isFirstLoad = useRef(true);
-
     useEffect(() => {
         if (isFirstLoad.current) {
             isFirstLoad.current = false;
@@ -75,28 +72,26 @@ const GuessSync = ({ user }: { user: IUser }) => {
     }, [dataUpdatedAt, resetIndex]);
 
     if (isPending) return <span className="loading">Fetching user albums...</span>;
-
     if (isAlbumsLoading) return <span className="loading">Loading albums...</span>;
-
     if (error || albumsErrors)
         return <span className="loading text-(--error-text)">{error?.message}</span>;
-
     if (albums.length <= 0)
         return <div className="loading">Preparing your albums, this may take a few minutes...</div>;
-
     if (isRefetching) return <div className="loading">Loading more albums...</div>;
 
     return <GuessContent user={user} />;
 };
 
 const GuessContent = ({ user }: { user: IUser }) => {
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
+    const [activeSheet, setActiveSheet] = useState<Sheet>(null);
+
     const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
     const {
-        register: trackRegister,
-        handleSubmit: trackHandleSubmit,
         resetField: resetTrack,
     } = useForm<TrackType>();
-    const { currentAlbum, guess, reset, compareTrack, tries, setTries } = useCompare(
+
+    const { currentAlbum, guess, reset } = useCompare(
         resetField,
         setFocus
     );
@@ -106,10 +101,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
     const [index, setIndex] = useState<number | undefined>();
 
     const { correctAnswers, isGuessed, setIsGuessed, config } = useGuessStore();
-
-    const { guessed, setIsFinished, isFinished } = useTrackStore();
-
-    const { isPending: isFriendsPending } = useFriendsAlbums(currentAlbum.albumId);
+    const { setIsFinished, isFinished } = useTrackStore();
     const { setScore, setAnswers, answers, isPending } = useScoring(minutes * 60 + seconds);
 
     const { data: timesGuessed, isSuccess } = useQuery({
@@ -123,22 +115,19 @@ const GuessContent = ({ user }: { user: IUser }) => {
     });
 
     const mutation = useMutation({
-        mutationFn: (albumId: string) => {
-            return axios.put('/guess', { albumId });
-        },
+        mutationFn: (albumId: string) => axios.put('/guess', { albumId }),
     });
+
+    const toggleSheet = (sheet: Sheet) => setActiveSheet((prev) => (prev === sheet ? null : sheet));
 
     const onGuess: SubmitHandler<GuessType> = async (data) => {
         if (!isGuessed) {
             setIsGuessed(true);
             setIsFinished(true);
 
-            const guessObj: {
-                album: string;
-                artist?: string;
-                genre?: string;
-                year?: string;
-            } = { album: data.album };
+            const guessObj: { album: string; artist?: string; genre?: string; year?: string } = {
+                album: data.album,
+            };
             if (config.artist) guessObj.artist = data.artist ?? '';
             if (config.genre) guessObj.genre = data.genre ?? '';
             if (config.year) guessObj.year = data.year ?? '';
@@ -158,21 +147,20 @@ const GuessContent = ({ user }: { user: IUser }) => {
                 ['friends', currentAlbum.albumId],
                 (oldData: IFriendsAlbums[]) => {
                     if (response.isNewBestScore) {
-                        return oldData.map((f) => {
-                            if (f.id === user.id) {
-                                return { ...f, bestScore: response.totalScore }
-                            }
-                            return f
-                        })
+                        return oldData.map((f) =>
+                            f.id === user.id ? { ...f, bestScore: response.totalScore } : f
+                        );
                     }
-                    return oldData
+                    return oldData;
                 }
-            )
+            );
             return queryClient.invalidateQueries({ queryKey: ['friends', currentAlbum.albumId] });
         }
 
         reset();
         resetTrack('track');
+        setIsImageLoaded(false);
+        setActiveSheet(null);
     };
 
     useEffect(() => {
@@ -182,22 +170,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
             if (index && index >= 0) {
                 const track = tracks.item(index);
                 if (!track) return;
-                track.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                });
+                track.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
     }, [tracksRef, index]);
-
-    const onTrackTry: SubmitHandler<TrackType> = (data) => {
-        setTries((prev) => prev + 1);
-        if (data.track === '' || !data.track) {
-            setIsFinished(true);
-        }
-        resetTrack('track');
-        setIndex(compareTrack(data.track));
-    };
 
     useEffect(() => {
         setFocus('album');
@@ -215,28 +191,33 @@ const GuessContent = ({ user }: { user: IUser }) => {
         }
     }, [isFinished, pauseTimer]);
 
-    const guessedTracks = guessed.map((g) => g.name);
-
     return (
-        <main className="flex flex-col lg:flex-row items-center lg:items-start main-height justify-center gap-5 py-2 pb-16 lg:pb-2">
-            <ConfigComponent />
-            <div className="h-fit flex-col items-center text-center min-w-62 max-w-62 order-2">
-                <article className="flex justify-center w-full">
+        <>
+            <div
+                className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-5 py-2 lg:main-height"
+                style={{
+                    minHeight: 'calc(100dvh - 58.5px)',
+                    paddingBottom: 'calc(56px + env(safe-area-inset-bottom))',
+                }}
+            >
+                <div className="hidden lg:block">
+                    <ConfigComponent />
+                </div>
+
+                <div className="flex flex-col items-center w-full lg:w-fit lg:min-w-62 lg:max-w-62 px-4 lg:px-0 order-1 lg:order-2">
+                    <article className="flex justify-center">
+                        <div className="w-fit max-w-fit h-fit max-h-fit">
+                            <AlbumCover
+                                key={currentAlbum.album.cover_url}
+                                src={currentAlbum.album.cover_url}
+                                isGuessed={isGuessed}
+                                onLoadingChange={setIsImageLoaded}
+                            />
+                        </div>
+                    </article>
+
                     <div
-                        className={`flex overflow-hidden w-full min-w-62 max-w-62 rounded-sm border-2 border-border`}
-                    >
-                        <img
-                            src={currentAlbum.album.cover_url}
-                            alt=""
-                            onContextMenu={(e) => e.preventDefault()}
-                            draggable={false}
-                            className={`size-full w-full min-w-62 max-w-62 ${!isGuessed ? 'blur-md' : ''}`}
-                        />
-                    </div>
-                </article>
-                <section className="mt-1">
-                    <p
-                        className={`flex ${timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'} items-center text-center`}
+                        className={`flex w-full max-w-xs lg:max-w-none mt-1 items-center text-center ${timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'}`}
                     >
                         {isSuccess && timesGuessed >= 1 && (
                             <div className="text-left text-xs opacity-90">
@@ -245,204 +226,192 @@ const GuessContent = ({ user }: { user: IUser }) => {
                             </div>
                         )}
                         <span className="border-border rounded-full border-2 bg-(--card-light) px-2 py-1 text-center number">
-                            {minutes < 10 ? 0 + '' + minutes : minutes}:
-                            {seconds < 10 ? 0 + '' + seconds : seconds}
+                            {minutes < 10 ? '0' + minutes : minutes}:
+                            {seconds < 10 ? '0' + seconds : seconds}
                         </span>
-                    </p>
-                    <Form
-                        ref={formRef}
-                        className="flex flex-col gap-2"
-                        onSubmit={handleSubmit(onGuess)}
-                    >
-                        <div
-                            className={`mt-1 flex w-full flex-col gap-1 rounded-sm border-2 bg-(--card-light) p-3 ${isGuessed && 'pb-1'}`}
+                    </div>
+
+                    <section className="w-full max-w-xs lg:max-w-none mt-1">
+                        <Form
+                            ref={formRef}
+                            className="flex flex-col gap-2"
+                            onSubmit={handleSubmit(onGuess)}
                         >
-                            {config.album && (
-                                <Form.Label>
-                                    <Form.Input
-                                        placeholder="Album"
-                                        disabled={!currentAlbum.album.normalizedName || isGuessed}
-                                        className={`disabled:opacity-90 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? (correctAnswers.album ? 'border-success' : 'border-error') : 'border-border')}`}
-                                        {...register('album')}
-                                        autoComplete="off"
-                                    />
-                                </Form.Label>
-                            )}
-                            {config.album && isGuessed && !correctAnswers.album && (
-                                <span
-                                    className="overflow-hidden text-left text-nowrap text-ellipsis whitespace-nowrap"
-                                    title={currentAlbum.album.normalizedName}
-                                >
-                                    {currentAlbum.album.normalizedName}
-                                </span>
-                            )}
-
-                            {config.artist && (
-                                <Form.Label>
-                                    <Form.Input
-                                        placeholder="Artist"
-                                        disabled={
-                                            currentAlbum.album.artists.length <= 0 || isGuessed
-                                        }
-                                        className={`disabled:opacity-90 ${config.artist && currentAlbum.album.artists && (isGuessed ? (correctAnswers.artist ? 'border-success' : correctAnswers.artist === false && 'border-error') : 'border-border')}`}
-                                        {...register('artist')}
-                                        autoComplete="off"
-                                    />
-                                </Form.Label>
-                            )}
-                            {config.artist && isGuessed && correctAnswers.artist === false && (
-                                <span
-                                    className="overflow-hidden text-left text-nowrap text-ellipsis whitespace-nowrap"
-                                    title={currentAlbum.album.artists.join(', ')}
-                                >
-                                    {currentAlbum.album.artists.map((a, i, arr) =>
-                                        i !== arr.length - 1
-                                            ? a.artist.normalizedName + ', '
-                                            : a.artist.normalizedName
-                                    )}
-                                </span>
-                            )}
-
-                            <div className="flex justify-between h-lg:-max-w-38">
-                                <div className="flex flex-col ">
-                                    {config.genre && (
-                                        <Form.Label>
-                                            <Form.Input
-                                                disabled={
-                                                    currentAlbum.album.genres.length <= 0 ||
-                                                    isGuessed
-                                                }
-                                                placeholder="Any tag"
-                                                className={`max-w-32 disabled:opacity-90 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? (correctAnswers.genre ? 'border-success' : correctAnswers.genre === false && 'border-error') : 'border-border')}`}
-                                                {...register('genre')}
-                                                autoComplete="off"
-                                            />
-                                        </Form.Label>
-                                    )}
-                                    {config.genre && isGuessed && (
-                                        <div
-                                            className="max-w-32 overflow-x-scroll scroll-smooth pb-3 text-left text-nowrap"
-                                            onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
-                                                if (e.deltaY !== 0) {
-                                                    e.preventDefault();
-                                                    e.currentTarget.scrollLeft += e.deltaY;
-                                                }
-                                            }}
-                                        >
-                                            {(correctAnswers.genre === true ||
-                                                correctAnswers.genre === false) &&
-                                                currentAlbum.album.genres.map((g, i, arr) =>
-                                                    i !== arr.length - 1
-                                                        ? g.genre.name + ', '
-                                                        : g.genre.name
-                                                )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-col">
-                                    {config.year && (
-                                        <Form.Label className="w-21">
-                                            <Form.Input
-                                                disabled={!currentAlbum.album.year || isGuessed}
-                                                placeholder="Year"
-                                                type="number"
-                                                className={`w-full disabled:opacity-90 ${config.year && currentAlbum.album.year && (isGuessed ? (correctAnswers.year ? 'border-success' : correctAnswers.year === false && 'border-error') : 'border-border')}`}
-                                                {...register('year')}
-                                                autoComplete="off"
-                                            />
-                                        </Form.Label>
-                                    )}
-                                    {currentAlbum.album.year &&
-                                        config.year &&
-                                        isGuessed &&
-                                        correctAnswers.year === false && (
-                                            <span className="max-w-67 pl-1 text-left">
-                                                {currentAlbum.album.year}
-                                            </span>
+                            <div
+                                className={`flex w-full flex-col gap-1 rounded-sm border-2 bg-(--card-light) p-3 ${isGuessed && 'pb-1'}`}
+                            >
+                                {config.album && (
+                                    <Form.Label>
+                                        <Form.Input
+                                            placeholder="Album"
+                                            disabled={
+                                                !currentAlbum.album.normalizedName || isGuessed
+                                            }
+                                            className={`disabled:opacity-90 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? (correctAnswers.album ? 'border-success' : 'border-error') : 'border-border')}`}
+                                            {...register('album')}
+                                            autoComplete="off"
+                                        />
+                                    </Form.Label>
+                                )}
+                                {config.album && isGuessed && !correctAnswers.album && (
+                                    <span
+                                        className="overflow-hidden text-left text-nowrap text-ellipsis whitespace-nowrap"
+                                        title={currentAlbum.album.normalizedName}
+                                    >
+                                        {currentAlbum.album.normalizedName}
+                                    </span>
+                                )}
+                                {config.artist && (
+                                    <Form.Label>
+                                        <Form.Input
+                                            placeholder="Artist"
+                                            disabled={
+                                                currentAlbum.album.artists.length <= 0 || isGuessed
+                                            }
+                                            className={`disabled:opacity-90 ${config.artist && currentAlbum.album.artists && (isGuessed ? (correctAnswers.artist ? 'border-success' : correctAnswers.artist === false && 'border-error') : 'border-border')}`}
+                                            {...register('artist')}
+                                            autoComplete="off"
+                                        />
+                                    </Form.Label>
+                                )}
+                                {config.artist && isGuessed && correctAnswers.artist === false && (
+                                    <span
+                                        className="overflow-hidden text-left text-nowrap text-ellipsis whitespace-nowrap"
+                                        title={currentAlbum.album.artists.join(', ')}
+                                    >
+                                        {currentAlbum.album.artists.map((a, i, arr) =>
+                                            i !== arr.length - 1
+                                                ? a.artist.normalizedName + ', '
+                                                : a.artist.normalizedName
                                         )}
+                                    </span>
+                                )}
+                                <div className="flex justify-between lg:h-lg:-max-w-38">
+                                    <div className="flex flex-col flex-1 mr-2">
+                                        {config.genre && (
+                                            <Form.Label>
+                                                <Form.Input
+                                                    disabled={
+                                                        currentAlbum.album.genres.length <= 0 ||
+                                                        isGuessed
+                                                    }
+                                                    placeholder="Any tag"
+                                                    className={`lg:max-w-32 disabled:opacity-90 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? (correctAnswers.genre ? 'border-success' : correctAnswers.genre === false && 'border-error') : 'border-border')}`}
+                                                    {...register('genre')}
+                                                    autoComplete="off"
+                                                />
+                                            </Form.Label>
+                                        )}
+                                        {config.genre && isGuessed && (
+                                            <div
+                                                className="max-w-48 lg:max-w-32 overflow-x-scroll scroll-smooth pb-3 text-left text-nowrap"
+                                                onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
+                                                    if (e.deltaY !== 0) {
+                                                        e.preventDefault();
+                                                        e.currentTarget.scrollLeft += e.deltaY;
+                                                    }
+                                                }}
+                                            >
+                                                {(correctAnswers.genre === true ||
+                                                    correctAnswers.genre === false) &&
+                                                    currentAlbum.album.genres.map((g, i, arr) =>
+                                                        i !== arr.length - 1
+                                                            ? g.genre.name + ', '
+                                                            : g.genre.name
+                                                    )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        {config.year && (
+                                            <Form.Label className="w-21">
+                                                <Form.Input
+                                                    disabled={!currentAlbum.album.year || isGuessed}
+                                                    placeholder="Year"
+                                                    type="number"
+                                                    className={`w-full disabled:opacity-90 ${config.year && currentAlbum.album.year && (isGuessed ? (correctAnswers.year ? 'border-success' : correctAnswers.year === false && 'border-error') : 'border-border')}`}
+                                                    {...register('year')}
+                                                    autoComplete="off"
+                                                />
+                                            </Form.Label>
+                                        )}
+                                        {currentAlbum.album.year &&
+                                            config.year &&
+                                            isGuessed &&
+                                            correctAnswers.year === false && (
+                                                <span className="max-w-67 pl-1 text-left">
+                                                    {currentAlbum.album.year}
+                                                </span>
+                                            )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <Form.Input
-                            {...register('buttonSubmit')}
-                            type="submit"
-                            disabled={isPending || isFriendsPending}
-                            value={!isGuessed ? 'Guess' : 'Next'}
-                            className={`sage-component w-full disabled:opacity-50`}
-                        />
-                    </Form>
-                </section>
-            </div>
-            <div className="flex flex-col items-center w-[355.5px] text-center aria-disabled:opacity-90 order-3">
-                {config.tracklist && (
-                    <section
-                        ref={tracksRef}
-                        className={`border-border relative lg:max-h-139 h-lg:max-h-159.5 w-full overflow-scroll rounded-sm border-2 bg-(--card-light) ${currentAlbum.album.tracks.length === 0 && 'pb-3'}`}
-                    >
-                        <div className="border-border sticky top-0 flex items-center justify-between bg-(--card-light) p-3 px-3 pt-3 text-xl">
-                            <div className="opacity-0">0/{currentAlbum.album.tracks.length}</div>
-                            <h3>Tracklist</h3>
-                            <span>
-                                {tries}/{currentAlbum.album.tracks.length}
-                            </span>
-                        </div>
-                        <ul className="my-1 flex flex-col gap-2 overflow-hidden scroll-smooth px-3">
-                            {currentAlbum.album.tracks.map((t) => {
-                                return (
-                                    <li
-                                        key={t.id}
-                                        id={t.id}
-                                        className={`rounded-sm border-2 bg-sidebar-border p-1 
-                                            ${
-                                                !isFinished
-                                                    ? guessedTracks.includes(t.normalizedName)
-                                                        ? 'border-success'
-                                                        : 'border-border)'
-                                                    : answers.tracklist
-                                                      ? guessedTracks.includes(t.normalizedName)
-                                                          ? 'border-success'
-                                                          : 'border-error'
-                                                      : 'border-border'
-                                            }`}
-                                    >
-                                        {!isFinished
-                                            ? guessedTracks.includes(t.normalizedName)
-                                                ? t.normalizedName
-                                                : '...'
-                                            : isFinished && answers.tracklist
-                                              ? t.normalizedName
-                                              : '...'}
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                        {currentAlbum.album.tracks.length > 0 ? (
-                            <Form
-                                onSubmit={trackHandleSubmit(onTrackTry)}
-                                className="sticky bottom-0 w-full bg-(--card-light) p-4 text-center"
-                            >
-                                <Form.Label>
-                                    <Form.Input
-                                        disabled={isFinished}
-                                        placeholder="Track"
-                                        className={'border-border w-full disabled:opacity-90'}
-                                        {...trackRegister('track')}
-                                        autoComplete="off"
-                                    />
-                                </Form.Label>
-                            </Form>
-                        ) : (
-                            <span>It wasn't possible to fetch the tracklist</span>
-                        )}
+                            <Form.Input
+                                {...register('buttonSubmit')}
+                                type="submit"
+                                disabled={isPending || !isImageLoaded}
+                                value={!isGuessed ? 'Guess' : 'Next'}
+                                className="sage-component w-full disabled:opacity-50"
+                            />
+                        </Form>
                     </section>
+                </div>
+
+                {config.tracklist ? (
+                    <div className="hidden lg:flex flex-col items-center w-[355.5px] text-center order-3">
+                        <TracklistSection
+                            tracksRef={tracksRef}
+                            answers={answers}
+                            onTrackIndexChange={setIndex}
+                        />
+                    </div>
+                ) : (
+                    <div className="hidden lg:flex flex-col items-center w-[355.5px] text-center order-3"></div>
                 )}
+
+                <div className="hidden lg:block h-fit min-w-[355.5px] order-1">
+                    <Friends isPending={isPending} />
+                </div>
             </div>
-            <div className="h-fit order-1 min-w-[355.5px]">
+
+            <BottomSheet
+                open={activeSheet === 'config'}
+                onClose={() => setActiveSheet(null)}
+                title="Options"
+            >
+                <ConfigComponent inSheet />
+            </BottomSheet>
+
+            <BottomSheet
+                open={activeSheet === 'friends'}
+                onClose={() => setActiveSheet(null)}
+                title="Also guessed"
+            >
                 <Friends isPending={isPending} />
-            </div>
-            <ToastContainer position="bottom-center" limit={1} autoClose={300} />
-        </main>
+            </BottomSheet>
+
+            {config.tracklist && (
+                <BottomSheet
+                    open={activeSheet === 'tracklist'}
+                    onClose={() => setActiveSheet(null)}
+                    title="Tracklist"
+                >
+                    <TracklistSection
+                        tracksRef={tracksRef}
+                        answers={answers}
+                        onTrackIndexChange={setIndex}
+                    />
+                </BottomSheet>
+            )}
+
+            <BottomNav
+                activeSheet={activeSheet}
+                onToggle={toggleSheet}
+                hasTracklist={config.tracklist}
+            />
+
+            <ToastContainer position="top-center" limit={1} autoClose={300} />
+        </>
     );
 };
 
