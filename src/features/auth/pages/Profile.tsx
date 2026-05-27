@@ -62,6 +62,7 @@ const Profile = () => {
                             {userProfile.userStats.totalScore}
                         </p>
                         <p className="opacity-80">Guessed {userProfile.userStats.guessedAlbums} times</p>
+                        <p className="opacity-80">Guessed {userProfile.userStats.guessedDistinctAlbums} albums</p>
                         <p className="opacity-80">Joined {creationDate}</p>
                     </article>
                 </section>

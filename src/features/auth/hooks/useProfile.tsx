@@ -19,6 +19,7 @@ export interface IProfile {
             userId: string,
             totalScore: number,
             guessedAlbums: number,
+            guessedDistinctAlbums: number,
             rightGuessedAlbums: number,
             guessedArtists: number,
             rightGuessedArtist: number,
@@ -41,13 +42,13 @@ export interface IProfile {
 const useProfile = () => {
     const { username } = useParams();
 
-    const { data, isPending, error, isSuccess } = useQuery({
+    const { data, isPending, error, isSuccess, isLoading } = useQuery({
         queryKey: ['profile', username],
         queryFn: () => axios.get<IProfileResponse>(`/profile/${username}`).then((res) => res.data.profile),
         enabled: !!username,
     });
 
-    return { data, isPending, error, isSuccess };
+    return { data, isPending, error, isSuccess, isLoading };
 };
 
 export default useProfile;

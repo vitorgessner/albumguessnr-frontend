@@ -29,13 +29,13 @@ export interface IFriendsResponse {
 }
 
 const useUserRelated = () => {
-    const { data: profile } = useProfile();
+    const { data: profile, isLoading: isProfileLoading } = useProfile();
 
-    return useRelations(profile);
+    return useRelations(profile, isProfileLoading);
 };
 
 const useUserRelatedContent = (username: string | null | undefined) => {
-    const { data: friend, error } = useQuery<IFriendStatus>({
+    const { data: friend, error, isPending, isLoading } = useQuery<IFriendStatus>({
         queryKey: ['friend', username],
         queryFn: () =>
             axios
@@ -44,23 +44,26 @@ const useUserRelatedContent = (username: string | null | undefined) => {
         enabled: !!username,
     });
 
-    return { friend, error };
+    return { friend, error, isPending, isLoading };
 };
 
-const useRelations = (profile: IProfile | undefined) => {
-    const { data: user } = useUser();
-    const { friend } = useUserRelatedContent(profile?.username);
+const useRelations = (profile: IProfile | undefined, isProfileLoading: boolean) => {
+    const { data: user, isLoading: isUserLoading } = useUser();
+    const { friend, isLoading: isFriendLoading } = useUserRelatedContent(profile?.username);
 
     const isOwnProfile = user?.id === profile?.user.id;
 
-    if (!friend)
+    const isLoading = isProfileLoading || isUserLoading || isFriendLoading
+
+    if (isLoading || !friend)
         return {
             isOwnProfile,
             isFriend: false,
             isPending: false,
             isRequested: false,
             isDenied: false,
-            isNotRelated: true,
+            isNotRelated: !isLoading,
+            isLoading: Boolean(isLoading)
         };
 
     const isFriend = friend?.stat === 'FRIEND';
@@ -70,8 +73,6 @@ const useRelations = (profile: IProfile | undefined) => {
     const isRequested = friend?.stat === 'PENDING' && friend.sentRequestsId === profile?.user.id;
 
     const isDenied = friend.stat === 'DENIED';
-    console.log(isOwnProfile, isPending, isRequested)
-    console.log('user: ' + user?.id, 'profile: ' + profile?.user.id, 'sent: ' + friend.sentRequestsId, 'received: ' + friend.receivedRequestsId)
 
     return {
         isOwnProfile,
@@ -80,6 +81,7 @@ const useRelations = (profile: IProfile | undefined) => {
         isRequested,
         isDenied,
         isNotRelated: false,
+        isLoading
     };
 };
 

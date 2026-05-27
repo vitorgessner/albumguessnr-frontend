@@ -1,5 +1,6 @@
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import FriendsLeaderboard from './FriendsLeaderboard';
 
 const ProfileSkeleton = () => {
     return (
@@ -51,31 +52,7 @@ const ProfileSkeleton = () => {
                     </article>
                 </section>
                 <section className="order-3 mx-auto lg:mx-0">
-                    <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
-                        <div className="p-2">
-                            <Skeleton className="text-2xl font-bold" />
-                        </div>
-                        <ul className="flex flex-col w-79">
-                            {Array.from({ length: 7 }).map((_,i) => {
-                                return (
-                                    <li key={i} className="flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2">
-                                        <div className="flex items-center w-full">
-                                            <span className="pl-2 pr-3 text-3xl text-left">
-                                                <Skeleton width={40} />
-                                            </span>
-                                            <div className="flex items-center gap-2">
-                                                <Skeleton width={35} height={35} circle />
-                                                <Skeleton width={130} height={30} />
-                                            </div>
-                                        </div>
-                                        <div className="-ml-4">
-                                            <Skeleton width={40} height={30} />
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </article>
+                    <FriendsLeaderboard />
                 </section>
             </div>
             {/* <h2 className="m-4 text-2xl text-center font-bold">Favorite albums</h2>

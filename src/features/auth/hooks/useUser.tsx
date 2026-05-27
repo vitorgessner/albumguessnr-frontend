@@ -7,7 +7,7 @@ import { AxiosError } from 'axios';
 
 const useUser = () => {
     const { setIsAuthenticated } = useAuthStore();
-    const { data, isPending, error, isSuccess } = useQuery({
+    const { data, isPending, error, isSuccess, isLoading } = useQuery({
         queryKey: ['user'],
         queryFn: () => {
             const response: Promise<IUser | undefined | null> = axios
@@ -33,7 +33,7 @@ const useUser = () => {
         }
     }, [isSuccess, data, setIsAuthenticated]);
 
-    return { data, isPending, error, isSuccess };
+    return { data, isPending, error, isSuccess, isLoading };
 };
 
 export default useUser;

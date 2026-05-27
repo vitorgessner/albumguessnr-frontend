@@ -22,9 +22,9 @@ const Friends = ({isPending}: {isPending: boolean}) => {
     const friendsGuessed = friends?.filter((f) => f.bestScore >= 0).sort((a, b) => b.bestScore - a.bestScore);
 
     return (
-        <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
+        <article className="h-full max-h-99 text-center lg:border-2 lg:border-border overflow-scroll rounded-lg bg-(--card-light)">
             <h2 className="text-2xl font-bold py-2">Also guessed the album</h2>
-            <ul className="flex flex-col w-79">
+            <ul className="flex flex-col w-full">
                 {friendsGuessed?.length === 0 || friendsGuessed?.every(f => f.bestScore === undefined || f.bestScore === null) && (
                     <p className="pb-3 max-w-60 mx-auto text-wrap ">
                         None of your friends guessed the album
@@ -48,7 +48,7 @@ const Friends = ({isPending}: {isPending: boolean}) => {
                                     <div className="flex items-center gap-2">
                                         <img
                                             src={friend.profile.avatar_url}
-                                            className="text-3xl size-14 rounded-full"
+                                            className="text-3xl size-14 rounded-full object-cover"
                                         />
                                         <h3 className="text-xl pr-4">{friend.profile.username}</h3>
                                     </div>
