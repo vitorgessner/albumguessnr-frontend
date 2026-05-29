@@ -1,14 +1,15 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface ITrackStore {
     tracks: Array<string>;
-    guessed: Array<{ trackId: string, name: string, isCorrect: boolean }>;
-    // rightAnswers: Array<{ trackId: string, isCorrect: boolean }>;
+    guessed: Array<{ trackId: string; name: string; isCorrect: boolean }>;
     isFinished: boolean;
+    tries: number;
 
+    incrementTries: () => void;
+    resetTries: () => void;
     setTracks: (tracks: Array<string>) => void;
-    addGuess: (guess: { trackId: string, name: string, isCorrect: boolean }) => void;
-    // getRightAnswers: () => void;
+    addGuess: (guess: { trackId: string; name: string; isCorrect: boolean }) => void;
     resetTracksState: () => void;
     setIsFinished: (isFinished: boolean) => void;
 }
@@ -16,29 +17,37 @@ interface ITrackStore {
 const useTrackStore = create<ITrackStore>()((set) => ({
     tracks: [],
     guessed: [],
-    // rightAnswers: [],
     isFinished: false,
+    tries: 0,
 
-    setTracks: (tracks) => set(() => ({
-        tracks: [...tracks]
+    setTracks: (tracks) =>
+        set(() => ({
+            tracks: [...tracks],
+        })),
+
+    addGuess: (guess) =>
+        set((state) => ({
+            guessed: [...state.guessed, guess],
+        })),
+
+    resetTracksState: () =>
+        set(() => ({
+            guessed: [],
+            remaining: 0,
+            rightAnswersCount: undefined,
+        })),
+
+    setIsFinished: (isFinished) =>
+        set(() => ({
+            isFinished,
+        })),
+
+    incrementTries: () => set((state) => ({
+        tries: state.tries + 1,
     })),
 
-    addGuess: (guess) => set((state) => ({
-        guessed: [...state.guessed, guess]
-    })),
-
-    // getRightAnswers: () => set((state) => ({
-    //     rightAnswers: state.guessed.filter(g => g.isCorrect)
-    // })),
-
-    resetTracksState: () => set(() => ({
-        guessed: [],
-        remaining: 0,
-        rightAnswersCount: undefined,
-    })),
-
-    setIsFinished: (isFinished) => set(() => ({
-        isFinished,
+    resetTries: () => set(() => ({
+        tries: 0,
     }))
 }));
 

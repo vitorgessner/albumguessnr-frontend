@@ -16,20 +16,20 @@ const TracklistSection = ({
     onTrackIndexChange: React.Dispatch<React.SetStateAction<number | undefined>>;
 }) => {
     const { register, handleSubmit, resetField } = useForm<TrackType>();
-    const { currentAlbum, compareTrack, tries, setTries } = useCompare();
+    const { currentAlbum, compareTrack, tries, incrementTries, resetTries } = useCompare();
     const { isFinished, setIsFinished, guessed } = useTrackStore();
     const guessedTracks = guessed.map((g) => g.name);
 
     const onTrackTry: SubmitHandler<TrackType> = (data) => {
-        setTries((prev) => prev + 1);
+        incrementTries();
         if (data.track === '' || !data.track) setIsFinished(true);
         resetField('track');
         onTrackIndexChange(compareTrack(data.track));
     };
 
     useEffect(() => {
-        setTries(0);
-    }, [setTries, currentAlbum])
+        resetTries();
+    }, [resetTries, currentAlbum])
 
     return (
         <section

@@ -6,12 +6,10 @@ import useUser from "../../../auth/hooks/useUser";
 import useTrackStore from "../stores/useTrackStore";
 import { fuzzy } from 'fast-fuzzy';
 import { WORD_REPLACEMENTS } from "../utils/removeWords";
-import { useState } from "react";
 
 const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFormSetFocus<GuessType>) => {
     const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
-    const { addGuess, resetTracksState, setIsFinished, guessed } = useTrackStore();
-    const [tries, setTries] = useState(0);
+    const { addGuess, resetTracksState, setIsFinished, guessed, tries, incrementTries, resetTries } = useTrackStore();
     const currentAlbum = albums[index];
     const { data: user } = useUser();
     const queryClient = useQueryClient();
@@ -66,7 +64,6 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
         if (index >= 0) {
             addGuess({ trackId: track[0].id, name: track[0].normalizedName ?? guess.toLowerCase().trim(), isCorrect: true });
         }
-        // getRightAnswers();
         if (tries >= currentAlbum.album.tracks.length - 1) setIsFinished(true);
 
         if (index >= 0) return index;
@@ -121,7 +118,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
     const reset = () => {
         setIsGuessed(false);
         setIsFinished(false);
-        setTries(0)
+        resetTries()
         if (resetField) {
             resetField('album');
             resetField('artist');
@@ -189,7 +186,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
             .split(' ').length;
     }
 
-    return { currentAlbum, guess, compareTrack, reset, tries, setTries };
+    return { currentAlbum, guess, compareTrack, reset, tries, incrementTries, resetTries };
 }
 
 export default useCompare;
