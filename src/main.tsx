@@ -18,6 +18,7 @@ import Login from './features/auth/pages/Login.tsx';
 import Register from './features/auth/pages/Register.tsx';
 import VerifyToken from './features/auth/components/VerifyToken.tsx';
 import { SkeletonTheme } from 'react-loading-skeleton';
+import Leaderboards from './features/leaderboards/pages/Leaderboards.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -41,6 +42,7 @@ createRoot(document.getElementById('root')!).render(
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/profile/:username/edit" element={<EditProfile />} />
                                 <Route path="/guess" element={<Guess />} />
+                                <Route path="/leaderboards" element={<Leaderboards />} />
                             </Route>
                         </Route>
                         <Route path="*" element={<NotFoundPage />} />
