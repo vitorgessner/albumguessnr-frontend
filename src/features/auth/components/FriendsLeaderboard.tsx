@@ -41,7 +41,7 @@ const FriendsLeaderboard = () => {
         </article>
     ) : (
         <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
-            <h2 className="text-2xl font-bold py-2">Friends' Leaderboard</h2>
+            <h2 className="text-2xl py-2 font-black font-heading text-navy tracking-tight">Friends' Leaderboard</h2>
             <ul className="flex flex-col w-79">
                 {!friends || friends.length < 1 && <div>No friends</div>}
                 {friends?.map((friend, i) => {
@@ -49,7 +49,7 @@ const FriendsLeaderboard = () => {
                         <Link
                             key={i}
                             to={`/profile/${friend.receivedRequests.profile.username}`}
-                            className="last-of-type:border-b-2"
+                            className="last-of-type:border-b-2 text-navy"
                         >
                             <li
                                 className={`flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2 ${friend.receivedRequestsId === user?.id && 'bg-(--amber-50)'}`}

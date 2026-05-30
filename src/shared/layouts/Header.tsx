@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import axios from '../utils/axios';
 import useAuthStore from '../../features/auth/stores/useAuthStore';
-import { Pencil, Calendar, ShoppingBasket, LogOut, Menu } from 'lucide-react';
+import { Pencil, ShoppingBasket, LogOut, Menu, Trophy } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import useUser from '../../features/auth/hooks/useUser';
 import { useQueryClient } from '@tanstack/react-query';
@@ -50,7 +50,7 @@ const Header = () => {
             <header className="sticky top-0 flex items-center z-10 p-3 w-full bg-(--card-light)">
                 <div className="flex justify-left lg:justify-center items-center grow pl-4 lg:pl-0">
                     <Link to={'/'}>
-                        <h1 className="uppercase text-(--text) text-xl text-center font-semibold">
+                        <h1 className="uppercase text-(--text) text-xl text-center font-black font-heading tracking-tight">
                             AlbumGuessnr
                         </h1>
                     </Link>
@@ -112,8 +112,11 @@ const Header = () => {
                             >
                                 <Pencil size={30} />
                             </button>
-                            <button>
-                                <Calendar size={30} />
+                            <button onClick={() => {
+                                navigate(`/leaderboards`);
+                                setIsModalOpen(false);
+                            }}>
+                                <Trophy size={30} />
                             </button>
                             <button>
                                 <ShoppingBasket size={30} />

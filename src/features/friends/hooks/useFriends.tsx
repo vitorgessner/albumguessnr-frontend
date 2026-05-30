@@ -47,7 +47,7 @@ const useFriends = (username: string | undefined) => {
         error,
     } = useQuery({
         queryKey: ['friends', username],
-        queryFn: () => axios.get<IUseFriendsResponse>(`/friend/${username}`).then(res => res.data.friends),
+        queryFn: async () => axios.get<IUseFriendsResponse>(`/friend/${username}`).then(res => res.data.friends),
         enabled: !!username,
     });
 

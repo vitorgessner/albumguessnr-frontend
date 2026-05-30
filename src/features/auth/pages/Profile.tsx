@@ -38,7 +38,7 @@ const Profile = () => {
                             alt={profile.username}
                             className="mx-auto rounded-full size-37.5 object-cover object-center"
                         />
-                        <h1 className="text-3xl font-bold">{profile.username}</h1>
+                        <h1 className="text-3xl font-black font-heading tracking-tight text-navy">{profile.username}</h1>
                         <h2 className="text-xs mb-2 opacity-70">
                             {userProfile.lastfmIntegration.lastfmUsername}
                             <span className="text-xs"> on lastfm</span>
@@ -68,7 +68,7 @@ const Profile = () => {
                 </section>
                 <section className="order-2 lg:order-1 mx-auto lg:mx-0">
                     <article className="max-h-99 px-2 pb-1 text-center bg-(--card-light) border-2 border-border overflow-scroll rounded-lg">
-                        <h2 className="sticky top-0 py-2 text-2xl font-bold bg-(--card-light)">
+                        <h2 className="sticky top-0 py-2 text-2xl font-black font-heading tracking-tight text-navy bg-(--card-light)">
                             Achievements
                         </h2>
                         <ul className="flex flex-wrap w-75">
