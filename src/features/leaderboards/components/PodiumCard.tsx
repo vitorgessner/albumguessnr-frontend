@@ -1,12 +1,13 @@
-import { MEDAL_COLORS } from "../constants/medal_colors";
-import type { Leaderboard } from "../hooks/useLeaderboards";
-import formatScore from "../utils/formatScore";
-import Avatar from "./Avatar";
+import { Link } from 'react-router';
+import { MEDAL_COLORS } from '../constants/medal_colors';
+import type { Leaderboard } from '../hooks/useLeaderboards';
+import formatScore from '../utils/formatScore';
+import Avatar from './Avatar';
 
 const PodiumCard = ({
     user,
     idx,
-    unique
+    unique,
 }: {
     user: Leaderboard;
     idx: number;
@@ -22,7 +23,9 @@ const PodiumCard = ({
         >
             <span className="text-2xl">{medal.medal}</span>
             <div className={`relative ${isFirst ? 'scale-120' : ''} transition-transform`}>
-                <Avatar user={user} idx={idx} size={isFirst ? 'lg' : 'md'} />
+                <Link to={`/profile/${user.username}`}>
+                    <Avatar user={user} idx={idx} size={isFirst ? 'lg' : 'md'} />
+                </Link>
             </div>
             <span className="text-base font-bold text-navy truncate max-w-18 text-center leading-tight">
                 {user.username}

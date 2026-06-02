@@ -1,4 +1,4 @@
-import { StarIcon } from 'lucide-react';
+import { StarIcon, CalendarDays, Music2, Disc3 } from 'lucide-react';
 import useUser from '../hooks/useUser';
 import useProfile from '../hooks/useProfile';
 import ProfileSkeleton from '../components/ProfileSkeleton';
@@ -29,79 +29,103 @@ const Profile = () => {
     const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`;
 
     return (
-        <main className="min-h-dvh h-full py-4 pb-16 lg:w-fit lg:mx-auto lg:h-full lg:min-h-dvh">
-            <div className="flex flex-col lg:flex-row justify-center gap-8">
-                <section className="grow h-full z-1 order-1 lg:order-2 text-center">
-                    <article className="w-fit mx-auto p-3 px-7 bg-(--card-light) border-2 border-border rounded-lg">
-                        <img
-                            src={profile.avatar_url}
-                            alt={profile.username}
-                            className="mx-auto rounded-full size-37.5 object-cover object-center"
-                        />
-                        <h1 className="text-3xl font-black font-heading tracking-tight text-navy">{profile.username}</h1>
-                        <h2 className="text-xs mb-2 opacity-70">
-                            {userProfile.lastfmIntegration.lastfmUsername}
-                            <span className="text-xs"> on lastfm</span>
-                        </h2>
-                        <p className="relative w-65 h-21 pt-5 px-3 pb-1 text-left bg-sidebar-border border-2 border-border rounded-lg opacity-80 hover:max-h-none multi-line-ellipsis">
-                            <span className="absolute text-sm left-1 top-0">Bio:</span>{' '}
-                            {profile.bio.length > 71 && (
-                                <span className="absolute right-1 top-0 text-xs">
-                                    Hover to read more
+        <main className="min-h-dvh py-6 pb-20 px-4">
+            <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
+                <section className="order-1 lg:order-2 min-w-0 w-full">
+                    <article className="w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
+                        <div className="flex flex-col items-center gap-2 text-center">
+                            <img
+                                src={profile.avatar_url}
+                                alt={profile.username}
+                                className="rounded-full size-24 object-cover object-center border-2 border-border"
+                            />
+                            <div className="min-w-0 w-full">
+                                <h1 className="text-2xl font-black font-heading tracking-tight text-navy leading-tight truncate">
+                                    {profile.username}
+                                </h1>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                    <span className="font-bold text-terra-dark">
+                                        {userProfile.lastfmIntegration.lastfmUsername}
+                                    </span>{' '}
+                                    on Last.fm
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="relative bg-sidebar-border border-2 border-border rounded-lg px-3 pt-5 pb-2 text-sm text-left min-w-0">
+                            <span className="absolute text-xs font-bold text-muted-foreground left-2 top-1">
+                                Bio
+                            </span>
+                            <p className="multi-line-ellipsis leading-snug text-navy opacity-80 break-words">
+                                {profile.bio || <span className="italic opacity-50">Sem bio.</span>}
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="flex flex-col items-center gap-0.5 bg-secondary/40 border border-border rounded-lg py-2 px-1 min-w-0">
+                                <StarIcon
+                                    size={14}
+                                    fill="var(--terra)"
+                                    stroke="var(--terra)"
+                                    className="drop-terra-ambar shrink-0"
+                                />
+                                <span className="text-sm font-black number text-navy">
+                                    {userProfile.userStats.totalScore}
                                 </span>
-                            )}
-                            <span>{profile.bio}</span>
+                                <span className="text-[10px] text-muted-foreground leading-tight">
+                                    total points
+                                </span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5 bg-secondary/40 border border-border rounded-lg py-2 px-1 min-w-0">
+                                <Music2 size={14} className="text-terra shrink-0" />
+                                <span className="text-sm font-black number text-navy">
+                                    {userProfile.userStats.guessedAlbums}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground leading-tight">
+                                    guesses
+                                </span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5 bg-secondary/40 border border-border rounded-lg py-2 px-1 min-w-0">
+                                <Disc3 size={14} className="text-terra shrink-0" />
+                                <span className="text-sm font-black number text-navy">
+                                    {userProfile.userStats.guessedDistinctAlbums}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground leading-tight">
+                                    albums
+                                </span>
+                            </div>
+                        </div>
+
+                        <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+                            <CalendarDays size={12} className="shrink-0" />
+                            Member since {creationDate}
                         </p>
+
                         <RequestButton />
-                        <p className="flex justify-center gap-1 items-center mt-2 text-xl opacity-80">
-                            <StarIcon
-                                fill="#d47358"
-                                stroke="#d47358"
-                                className="drop-terra-ambar"
-                            />{' '}
-                            {userProfile.userStats.totalScore}
-                        </p>
-                        <p className="opacity-80">Guessed {userProfile.userStats.guessedAlbums} times</p>
-                        <p className="opacity-80">Guessed {userProfile.userStats.guessedDistinctAlbums} albums</p>
-                        <p className="opacity-80">Joined {creationDate}</p>
                     </article>
                 </section>
-                <section className="order-2 lg:order-1 mx-auto lg:mx-0">
-                    <article className="max-h-99 px-2 pb-1 text-center bg-(--card-light) border-2 border-border overflow-scroll rounded-lg">
-                        <h2 className="sticky top-0 py-2 text-2xl font-black font-heading tracking-tight text-navy bg-(--card-light)">
+
+                <section className="order-2 lg:order-1 min-w-0 w-full h-full min-h-103">
+                    <article className="max-h-103 flex flex-col bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden h-full min-h-full">
+                        <h2 className="shrink-0 py-3 px-5 text-xl font-black font-heading tracking-tight text-navy bg-(--card-light) border-b-2 border-border">
                             Achievements
                         </h2>
-                        <ul className="flex flex-wrap w-75">
-                            {Array.from({ length: 100 }).map((_, i) => {
-                                return (
-                                    <li key={i} className="text-3xl py-1 achievements">
+                        <div className="overflow-y-auto">
+                            <ul className="grid grid-cols-6 p-3 gap-1">
+                                {Array.from({ length: 100 }).map((_, i) => (
+                                    <li key={i} className="text-2xl py-1.5 text-center">
                                         😭
                                     </li>
-                                );
-                            })}
-                        </ul>
+                                ))}
+                            </ul>
+                        </div>
                     </article>
                 </section>
-                <section className="order-3 mx-auto lg:mx-0">
+
+                <section className="order-3 min-w-0 w-full min-h-103 h-full">
                     <FriendsLeaderboard />
                 </section>
             </div>
-            {/* <h2 className="m-4 text-2xl text-center font-bold">Favorite albums</h2>
-            <article className="order-4 flex flex-row flex-wrap mx-8 justify-center items-center gap-3 h-fit">
-                {Array.from({ length: 4 }).map(() => {
-                    return (
-                        <div
-                            className={`flex size-39 lg:size-55 overflow-hidden rounded-sm border-2 border-border`}
-                        >
-                            <img
-                                src="../../src/assets/the now now and never.jpg"
-                                className=""
-                                alt=""
-                            />
-                        </div>
-                    );
-                })}
-            </article> */}
         </main>
     );
 };
