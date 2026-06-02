@@ -6,7 +6,7 @@ const AlbumCover = ({
     isGuessed,
     onLoadingChange,
     startTimer,
-    clearTimer
+    clearTimer,
 }: {
     src: string;
     isGuessed: boolean;
@@ -22,9 +22,11 @@ const AlbumCover = ({
     };
 
     useEffect(() => {
-        clearTimer();
-        startTimer();
-    }, [startTimer, clearTimer]);
+        if (isImageLoaded) {
+            clearTimer();
+            startTimer();
+        }
+    }, [startTimer, clearTimer, isImageLoaded]);
 
     return (
         <div className="relative flex justify-center overflow-hidden mx-auto w-full rounded-sm lg:w-fit lg:max-w-fit border-2 border-border">
