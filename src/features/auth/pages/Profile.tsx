@@ -10,7 +10,7 @@ import Stats from '@/features/stats/components/Stats';
 type CenterTab = 'achievements' | 'stats';
 
 const Profile = () => {
-    const [centerTab, setCenterTab] = useState<CenterTab>('achievements');
+    const [centerTab, setCenterTab] = useState<CenterTab>('stats');
     const { data: authenticatedUser } = useUser();
     const { data: user, isPending: isUserPending, error: userError } = useProfile();
 
@@ -21,7 +21,7 @@ const Profile = () => {
             </div>
         );
 
-    if (isUserPending) return <ProfileSkeleton />;
+    if (isUserPending) return <ProfileSkeleton activeTab={centerTab}/>;
 
     const userProfile =
         user?.username === authenticatedUser?.profile.username ? authenticatedUser : user?.user;
@@ -37,7 +37,7 @@ const Profile = () => {
         <main className="min-h-dvh py-6 pb-20 px-4">
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
                 <section className="order-1 lg:order-2 min-w-0 w-full">
-                    <article className="w-full max-w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
+                    <article className="w-full min-w-82 max-w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <img
                                 src={profile.avatar_url}
@@ -114,8 +114,9 @@ const Profile = () => {
                     <article className="max-h-103 flex flex-col bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden h-full min-h-full">
                         <div className="shrink-0 flex border-b-2 border-border">
                             <button
+                                disabled={true}
                                 onClick={() => setCenterTab('achievements')}
-                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-5 text-sm font-black font-heading tracking-tight transition-colors ${
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-5 text-sm font-black font-heading tracking-tight transition-colors disabled:opacity-70 disabled:bg-white disabled:cursor-not-allowed ${
                                     centerTab === 'achievements'
                                         ? 'text-navy border-b-2 border-terra -mb-[2px] bg-(--card-light)'
                                         : 'text-muted-foreground hover:text-navy'
@@ -149,9 +150,7 @@ const Profile = () => {
                             </div>
                         )}
 
-                        {centerTab === 'stats' && (
-                           <Stats />
-                        )}
+                        {centerTab === 'stats' && <Stats />}
                     </article>
                 </section>
 
