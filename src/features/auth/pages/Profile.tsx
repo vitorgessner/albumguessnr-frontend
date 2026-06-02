@@ -1,11 +1,16 @@
-import { StarIcon, CalendarDays, Music2, Disc3 } from 'lucide-react';
+import { useState } from 'react';
+import { StarIcon, CalendarDays, Music2, Disc3, ChartNoAxesColumn, Target } from 'lucide-react';
 import useUser from '../hooks/useUser';
 import useProfile from '../hooks/useProfile';
 import ProfileSkeleton from '../components/ProfileSkeleton';
 import RequestButton from '@/features/friends/components/RequestButton';
 import FriendsLeaderboard from '../components/FriendsLeaderboard';
+import Stats from '@/features/stats/components/Stats';
+
+type CenterTab = 'achievements' | 'stats';
 
 const Profile = () => {
+    const [centerTab, setCenterTab] = useState<CenterTab>('achievements');
     const { data: authenticatedUser } = useUser();
     const { data: user, isPending: isUserPending, error: userError } = useProfile();
 
@@ -32,7 +37,7 @@ const Profile = () => {
         <main className="min-h-dvh py-6 pb-20 px-4">
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
                 <section className="order-1 lg:order-2 min-w-0 w-full">
-                    <article className="w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
+                    <article className="w-full max-w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <img
                                 src={profile.avatar_url}
@@ -56,7 +61,7 @@ const Profile = () => {
                             <span className="absolute text-xs font-bold text-muted-foreground left-2 top-1">
                                 Bio
                             </span>
-                            <p className="multi-line-ellipsis leading-snug text-navy opacity-80 break-words">
+                            <p className="multi-line-ellipsis leading-snug text-navy opacity-80 wrap-break-word">
                                 {profile.bio || <span className="italic opacity-50">No bio.</span>}
                             </p>
                         </div>
@@ -91,7 +96,7 @@ const Profile = () => {
                                     {userProfile.userStats.guessedDistinctAlbums}
                                 </span>
                                 <span className="text-[10px] text-muted-foreground leading-tight">
-                                    albums
+                                    distinct albums
                                 </span>
                             </div>
                         </div>
@@ -105,24 +110,52 @@ const Profile = () => {
                     </article>
                 </section>
 
-                <section className="order-2 lg:order-1 min-w-0 w-full h-full min-h-103">
+                <section className="w-full max-w-82 mx-auto order-2 lg:order-1 min-w-0 h-full min-h-103">
                     <article className="max-h-103 flex flex-col bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden h-full min-h-full">
-                        <h2 className="shrink-0 py-3 px-5 text-xl font-black font-heading tracking-tight text-navy bg-(--card-light) border-b-2 border-border">
-                            Achievements
-                        </h2>
-                        <div className="overflow-y-auto">
-                            <ul className="grid grid-cols-6 p-3 gap-1">
-                                {Array.from({ length: 100 }).map((_, i) => (
-                                    <li key={i} className="text-2xl py-1.5 text-center">
-                                        😭
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className="shrink-0 flex border-b-2 border-border">
+                            <button
+                                onClick={() => setCenterTab('achievements')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-5 text-sm font-black font-heading tracking-tight transition-colors ${
+                                    centerTab === 'achievements'
+                                        ? 'text-navy border-b-2 border-terra -mb-[2px] bg-(--card-light)'
+                                        : 'text-muted-foreground hover:text-navy'
+                                }`}
+                            >
+                                <Target size={14} />
+                                Achievements
+                            </button>
+                            <button
+                                onClick={() => setCenterTab('stats')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-5 text-sm font-black font-heading tracking-tight transition-colors ${
+                                    centerTab === 'stats'
+                                        ? 'text-navy border-b-2 border-terra -mb-[2px] bg-(--card-light)'
+                                        : 'text-muted-foreground hover:text-navy'
+                                }`}
+                            >
+                                <ChartNoAxesColumn size={14} />
+                                Stats
+                            </button>
                         </div>
+
+                        {centerTab === 'achievements' && (
+                            <div className="overflow-y-auto">
+                                <ul className="grid grid-cols-6 p-3 gap-1">
+                                    {Array.from({ length: 100 }).map((_, i) => (
+                                        <li key={i} className="text-2xl py-1.5 text-center">
+                                            😭
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {centerTab === 'stats' && (
+                           <Stats />
+                        )}
                     </article>
                 </section>
 
-                <section className="order-3 min-w-0 w-full min-h-103 h-full">
+                <section className="w-full max-w-82 mx-auto order-3 min-w-0 min-h-103 h-full">
                     <FriendsLeaderboard />
                 </section>
             </div>
