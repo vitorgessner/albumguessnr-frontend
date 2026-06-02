@@ -1,76 +1,52 @@
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import FriendsLeaderboard from './FriendsLeaderboard';
 
 const ProfileSkeleton = () => {
     return (
-        <main className="min-h-dvh h-full py-4 pb-16 lg:w-fit lg:mx-auto lg:h-full lg:min-h-dvh">
-            <div className="flex flex-col lg:flex-row justify-center gap-8">
-                <section className="grow h-full z-1 order-1 lg:order-2 text-center">
-                    <article className="w-fit mx-auto p-3 px-7 bg-(--card-light) border-2 border-border rounded-lg">
-                        <Skeleton
-                            width={150}
-                            height={150}
-                            className="mx-auto rounded-full size-37.5 object-cover object-center mb-2"
-                            circle
-                        />
-                        <Skeleton
-                            width={260}
-                            className="text-3xl font-bold"
-                        />
-                        <Skeleton
-                            width={260}
-                            className="text-xs mb-2"
-                        />
-                        <Skeleton
-                            width={292}
-                            height={94.5}
-                            className=" h-full rounded-3xl px-3 pt-5 pb-1"
-                        />
-                        <Skeleton
-                            width={180}
-                            className="flex justify-center items-center mt-2 text-xl"
-                        />
-                        <Skeleton width={130} />
-                        <Skeleton width={130} />
+        <main className="min-h-dvh py-6 pb-20 px-4">
+            <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
+                <section className="order-1 lg:order-2 min-w-0 w-full">
+                    <article className="w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
+                        <div className='flex flex-col'>
+                            <div className="flex flex-col items-center gap-2 text-center">
+                                <Skeleton circle width={108} height={108} />
+                                <div className="min-w-0 w-full flex flex-col items-center gap-1">
+                                    <Skeleton width={120} height={28} />
+                                    <Skeleton width={140} height={14} />
+                                </div>
+                            </div>
+
+                            <Skeleton height={57} borderRadius={8} />
+                        </div>
+
+                        <div className="flex flex-col gap-[14px]">
+                            <div className="grid grid-cols-3 gap-2">
+                                {Array.from({ length: 3 }).map((_, i) => (
+                                    <Skeleton key={i} height={73} borderRadius={8} />
+                                ))}
+                            </div>
+                            <Skeleton width={185} height={14} className="mx-auto" />
+                        </div>
                     </article>
                 </section>
-                <section className="order-2 lg:order-1 mx-auto lg:mx-0">
-                    <article className="max-h-99 px-2 pb-1 text-center bg-(--card-light) border-2 border-border overflow-scroll rounded-lg">
-                        <h2 className="sticky top-0 py-2 text-2xl font-bold bg-(--card-light)">
-                            <Skeleton />
-                        </h2>
-                        <ul className="flex flex-wrap w-75">
-                            {Array.from({ length: 48 }).map((_,i) => {
-                                return (
-                                    <li key={i} className="text-3xl py-1 achievements">
-                                        <Skeleton width={35} height={35} circle/>
+
+                <section className="order-2 lg:order-1 min-w-0 w-full h-full min-h-103">
+                    <article className="max-h-103 flex flex-col bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden h-full min-h-full">
+                        <div className="shrink-0 py-3 px-5 border-b-2 border-border">
+                            <Skeleton width={120} height={24} />
+                        </div>
+                        <div className="overflow-y-auto">
+                            <ul className="grid grid-cols-6 p-3 gap-1">
+                                {Array.from({ length: 48 }).map((_, i) => (
+                                    <li key={i} className="py-1.5 flex items-center justify-center">
+                                        <Skeleton circle width={28} height={28} />
                                     </li>
-                                );
-                            })}
-                        </ul>
+                                ))}
+                            </ul>
+                        </div>
                     </article>
-                </section>
-                <section className="order-3 mx-auto lg:mx-0">
-                    <FriendsLeaderboard />
                 </section>
             </div>
-            {/* <h2 className="m-4 text-2xl text-center font-bold">Favorite albums</h2>
-            <article className="order-4 flex flex-row flex-wrap mx-8 justify-center items-center gap-3 h-fit">
-                {Array.from({ length: 4 }).map(() => {
-                    return (
-                        <div
-                            className={`flex size-39 lg:size-55 overflow-hidden rounded-sm border-2 border-border`}
-                        >
-                            <img
-                                src="../../src/assets/the now now and never.jpg"
-                                className=""
-                                alt=""
-                            />
-                        </div>
-                    );
-                })}
-            </article> */}
         </main>
     );
 };

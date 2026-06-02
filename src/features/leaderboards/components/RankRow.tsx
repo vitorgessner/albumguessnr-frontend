@@ -1,16 +1,9 @@
+import { Link } from 'react-router';
 import type { Leaderboard } from '../hooks/useLeaderboards';
 import formatScore from '../utils/formatScore';
 import Avatar from './Avatar';
 
-const RankRow = ({
-    user,
-    idx,
-    isMe,
-}: {
-    user: Leaderboard;
-    idx: number;
-    isMe?: boolean;
-}) => {
+const RankRow = ({ user, idx, isMe }: { user: Leaderboard; idx: number; isMe?: boolean }) => {
     const rank = idx + 1;
     return (
         <div
@@ -21,7 +14,9 @@ const RankRow = ({
             <span className="w-5 text-center text-sm font-bold text-muted-foreground number shrink-0">
                 {rank}
             </span>
-            <Avatar user={user} idx={idx} size="sm" />
+            <Link to={`/profile/${user.username}`}>
+                <Avatar user={user} idx={idx} size="sm" />
+            </Link>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-navy truncate">
                     {user.username}

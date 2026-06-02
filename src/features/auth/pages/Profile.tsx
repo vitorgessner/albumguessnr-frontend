@@ -57,7 +57,7 @@ const Profile = () => {
                                 Bio
                             </span>
                             <p className="multi-line-ellipsis leading-snug text-navy opacity-80 break-words">
-                                {profile.bio || <span className="italic opacity-50">Sem bio.</span>}
+                                {profile.bio || <span className="italic opacity-50">No bio.</span>}
                             </p>
                         </div>
 

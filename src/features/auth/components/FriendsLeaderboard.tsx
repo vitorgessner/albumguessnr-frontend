@@ -18,12 +18,12 @@ const FriendsLeaderboard = () => {
                 Friends
             </h2>
 
-            <ul className="flex flex-col overflow-y-auto flex-1 h-full">
+            <ul className="flex flex-col overflow-y-auto flex-1 h-full overflow-hidden">
                 {isPending ? (
-                    Array.from({ length: 7 }).map((_, i) => (
+                    Array.from({ length: 5 }).map((_, i) => (
                         <li
                             key={i}
-                            className="flex items-center gap-3 px-4 py-3 border-b border-border last:border-0"
+                            className="flex items-center gap-3 pl-5 px-4 py-3 border-b border-border last:border-0"
                         >
                             <Skeleton width={20} height={16} />
                             <Skeleton circle width={44} height={44} />

@@ -96,7 +96,9 @@ const RequestButton = () => {
         <>
             {!isOwnProfile &&
                 (showSkeleton ? (
-                    <Skeleton height={48} />
+                    <div className='mt-1'> 
+                        <Skeleton height={48}  borderRadius={8} />
+                    </div>
                 ) : (
                     <>
                         {!isPending && !isRequested && !isFriend && (
