@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import axios from '../utils/axios';
 import useAuthStore from '../../features/auth/stores/useAuthStore';
-import { Pencil, ShoppingBasket, LogOut, Menu, Trophy } from 'lucide-react';
+import { Pencil, LogOut, Menu, Trophy, Calendar } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import useUser from '../../features/auth/hooks/useUser';
 import { useQueryClient } from '@tanstack/react-query';
@@ -119,7 +119,7 @@ const Header = () => {
                                 <Trophy size={30} />
                             </button>
                             <button>
-                                <ShoppingBasket size={30} />
+                                <Calendar size={30} />
                             </button>
                             <button onClick={handleLogout}>
                                 <LogOut size={30} />

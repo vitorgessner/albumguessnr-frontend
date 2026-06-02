@@ -105,8 +105,8 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 - [x] Ao adivinhar um álbum, exibir amigos que adivinharam também
 - [x] Ganhar pontos ao acertar características do álbum
 - [x] Ganhar pontos de acordo com a velocidade da tentativa
-- [ ] Leaderboard de pontos entre amigos
-- [ ] Leaderboard global
+- [x] Leaderboard de pontos entre amigos
+- [x] Leaderboard global
 - [ ] Visualização de estatísticas no perfil do usuário
 - [ ] Exibir histórico de adivinhações
 - [ ] Filtros para o histórico de adivinhações

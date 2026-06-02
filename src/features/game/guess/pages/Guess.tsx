@@ -180,11 +180,6 @@ const GuessContent = ({ user }: { user: IUser }) => {
     }, [setFocus, correctAnswers]);
 
     useEffect(() => {
-        clearTimer();
-        startTimer();
-    }, [startTimer, clearTimer, currentAlbum.album.cover_url]);
-
-    useEffect(() => {
         if (isFinished) {
             formRef.current?.requestSubmit();
             pauseTimer();
@@ -212,6 +207,8 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                 src={currentAlbum.album.cover_url}
                                 isGuessed={isGuessed}
                                 onLoadingChange={setIsImageLoaded}
+                                startTimer={startTimer}
+                                clearTimer={clearTimer}
                             />
                         </div>
                     </article>

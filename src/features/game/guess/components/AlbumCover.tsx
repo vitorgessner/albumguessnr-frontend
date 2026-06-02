@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 const AlbumCover = ({
     src,
     isGuessed,
     onLoadingChange,
+    startTimer,
+    clearTimer
 }: {
     src: string;
     isGuessed: boolean;
     onLoadingChange: (loaded: boolean) => void;
+    startTimer: React.Dispatch<React.SetStateAction<void>>;
+    clearTimer: React.Dispatch<React.SetStateAction<void>>;
 }) => {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -17,23 +21,20 @@ const AlbumCover = ({
         onLoadingChange(loaded);
     };
 
+    useEffect(() => {
+        clearTimer();
+        startTimer();
+    }, [startTimer, clearTimer]);
+
     return (
         <div className="relative flex justify-center overflow-hidden mx-auto w-full rounded-sm lg:w-fit lg:max-w-fit border-2 border-border">
             {!isImageLoaded && (
                 <div>
                     <div className="lg:hidden block">
-                        <Skeleton
-                            width={220}
-                            height={220}
-                            className="p-1"
-                        />
+                        <Skeleton width={220} height={220} className="p-1" />
                     </div>
-                    <div className='hidden lg:block'>
-                        <Skeleton
-                            width={279}
-                            height={279}
-                            className="p-1"
-                        />
+                    <div className="hidden lg:block">
+                        <Skeleton width={279} height={279} className="p-1" />
                     </div>
                 </div>
             )}
