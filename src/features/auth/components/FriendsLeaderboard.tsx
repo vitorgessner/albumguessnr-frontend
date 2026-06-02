@@ -10,71 +10,84 @@ const FriendsLeaderboard = () => {
     const { data: profile } = useProfile();
     const { friends, isPending } = useFriends(profile?.username);
 
-    return isPending ? (
-        <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
-            <div className="p-3">
-                <Skeleton className="text-2xl font-bold" />
-            </div>
-            <ul className="flex flex-col w-79">
-                {Array.from({ length: 7 }).map((_, i) => {
-                    return (
+    const MEDAL: Record<number, string> = { 0: '🥇', 1: '🥈', 2: '🥉' };
+
+    return (
+        <article className="h-full flex flex-col bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden">
+            <h2 className="shrink-0 py-3 px-5 text-xl font-black font-heading tracking-tight text-navy bg-(--card-light) border-b-2 border-border">
+                Friends
+            </h2>
+
+            <ul className="flex flex-col overflow-y-auto flex-1 h-full">
+                {isPending ? (
+                    Array.from({ length: 7 }).map((_, i) => (
                         <li
                             key={i}
-                            className="flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2 h-18"
+                            className="flex items-center gap-3 px-4 py-3 border-b border-border last:border-0"
                         >
-                            <div className="flex items-center w-full">
-                                <span className="pl-2 pr-3 text-3xl text-left">
-                                    <Skeleton width={20} />
-                                </span>
-                                <div className="flex items-center gap-2">
-                                    <Skeleton width={55} height={55} circle />
-                                    <Skeleton width={130} height={30} />
-                                </div>
+                            <Skeleton width={20} height={16} />
+                            <Skeleton circle width={44} height={44} />
+                            <div className="flex-1">
+                                <Skeleton width={110} height={14} />
                             </div>
-                            <div className="-ml-4">
-                                <Skeleton width={50} height={30} />
-                            </div>
+                            <Skeleton width={44} height={14} />
                         </li>
-                    );
-                })}
-            </ul>
-        </article>
-    ) : (
-        <article className="h-full max-h-99 text-center border-2 border-border overflow-scroll rounded-lg bg-(--card-light)">
-            <h2 className="text-2xl py-2 font-black font-heading text-navy tracking-tight">Friends' Leaderboard</h2>
-            <ul className="flex flex-col w-79">
-                {!friends || friends.length < 1 && <div>No friends</div>}
-                {friends?.map((friend, i) => {
-                    return (
-                        <Link
-                            key={i}
-                            to={`/profile/${friend.receivedRequests.profile.username}`}
-                            className="last-of-type:border-b-2 text-navy"
-                        >
-                            <li
-                                className={`flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2 ${friend.receivedRequestsId === user?.id && 'bg-(--amber-50)'}`}
+                    ))
+                ) : !friends || friends.length < 1 ? (
+                    <li className="flex flex-col items-center justify-center gap-2 py-12 text-center px-4 h-full">
+                        <span className="text-4xl">👥</span>
+                        <p className="text-sm font-bold text-navy">No friends yet</p>
+                        <p className="text-xs text-muted-foreground">
+                            Add friends to see the leaderboards
+                        </p>
+                    </li>
+                ) : (
+                    friends.map((friend, i) => {
+                        const isMe = friend.receivedRequestsId === user?.id;
+                        const friendProfile = friend.receivedRequests.profile;
+                        return (
+                            <Link
+                                key={i}
+                                to={`/profile/${friendProfile.username}`}
+                                className="last-of-type:border-b-0"
                             >
-                                <div className="flex items-center w-full">
-                                    <span className="pl-2 text-3xl mr-3 text-left number">
-                                        {i + 1}
+                                <li
+                                    className={`flex items-center gap-3 px-4 py-3 border-b border-border transition-colors hover:bg-muted/40 ${
+                                        isMe ? 'bg-secondary/40' : ''
+                                    }`}
+                                >
+                                    <span className="w-5 text-center shrink-0">
+                                        {MEDAL[i] ?? (
+                                            <span className="text-xs font-black text-muted-foreground number">
+                                                {i + 1}
+                                            </span>
+                                        )}
                                     </span>
-                                    <div className="flex items-center gap-2">
-                                        <img
-                                            src={friend.receivedRequests.profile.avatar_url}
-                                            className="text-3xl size-14 rounded-full object-cover"
-                                        />
-                                        <h3 className="text-xl pr-4">
-                                            {friend.receivedRequests.profile.username}
-                                        </h3>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1 text-xl">
-                                    <Star /> <span>{friend.receivedRequests.totalScore}</span>
-                                </div>
-                            </li>
-                        </Link>
-                    );
-                })}
+
+                                    <img
+                                        src={friendProfile.avatar_url}
+                                        alt={friendProfile.username}
+                                        className="size-11 rounded-full object-cover border-2 border-border shrink-0"
+                                    />
+
+                                    <span className="flex-1 text-sm font-bold text-navy truncate">
+                                        {friendProfile.username}
+                                        {isMe && (
+                                            <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-terra bg-terra/10 px-1.5 py-0.5 rounded-sm">
+                                                you
+                                            </span>
+                                        )}
+                                    </span>
+
+                                    <span className="flex items-center gap-1 text-sm font-black text-terra-dark number shrink-0">
+                                        <Star size={12} fill="var(--terra)" stroke="var(--terra)" />
+                                        {friend.receivedRequests.totalScore}
+                                    </span>
+                                </li>
+                            </Link>
+                        );
+                    })
+                )}
             </ul>
         </article>
     );

@@ -59,11 +59,13 @@ const Leaderboards = () => {
                         <button
                             key={String(c.value)}
                             onClick={() => setActiveCategory(c.value)}
-                            className={`shrink-0 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all duration-150 ${
+                            className={`shrink-0 disabled:opacity-60 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all duration-150 disabled:border-border disabled:hover:text-muted-foreground disabled:hover:cursor-not-allowed ${
                                 activeCategory === c.value
                                     ? 'bg-secondary border-amber-dark text-navy shadow-[2px_2px_0_var(--amber-dark)]'
                                     : 'bg-card border-border text-muted-foreground hover:border-amber/50 hover:text-navy'
                             }`}
+                            disabled={c.label === 'All' && activeMode === 'accuracy'}
+                            title={c.label === 'All' && activeMode === 'accuracy' ? 'Not allowed for "Accuracy" mode' : ''}
                         >
                             {c.label}
                         </button>
@@ -75,11 +77,13 @@ const Leaderboards = () => {
                         <button
                             key={String(m.value)}
                             onClick={() => setActiveMode(m.value)}
-                            className={`shrink-0 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all duration-150 ${
+                            className={`shrink-0 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all duration-150 disabled:opacity-60 disabled:border-border disabled:hover:text-muted-foreground disabled:hover:cursor-not-allowed ${
                                 activeMode === m.value
                                     ? 'bg-sage border-sage-dark text-white shadow-[2px_2px_0_var(--sage-dark)]'
                                     : 'bg-card border-border text-muted-foreground hover:border-amber/50 hover:text-navy'
                             }`}
+                            disabled={m.label === 'Accuracy' && !activeCategory}
+                            title={m.label === 'Accuracy' && !activeCategory ? 'Not allowed for category "All"' : ''}
                         >
                             {m.label}
                         </button>
