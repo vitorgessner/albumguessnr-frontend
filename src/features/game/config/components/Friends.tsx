@@ -8,62 +8,111 @@ import useScoringStore from '../../scoring/stores/useScoringStore';
 import { useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
-const Friends = ({isPending}: {isPending: boolean}) => {
+const MEDAL: Record<number, string> = { 0: '🥇', 1: '🥈', 2: '🥉' };
+
+const Friends = ({ isPending }: { isPending: boolean }) => {
     const { data: user } = useUser();
     const { currentAlbum } = useCompare();
-    const { friendsGuessed: friends, isPending: isFriendsPending } = useFriendsAlbums(currentAlbum.albumId);
+    const { friendsGuessed: friends, isPending: isFriendsPending } = useFriendsAlbums(
+        currentAlbum.albumId
+    );
     const { isGuessed } = useGuessStore();
     const { isNewBestScore, setIsNewBestScore } = useScoringStore();
 
     useEffect(() => {
         setIsNewBestScore(false);
-    }, [setIsNewBestScore, currentAlbum])
+    }, [setIsNewBestScore, currentAlbum]);
 
-    const friendsGuessed = friends?.filter((f) => f.bestScore >= 0).sort((a, b) => b.bestScore - a.bestScore);
+    const friendsGuessed = friends
+        ?.filter((f) => f.bestScore >= 0)
+        .sort((a, b) => b.bestScore - a.bestScore);
+
+    const isEmpty =
+        friendsGuessed?.length === 0 ||
+        friendsGuessed?.every((f) => f.bestScore === undefined || f.bestScore === null);
 
     return (
-        <article className="h-full max-h-99 text-center lg:border-2 lg:border-border overflow-scroll rounded-lg bg-(--card-light)">
-            <h2 className="text-2xl font-bold py-2">Also guessed the album</h2>
-            <ul className="flex flex-col w-full">
-                {friendsGuessed?.length === 0 || friendsGuessed?.every(f => f.bestScore === undefined || f.bestScore === null) && (
-                    <p className="pb-3 max-w-60 mx-auto text-wrap ">
-                        None of your friends guessed the album
-                    </p>
-                )}
-                {friendsGuessed?.map((friend, i) => {
-                    if (friend.bestScore === undefined || friend.bestScore === null) return;
-                    return (
-                        <Link
-                            key={i}
-                            to={`/profile/${friend.profile.username}`}
-                            className="last-of-type:border-b-2"
-                        >
-                            <li
-                                className={`relative flex items-center justify-between p-2 border-b-0 gap-5 border-x-0 border-2 ${friend.id === user?.id && 'bg-(--amber-50)'}`}
+        <article className="flex flex-col h-full max-h-99 bg-(--card-light) lg:border-2 lg:border-border rounded-xl lg:shadow-[3px_3px_0_var(--border)] overflow-hidden">
+            <h2 className="shrink-0 py-3 px-5 text-xl font-black font-heading tracking-tight text-navy bg-(--card-light) border-b-2 border-border">
+                Also guessed
+            </h2>
+
+            <ul className="flex flex-col overflow-y-auto flex-1">
+                {isEmpty ? (
+                    <li className="flex flex-col items-center justify-center gap-2 py-12 text-center px-4">
+                        <span className="text-4xl">🎵</span>
+                        <p className="text-sm font-bold text-navy">
+                            No friends guessed this album yet
+                        </p>
+                    </li>
+                ) : (
+                    friendsGuessed?.map((friend, i) => {
+                        if (friend.bestScore === undefined || friend.bestScore === null)
+                            return null;
+                        const isMe = friend.id === user?.id;
+                        return (
+                            <Link
+                                key={i}
+                                to={`/profile/${friend.profile.username}`}
+                                className="last-of-type:border-b-0"
                             >
-                                <div className="flex items-center w-full">
-                                    <span className="pl-2 text-3xl mr-3 text-left number">
-                                        {i + 1}
+                                <li
+                                    className={`relative flex items-center gap-3 px-4 py-3 border-b border-border transition-colors hover:bg-muted/40 ${
+                                        isMe ? 'bg-secondary/40' : ''
+                                    }`}
+                                >
+                                    <span className="w-5 text-center shrink-0 text-base">
+                                        {MEDAL[i] ?? (
+                                            <span className="text-xs font-black text-muted-foreground number">
+                                                {i + 1}
+                                            </span>
+                                        )}
                                     </span>
-                                    <div className="flex items-center gap-2">
-                                        <img
-                                            src={friend.profile.avatar_url}
-                                            className="text-3xl size-14 rounded-full object-cover"
-                                        />
-                                        <h3 className="text-xl pr-4">{friend.profile.username}</h3>
+
+                                    <img
+                                        src={friend.profile.avatar_url}
+                                        alt={friend.profile.username}
+                                        className="size-11 rounded-full object-cover border-2 border-border shrink-0"
+                                    />
+
+                                    <span className="flex-1 text-sm font-bold text-navy truncate">
+                                        {friend.profile.username}
+                                        {isMe && (
+                                            <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-terra bg-terra/10 px-1.5 py-0.5 rounded-sm">
+                                                you
+                                            </span>
+                                        )}
+                                    </span>
+
+                                    <div className="flex flex-col items-end shrink-0 gap-0.5">
+                                        <span
+                                            className={`flex items-center gap-1 text-sm font-black text-terra-dark number ${!isGuessed || isPending ? 'blur-sm' : 'blur-none'} transition-all`}
+                                        >
+                                            <Star
+                                                size={12}
+                                                fill="var(--terra)"
+                                                stroke="var(--terra)"
+                                            />
+                                            {!isPending && !isFriendsPending ? (
+                                                friend.bestScore
+                                            ) : (
+                                                <Skeleton width={25} height={14} />
+                                            )}
+                                        </span>
+                                        {!isFriendsPending &&
+                                            !isPending &&
+                                            isMe &&
+                                            isNewBestScore && (
+                                                <span className="text-[10px] font-bold text-sage-dark">
+                                                    New best!
+                                                </span>
+                                            )}
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-1 text-xl">
-                                    <Star />{' '}
-                                    <span className={`${!isGuessed || isPending ? 'blur-xs' : 'blur-none'}`}>
-                                        {!isPending && !isFriendsPending ? <span className='number'>{friend.bestScore}</span> : <Skeleton width={25} height={20}/>}
-                                    </span>
-                                </div>
-                                {!isFriendsPending && !isPending && friend.id === user?.id && isNewBestScore && <span className='absolute bottom-0 right-1 text-sm text-(--sage-dark)'>New Best Score!</span>}
-                            </li>
-                        </Link>
-                    );
-                })}
+                                </li>
+                            </Link>
+                        );
+                    })
+                )}
             </ul>
         </article>
     );

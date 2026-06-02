@@ -87,16 +87,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
     const [activeSheet, setActiveSheet] = useState<Sheet>(null);
 
     const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
-    const {
-        resetField: resetTrack,
-    } = useForm<TrackType>();
+    const { resetField: resetTrack } = useForm<TrackType>();
 
-    const { currentAlbum, guess, reset } = useCompare(
-        resetField,
-        setFocus
-    );
+    const { currentAlbum, guess, reset } = useCompare(resetField, setFocus);
     const formRef = useRef<HTMLFormElement>(null);
-    const tracksRef = useRef<HTMLUListElement>(null);
     const { startTimer, pauseTimer, clearTimer, seconds, minutes } = useTimer();
     const [index, setIndex] = useState<number | undefined>();
 
@@ -135,10 +129,9 @@ const GuessContent = ({ user }: { user: IUser }) => {
             const answers = guess(guessObj);
             setAnswers(answers);
 
-            const [response] = await Promise.all([
-                setScore(),
-                mutation.mutateAsync(currentAlbum.albumId),
-            ]);
+            const response = await setScore();
+
+            mutation.mutateAsync(currentAlbum.albumId);
 
             toast.success(response.totalScore + ' points');
             setFocus('buttonSubmit');
@@ -162,18 +155,6 @@ const GuessContent = ({ user }: { user: IUser }) => {
         setIsImageLoaded(false);
         setActiveSheet(null);
     };
-
-    useEffect(() => {
-        if (tracksRef.current) {
-            const tracks = tracksRef.current?.querySelector('ul')?.querySelectorAll('li');
-            if (!tracks) return;
-            if (index && index >= 0) {
-                const track = tracks.item(index);
-                if (!track) return;
-                track.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-    }, [tracksRef, index]);
 
     useEffect(() => {
         setFocus('album');
@@ -214,28 +195,34 @@ const GuessContent = ({ user }: { user: IUser }) => {
                     </article>
 
                     <div
-                        className={`flex w-full max-w-xs lg:max-w-none mt-1 items-center text-center ${timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'}`}
+                        className={`flex w-full max-w-xs lg:max-w-none mt-2 items-center ${
+                            timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'
+                        }`}
                     >
                         {isSuccess && timesGuessed >= 1 && (
-                            <div className="text-left text-xs opacity-90">
-                                You've guessed this album
-                                {timesGuessed === 1 ? ' 1 time' : ` ${timesGuessed} times`}!
-                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Guessed{' '}
+                                <span className="font-bold text-navy">
+                                    {timesGuessed === 1 ? '1 time' : `${timesGuessed} times`}
+                                </span>
+                            </p>
                         )}
-                        <span className="border-border rounded-full border-2 bg-(--card-light) px-2 py-1 text-center number">
+                        <span className="border-2 border-border rounded-full bg-(--card-light) px-3 py-1 text-sm font-black number text-navy shadow-[2px_2px_0_var(--border)]">
                             {minutes < 10 ? '0' + minutes : minutes}:
                             {seconds < 10 ? '0' + seconds : seconds}
                         </span>
                     </div>
 
-                    <section className="w-full max-w-xs lg:max-w-none mt-1">
+                    <section className="w-full max-w-xs lg:max-w-none mt-2">
                         <Form
                             ref={formRef}
                             className="flex flex-col gap-2"
                             onSubmit={handleSubmit(onGuess)}
                         >
                             <div
-                                className={`flex w-full flex-col gap-1 rounded-sm border-2 bg-(--card-light) p-3 ${isGuessed && 'pb-1'}`}
+                                className={`flex w-full flex-col gap-1.5 rounded-xl border-2 border-border bg-(--card-light) p-3 shadow-[3px_3px_0_var(--border)] ${
+                                    isGuessed && 'pb-1'
+                                }`}
                             >
                                 {config.album && (
                                     <Form.Label>
@@ -244,20 +231,26 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             disabled={
                                                 !currentAlbum.album.normalizedName || isGuessed
                                             }
-                                            className={`disabled:opacity-90 ${config.album && currentAlbum.album.normalizedName && (isGuessed ? (correctAnswers.album ? 'border-success' : 'border-error') : 'border-border')}`}
+                                            className={`disabled:opacity-90 ${
+                                                config.album &&
+                                                currentAlbum.album.normalizedName &&
+                                                (isGuessed
+                                                    ? correctAnswers.album
+                                                        ? 'border-success'
+                                                        : 'border-error'
+                                                    : 'border-border')
+                                            }`}
                                             {...register('album')}
                                             autoComplete="off"
                                         />
                                     </Form.Label>
                                 )}
                                 {config.album && isGuessed && !correctAnswers.album && (
-                                    <span
-                                        className="overflow-hidden text-left text-nowrap text-ellipsis whitespace-nowrap"
-                                        title={currentAlbum.album.normalizedName}
-                                    >
+                                    <span className="overflow-hidden text-left text-nowrap text-ellipsis text-sm text-terra-dark font-bold px-1">
                                         {currentAlbum.album.normalizedName}
                                     </span>
                                 )}
+
                                 {config.artist && (
                                     <Form.Label>
                                         <Form.Input
@@ -265,17 +258,23 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             disabled={
                                                 currentAlbum.album.artists.length <= 0 || isGuessed
                                             }
-                                            className={`disabled:opacity-90 ${config.artist && currentAlbum.album.artists && (isGuessed ? (correctAnswers.artist ? 'border-success' : correctAnswers.artist === false && 'border-error') : 'border-border')}`}
+                                            className={`disabled:opacity-90 ${
+                                                config.artist &&
+                                                currentAlbum.album.artists &&
+                                                (isGuessed
+                                                    ? correctAnswers.artist
+                                                        ? 'border-success'
+                                                        : correctAnswers.artist === false &&
+                                                          'border-error'
+                                                    : 'border-border')
+                                            }`}
                                             {...register('artist')}
                                             autoComplete="off"
                                         />
                                     </Form.Label>
                                 )}
                                 {config.artist && isGuessed && correctAnswers.artist === false && (
-                                    <span
-                                        className="overflow-hidden text-left text-nowrap text-ellipsis whitespace-nowrap"
-                                        title={currentAlbum.album.artists.join(', ')}
-                                    >
+                                    <span className="overflow-hidden text-left text-nowrap text-ellipsis text-sm text-terra-dark font-bold px-1">
                                         {currentAlbum.album.artists.map((a, i, arr) =>
                                             i !== arr.length - 1
                                                 ? a.artist.normalizedName + ', '
@@ -283,8 +282,9 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                         )}
                                     </span>
                                 )}
-                                <div className="flex justify-between lg:h-lg:-max-w-38">
-                                    <div className="flex flex-col flex-1 mr-2">
+
+                                <div className="flex justify-between gap-2">
+                                    <div className="flex flex-col flex-1">
                                         {config.genre && (
                                             <Form.Label>
                                                 <Form.Input
@@ -293,7 +293,16 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                         isGuessed
                                                     }
                                                     placeholder="Any tag"
-                                                    className={`lg:max-w-32 disabled:opacity-90 ${config.genre && currentAlbum.album.genres.length > 0 && (isGuessed ? (correctAnswers.genre ? 'border-success' : correctAnswers.genre === false && 'border-error') : 'border-border')}`}
+                                                    className={`disabled:opacity-90 ${
+                                                        config.genre &&
+                                                        currentAlbum.album.genres.length > 0 &&
+                                                        (isGuessed
+                                                            ? correctAnswers.genre
+                                                                ? 'border-success'
+                                                                : correctAnswers.genre === false &&
+                                                                  'border-error'
+                                                            : 'border-border')
+                                                    }`}
                                                     {...register('genre')}
                                                     autoComplete="off"
                                                 />
@@ -301,7 +310,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                         )}
                                         {config.genre && isGuessed && (
                                             <div
-                                                className="max-w-48 lg:max-w-32 overflow-x-scroll scroll-smooth pb-3 text-left text-nowrap"
+                                                className="max-w-48 lg:max-w-32 overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-sm text-terra-dark font-bold px-1"
                                                 onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
                                                     if (e.deltaY !== 0) {
                                                         e.preventDefault();
@@ -319,6 +328,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             </div>
                                         )}
                                     </div>
+
                                     <div className="flex flex-col">
                                         {config.year && (
                                             <Form.Label className="w-21">
@@ -326,7 +336,16 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                     disabled={!currentAlbum.album.year || isGuessed}
                                                     placeholder="Year"
                                                     type="number"
-                                                    className={`w-full disabled:opacity-90 ${config.year && currentAlbum.album.year && (isGuessed ? (correctAnswers.year ? 'border-success' : correctAnswers.year === false && 'border-error') : 'border-border')}`}
+                                                    className={`w-full disabled:opacity-90 ${
+                                                        config.year &&
+                                                        currentAlbum.album.year &&
+                                                        (isGuessed
+                                                            ? correctAnswers.year
+                                                                ? 'border-success'
+                                                                : correctAnswers.year === false &&
+                                                                  'border-error'
+                                                            : 'border-border')
+                                                    }`}
                                                     {...register('year')}
                                                     autoComplete="off"
                                                 />
@@ -336,19 +355,20 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             config.year &&
                                             isGuessed &&
                                             correctAnswers.year === false && (
-                                                <span className="max-w-67 pl-1 text-left">
+                                                <span className="text-sm text-terra-dark font-bold px-1">
                                                     {currentAlbum.album.year}
                                                 </span>
                                             )}
                                     </div>
                                 </div>
                             </div>
+
                             <Form.Input
                                 {...register('buttonSubmit')}
                                 type="submit"
                                 disabled={isPending || !isImageLoaded}
                                 value={!isGuessed ? 'Guess' : 'Next'}
-                                className="sage-component w-full disabled:opacity-50"
+                                className="sage-component w-full disabled:opacity-50 rounded-xl"
                             />
                         </Form>
                     </section>
@@ -357,13 +377,13 @@ const GuessContent = ({ user }: { user: IUser }) => {
                 {config.tracklist ? (
                     <div className="hidden lg:flex flex-col items-center w-[355.5px] text-center order-3">
                         <TracklistSection
-                            tracksRef={tracksRef}
                             answers={answers}
+                            index={index}
                             onTrackIndexChange={setIndex}
                         />
                     </div>
                 ) : (
-                    <div className="hidden lg:flex flex-col items-center w-[355.5px] text-center order-3"></div>
+                    <div className="hidden lg:flex flex-col items-center w-[355.5px] order-3" />
                 )}
 
                 <div className="hidden lg:block h-fit min-w-[355.5px] order-1">
@@ -394,8 +414,8 @@ const GuessContent = ({ user }: { user: IUser }) => {
                     title="Tracklist"
                 >
                     <TracklistSection
-                        tracksRef={tracksRef}
                         answers={answers}
+                        index={index}
                         onTrackIndexChange={setIndex}
                     />
                 </BottomSheet>
