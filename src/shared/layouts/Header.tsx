@@ -72,7 +72,7 @@ const Header = () => {
                 </div>
                 <div></div>
                 {!isPending && (
-                    <div className="absolute right-5 flex items-center justify-right gap-5">
+                    <div className="absolute right-5 flex items-center justify-right gap-5 text-navy tracking-tight font-heading font-semibold">
                         {isAuthenticated && <Link to={'/guess'}>Guess</Link>}
                         {isAuthenticated && (
                             <button className="cursor-pointer">
