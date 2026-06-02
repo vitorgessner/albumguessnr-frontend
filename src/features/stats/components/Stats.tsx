@@ -1,10 +1,9 @@
 import StatCard from './StatCard';
 import StatBar from './StatBar';
-import useStats from '../hooks/useStats';
 import { BookA, CalendarDays, Disc3, Music, User } from 'lucide-react';
+import type { IStats } from '../types/IStats';
 
-const Stats = () => {
-    const { data: stats } = useStats();
+const Stats = ({stats}: {stats: IStats}) => {
     return (
         <div className="overflow-y-auto flex-1">
             {!stats ? (
