@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { StarIcon, CalendarDays, Music2, Disc3, ChartNoAxesColumn, Target } from 'lucide-react';
-import useUser from '../hooks/useUser';
 import useProfile from '../hooks/useProfile';
 import ProfileSkeleton from '../components/ProfileSkeleton';
 import RequestButton from '@/features/friends/components/RequestButton';
@@ -11,8 +10,7 @@ type CenterTab = 'achievements' | 'stats';
 
 const Profile = () => {
     const [centerTab, setCenterTab] = useState<CenterTab>('stats');
-    const { data: authenticatedUser } = useUser();
-    const { data: user, isPending: isUserPending, error: userError } = useProfile();
+    const { data: profile, isPending: isUserPending, error: userError } = useProfile();
 
     if (userError)
         return (
@@ -23,13 +21,9 @@ const Profile = () => {
 
     if (isUserPending) return <ProfileSkeleton activeTab={centerTab}/>;
 
-    const userProfile =
-        user?.username === authenticatedUser?.profile.username ? authenticatedUser : user?.user;
-    const profile =
-        user?.username === authenticatedUser?.profile.username ? authenticatedUser?.profile : user;
-    if (!profile || !userProfile) return null;
+    if (!profile) return null;
 
-    const date = new Date(userProfile.createdAt);
+    const date = new Date(profile.user.createdAt);
     const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`;
 
@@ -50,7 +44,7 @@ const Profile = () => {
                                 </h1>
                                 <p className="text-xs text-muted-foreground mt-0.5">
                                     <span className="font-bold text-terra-dark">
-                                        {userProfile.lastfmIntegration.lastfmUsername}
+                                        {profile.user.lastfmIntegration.lastfmUsername}
                                     </span>{' '}
                                     on Last.fm
                                 </p>
@@ -75,7 +69,7 @@ const Profile = () => {
                                     className="drop-terra-ambar shrink-0"
                                 />
                                 <span className="text-sm font-black number text-navy">
-                                    {userProfile.userStats.totalScore}
+                                    {profile.user.userStats.totalScore}
                                 </span>
                                 <span className="text-[10px] text-muted-foreground leading-tight">
                                     total points
@@ -84,7 +78,7 @@ const Profile = () => {
                             <div className="flex flex-col items-center gap-0.5 bg-secondary/40 border border-border rounded-lg py-2 px-1 min-w-0">
                                 <Music2 size={14} className="text-terra shrink-0" />
                                 <span className="text-sm font-black number text-navy">
-                                    {userProfile.userStats.guessedAlbums}
+                                    {profile.user.userStats.guessedAlbums}
                                 </span>
                                 <span className="text-[10px] text-muted-foreground leading-tight">
                                     guesses
@@ -93,7 +87,7 @@ const Profile = () => {
                             <div className="flex flex-col items-center gap-0.5 bg-secondary/40 border border-border rounded-lg py-2 px-1 min-w-0">
                                 <Disc3 size={14} className="text-terra shrink-0" />
                                 <span className="text-sm font-black number text-navy">
-                                    {userProfile.userStats.guessedDistinctAlbums}
+                                    {profile.user.userStats.guessedDistinctAlbums}
                                 </span>
                                 <span className="text-[10px] text-muted-foreground leading-tight">
                                     distinct albums
@@ -115,6 +109,7 @@ const Profile = () => {
                         <div className="shrink-0 flex border-b-2 border-border">
                             <button
                                 disabled={true}
+                                title='Available soon'
                                 onClick={() => setCenterTab('achievements')}
                                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-5 text-sm font-black font-heading tracking-tight transition-colors disabled:opacity-70 disabled:bg-white disabled:cursor-not-allowed ${
                                     centerTab === 'achievements'
@@ -150,7 +145,7 @@ const Profile = () => {
                             </div>
                         )}
 
-                        {centerTab === 'stats' && <Stats />}
+                        {centerTab === 'stats' && <Stats stats={profile.user.userStats}/>}
                     </article>
                 </section>
 
