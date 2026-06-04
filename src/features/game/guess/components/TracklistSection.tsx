@@ -3,7 +3,7 @@ import useCompare from '../hooks/useCompare';
 import useTrackStore from '../stores/useTrackStore';
 import type { TrackType } from '../types/guessTypes';
 import Form from '@/features/auth/components/form/Form';
-import type { Answers } from '../../scoring/hooks/useScoring';
+import type { Answers } from '../hooks/useGuess';
 import { useEffect, useRef } from 'react';
 
 const TracklistSection = ({
@@ -109,7 +109,7 @@ const TracklistSection = ({
                         <Form.Input
                             disabled={isFinished}
                             placeholder="Type a track name..."
-                            className="border-border w-full disabled:opacity-60"
+                            className="border-border w-full disabled:opacity-40"
                             {...register('track')}
                             autoComplete="off"
                         />
