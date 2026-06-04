@@ -7,14 +7,14 @@ import type { FetchResponse } from '../types/albumTypes';
 import useGuessStore from '../stores/useGuessStore';
 import useCompare from '../hooks/useCompare';
 import shuffle from '../utils/shuffle';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import useUser from '../../../auth/hooks/useUser';
 import type { IUser } from '../../../../shared/types/user';
 import useTrackStore from '../stores/useTrackStore';
 import useTimer from '../hooks/useTimer';
 import ConfigComponent from '../../config/components/Config';
 import Friends from '../../config/components/Friends';
-import useScoring from '../../scoring/hooks/useScoring';
+import useGuess from '../hooks/useGuess';
 import { toast, ToastContainer } from 'react-toastify';
 import queryClient from '@/shared/utils/queryClient';
 import { type IFriendsAlbums } from '@/features/friends/hooks/useFriends';
@@ -96,7 +96,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
 
     const { correctAnswers, isGuessed, setIsGuessed, config } = useGuessStore();
     const { setIsFinished, isFinished } = useTrackStore();
-    const { setScore, setAnswers, answers, isPending } = useScoring(minutes * 60 + seconds);
+    const { setGuess, setAnswers, answers, isPending } = useGuess(minutes * 60 + seconds);
 
     const { data: timesGuessed, isSuccess } = useQuery({
         queryKey: ['stats', currentAlbum?.albumId],
@@ -106,10 +106,6 @@ const GuessContent = ({ user }: { user: IUser }) => {
             );
             return res.data.timesGuessed ?? -1;
         },
-    });
-
-    const mutation = useMutation({
-        mutationFn: (albumId: string) => axios.put('/guess', { albumId }),
     });
 
     const toggleSheet = (sheet: Sheet) => setActiveSheet((prev) => (prev === sheet ? null : sheet));
@@ -129,9 +125,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
             const answers = guess(guessObj);
             setAnswers(answers);
 
-            const response = await setScore();
-
-            mutation.mutateAsync(currentAlbum.albumId);
+            const response = await setGuess();
 
             toast.success(response.totalScore + ' points');
             setFocus('buttonSubmit');
@@ -231,7 +225,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             disabled={
                                                 !currentAlbum.album.normalizedName || isGuessed
                                             }
-                                            className={`disabled:opacity-90 ${
+                                            className={`disabled:opacity-40 ${
                                                 config.album &&
                                                 currentAlbum.album.normalizedName &&
                                                 (isGuessed
@@ -258,7 +252,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             disabled={
                                                 currentAlbum.album.artists.length <= 0 || isGuessed
                                             }
-                                            className={`disabled:opacity-90 ${
+                                            className={`disabled:opacity-40 ${
                                                 config.artist &&
                                                 currentAlbum.album.artists &&
                                                 (isGuessed
@@ -293,7 +287,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                         isGuessed
                                                     }
                                                     placeholder="Any tag"
-                                                    className={`disabled:opacity-90 ${
+                                                    className={`disabled:opacity-40 ${
                                                         config.genre &&
                                                         currentAlbum.album.genres.length > 0 &&
                                                         (isGuessed
@@ -336,7 +330,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                     disabled={!currentAlbum.album.year || isGuessed}
                                                     placeholder="Year"
                                                     type="number"
-                                                    className={`w-full disabled:opacity-90 ${
+                                                    className={`w-full disabled:opacity-40 ${
                                                         config.year &&
                                                         currentAlbum.album.year &&
                                                         (isGuessed

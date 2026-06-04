@@ -3,10 +3,10 @@ import axios from '@/shared/utils/axios';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
-import useCompare from '../../guess/hooks/useCompare';
-import useScoringStore from '../stores/useScoringStore';
+import useCompare from './useCompare';
+import useScoringStore from '../../scoring/stores/useScoringStore';
 
-interface IScoringResponse {
+interface IGuessResponse {
     status: string;
     message: string;
     totalScore: number;
@@ -24,7 +24,7 @@ export type Answers = {
     }[] | undefined;
 }
 
-const useScoring = (timeSpent: number) => {
+const useGuess = (timeSpent: number) => {
     const { currentAlbum } = useCompare();
     const { setIsNewBestScore } = useScoringStore();
 
@@ -35,10 +35,10 @@ const useScoring = (timeSpent: number) => {
         Object.entries(answers).filter(([, value]) => value !== undefined)
     )
 
-    const { mutateAsync, isPending } = useMutation<IScoringResponse, ErrorResponse>({
-        mutationKey: ['scoring'],
+    const { mutateAsync, isPending } = useMutation<IGuessResponse, ErrorResponse>({
+        mutationKey: ['guess'],
         mutationFn: () =>
-            axios.post('/scoring', { albumId: currentAlbum.albumId, timeSpent, guessedCategories: finalAnswers }).then((res) => res.data),
+            axios.post('/guess', { albumId: currentAlbum.albumId, timeSpent, guessedCategories: finalAnswers }).then((res) => res.data),
         onSuccess: (data) => setIsNewBestScore(data.isNewBestScore),
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
@@ -47,7 +47,7 @@ const useScoring = (timeSpent: number) => {
         },
     });
 
-    return { setScore: mutateAsync, answers, setAnswers, isPending };
+    return { setGuess: mutateAsync, answers, setAnswers, isPending };
 };
 
-export default useScoring;
+export default useGuess;
