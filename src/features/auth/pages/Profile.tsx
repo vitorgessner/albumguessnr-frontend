@@ -19,7 +19,7 @@ const Profile = () => {
             </div>
         );
 
-    if (isUserPending) return <ProfileSkeleton activeTab={centerTab}/>;
+    if (isUserPending) return <ProfileSkeleton activeTab={centerTab} />;
 
     if (!profile) return null;
 
@@ -28,7 +28,13 @@ const Profile = () => {
     const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`;
 
     return (
-        <main className="min-h-dvh py-6 pb-20 px-4">
+        <main
+            className="min-h-dvh py-6 pb-20 px-4"
+            style={{
+                minHeight: 'calc(100dvh - 58.5px)',
+                paddingBottom: 'calc(56px + env(safe-area-inset-bottom))',
+            }}
+        >
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
                 <section className="order-1 lg:order-2 min-w-0 w-full">
                     <article className="w-full min-w-82 max-w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
@@ -109,7 +115,7 @@ const Profile = () => {
                         <div className="shrink-0 flex border-b-2 border-border">
                             <button
                                 disabled={true}
-                                title='Available soon'
+                                title="Available soon"
                                 onClick={() => setCenterTab('achievements')}
                                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-5 text-sm font-black font-heading tracking-tight transition-colors disabled:opacity-70 disabled:bg-white disabled:cursor-not-allowed ${
                                     centerTab === 'achievements'
@@ -145,7 +151,7 @@ const Profile = () => {
                             </div>
                         )}
 
-                        {centerTab === 'stats' && <Stats stats={profile.user.userStats}/>}
+                        {centerTab === 'stats' && <Stats stats={profile.user.userStats} />}
                     </article>
                 </section>
 

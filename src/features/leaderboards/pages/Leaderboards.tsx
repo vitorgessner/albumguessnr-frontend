@@ -15,7 +15,13 @@ const Leaderboards = () => {
     const { data } = useUser();
 
     return (
-        <div className="min-h-dvh bg-background">
+        <div
+            className="min-h-dvh bg-background"
+            style={{
+                minHeight: 'calc(100dvh - 58.5px)',
+                paddingBottom: 'calc(56px + env(safe-area-inset-bottom))',
+            }}
+        >
             <div className="max-w-lg mx-auto px-4 pb-10">
                 <div className="pt-6 pb-4">
                     <h1 className="font-heading font-black text-2xl text-navy tracking-tight">
@@ -30,7 +36,11 @@ const Leaderboards = () => {
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             disabled={tab === 'friends' && !data}
-                            title={tab === 'friends' && !data ? 'You must login to see friends leaderboards' : ''}
+                            title={
+                                tab === 'friends' && !data
+                                    ? 'You must login to see friends leaderboards'
+                                    : ''
+                            }
                             className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${
                                 activeTab === tab
                                     ? 'bg-sidebar-border text-navy shadow-[2px_2px_0_var(--border)] border border-border'
@@ -69,7 +79,11 @@ const Leaderboards = () => {
                                     : 'bg-card border-border text-muted-foreground hover:border-amber/50 hover:text-navy'
                             }`}
                             disabled={c.label === 'All' && activeMode === 'accuracy'}
-                            title={c.label === 'All' && activeMode === 'accuracy' ? 'Not allowed for "Accuracy" mode' : ''}
+                            title={
+                                c.label === 'All' && activeMode === 'accuracy'
+                                    ? 'Not allowed for "Accuracy" mode'
+                                    : ''
+                            }
                         >
                             {c.label}
                         </button>
@@ -87,7 +101,11 @@ const Leaderboards = () => {
                                     : 'bg-card border-border text-muted-foreground hover:border-amber/50 hover:text-navy'
                             }`}
                             disabled={m.label === 'Accuracy' && !activeCategory}
-                            title={m.label === 'Accuracy' && !activeCategory ? 'Not allowed for category "All"' : ''}
+                            title={
+                                m.label === 'Accuracy' && !activeCategory
+                                    ? 'Not allowed for category "All"'
+                                    : ''
+                            }
                         >
                             {m.label}
                         </button>
