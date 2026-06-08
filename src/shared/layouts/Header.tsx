@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import axios from '../utils/axios';
 import useAuthStore from '../../features/auth/stores/useAuthStore';
-import { Pencil, LogOut, Menu, Trophy, Calendar } from 'lucide-react';
+import { Pencil, LogOut, Trophy, Calendar } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import useUser from '../../features/auth/hooks/useUser';
 import { useQueryClient } from '@tanstack/react-query';
@@ -60,12 +60,8 @@ const Header = () => {
                             path.pathname === '/auth/login' || path.pathname === '/auth/register'
                         ) && (
                             <>
-                                <Menu
-                                    size={28}
-                                    className="sm:hidden absolute right-5 rounded-sm p-1 bg-(--secondary-color)"
-                                />
-                                <Link to="/auth/login" className="hidden sm:block absolute right-5">
-                                    Login
+                                <Link to="/auth/register" className="absolute right-5">
+                                    Sign up
                                 </Link>
                             </>
                         )}

@@ -3,6 +3,7 @@ import { PERIODS, type Period } from '../constants/periods';
 import { CATEGORIES, type Category } from '../constants/categories';
 import LeaderboardContent from '../components/LeaderboardContent';
 import { MODE, type Mode } from '../constants/mode';
+import useUser from '@/features/auth/hooks/useUser';
 
 type Tab = 'global' | 'friends';
 
@@ -11,6 +12,7 @@ const Leaderboards = () => {
     const [activePeriod, setActivePeriod] = useState<Period>(undefined);
     const [activeCategory, setActiveCategory] = useState<Category>(undefined);
     const [activeMode, setActiveMode] = useState<Mode>(undefined);
+    const { data } = useUser();
 
     return (
         <div className="min-h-dvh bg-background">
@@ -27,7 +29,9 @@ const Leaderboards = () => {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-150 ${
+                            disabled={tab === 'friends' && !data}
+                            title={tab === 'friends' && !data ? 'You must login to see friends leaderboards' : ''}
+                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${
                                 activeTab === tab
                                     ? 'bg-sidebar-border text-navy shadow-[2px_2px_0_var(--border)] border border-border'
                                     : 'text-muted-foreground hover:text-navy'
