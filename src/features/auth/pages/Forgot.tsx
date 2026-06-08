@@ -72,7 +72,7 @@ const Forgot = () => {
           )}
 
           <Form.Input type="submit" value="Send" className="cursor-pointer primary-component" />
-          {isPending && <div className="loading">Loading...</div>}
+          {isPending && <div>Loading...</div>}
           {error && (
             <span className="text-(--error-text) text-center">
               {error.response?.data.message}

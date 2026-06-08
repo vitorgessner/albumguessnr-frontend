@@ -17,7 +17,7 @@ const VerifyToken = () => {
         queryKey: ['token'],
         queryFn: async () =>
             await axios
-                .get<ResponseData>(`${import.meta.env.VITE_API_URL}/verify/${token}`)
+                .get<ResponseData>(`/verify/${token}`)
                 .then((res) => res.data),
     });
 

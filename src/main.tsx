@@ -19,6 +19,7 @@ import Register from './features/auth/pages/Register.tsx';
 import VerifyToken from './features/auth/components/VerifyToken.tsx';
 import { SkeletonTheme } from 'react-loading-skeleton';
 import Leaderboards from './features/leaderboards/pages/Leaderboards.tsx';
+import Test from './features/auth/components/Test.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -32,6 +33,7 @@ createRoot(document.getElementById('root')!).render(
                                 <Route path="/auth/register" element={<Register />} />
                                 <Route path="/auth/login" element={<Login />} />
                                 <Route path="/auth/forgot" element={<Forgot />} />
+                                <Route path="/test" element={<Test />} />
                                 <Route
                                     path="/auth/:username/passwordChange"
                                     element={<PasswordChange />}
