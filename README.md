@@ -10,9 +10,11 @@ O projeto se trata de um jogo de adivinhação de álbuns musicais integrado (at
 - **Linguagem**: TypeScript
 - **Gerenciamento de estado**: Zustand
 - **Formulários**: React Hook Form
+- **Validação de dados**: Zod
 - **Data fetching**: TanStack Query (React Query)
 - **HTTP Client**: Axios (com interceptor de refresh token)
 - **Estilização**: Tailwind CSS
+- **Deploy**: Vercel
 
 ## Estrutura
 
@@ -43,12 +45,12 @@ src/
 ## Fluxo do jogo
 
 1. `useUser` busca o usuário autenticado
-2. `GuessSync` dispara o sync via `/game` (TanStack Query)
+2. `GuessSync` dispara o sync via `/game`
 3. Após sync concluído, busca álbuns via `/integration/albums`
 4. Álbuns são embaralhados (`shuffle`) e armazenados no `useGuessStore`
 5. `GuessContent` exibe o álbum atual (capa borrada) e os campos de adivinhação
 6. `useCompare` compara as respostas com os dados normalizados do banco
-7. Ao clicar em "Guess": revela capa, exibe resultado, avança para próximo álbum
+7. Ao clicar em "Guess": revela capa, calcula pontuação, armazena registro de tentativa, incrementar stats do usuário e incrementa score total do user (caso tenha sido o melhor do dia para aquele álbum)
 8. Ao esgotar os álbuns: invalida a query e busca novo lote
 
 ## Stores (Zustand)
@@ -61,10 +63,14 @@ Estado central do jogo:
 - `config`: campos que o usuário quer adivinhar
 - `correctAnswers`: estado das respostas do usuário
 
-### `useTrackStore` *(em desenvolvimento)*
+### `useTrackStore`
 Estado para adivinhação iterativa de tracklist:
 - `guessed`: tracks já tentadas com resultado (`{ name, isCorrect }`)
 - `remaining`: número de tentativas restantes
+
+### `useScoringScore`
+Estado para ux de newBestScore
+- `isNewBestScore`: define se é a melhor pontuação para o álbum adivinhado
 
 ## Comparação de respostas
 
@@ -88,18 +94,9 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 - [x] Timer in-game
 - [x] Validação com Zod
 - [x] Exibir quantas vezes o usuário adivinhou o álbum
-
-## O que está aberto / falta fazer
-
-- [ ] Melhorar Responsividade
-- [ ] Trancar os inputs no loading da imagem do álbum
-- [ ] Preloading da imagem do próximo álbum
-- [ ] Gerar nova lista de álbuns ao sair da página de Guess
-- [ ] Melhorias de UX e correção de bugs
-- [ ] Zod Schemas na edição de perfil
-
-## Até 26/05
-
+- [x] Melhorar Responsividade
+- [x] Trancar os inputs no loading da imagem do álbum
+- [x] Melhorias de UX e correção de bugs
 - [x] Ver perfil de outros usuários
 - [x] Adicionar outros usuários, como amigos
 - [x] Ao adivinhar um álbum, exibir amigos que adivinharam também
@@ -107,9 +104,13 @@ Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, 
 - [x] Ganhar pontos de acordo com a velocidade da tentativa
 - [x] Leaderboard de pontos entre amigos
 - [x] Leaderboard global
-- [ ] Visualização de estatísticas no perfil do usuário
-- [ ] Exibir histórico de adivinhações
-- [ ] Filtros para o histórico de adivinhações
+- [x] Visualização de estatísticas no perfil do usuário
+
+## O que está aberto / falta fazer
+
+- [ ] Preloading da imagem do próximo álbum
+- [ ] Gerar nova lista de álbuns ao sair da página de Guess
+- [ ] Zod Schemas na edição de perfil
 
 ## Decisões de design
 

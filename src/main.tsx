@@ -29,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
                     <Routes>
                         <Route element={<Header />}>
                             <Route path="/" element={<App />} />
+                            <Route path="/leaderboards" element={<Leaderboards />} />
                             <Route element={<UnprotectedRoute />}>
                                 <Route path="/auth/register" element={<Register />} />
                                 <Route path="/auth/login" element={<Login />} />
@@ -44,7 +45,6 @@ createRoot(document.getElementById('root')!).render(
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/profile/:username/edit" element={<EditProfile />} />
                                 <Route path="/guess" element={<Guess />} />
-                                <Route path="/leaderboards" element={<Leaderboards />} />
                             </Route>
                         </Route>
                         <Route path="*" element={<NotFoundPage />} />
