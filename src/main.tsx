@@ -35,10 +35,7 @@ createRoot(document.getElementById('root')!).render(
                                 <Route path="/auth/login" element={<Login />} />
                                 <Route path="/auth/forgot" element={<Forgot />} />
                                 <Route path="/test" element={<Test />} />
-                                <Route
-                                    path="/auth/:username/passwordChange"
-                                    element={<PasswordChange />}
-                                />
+                                <Route path="/auth/passwordChange/:passwordResetToken" element={<PasswordChange />} />
                                 <Route path="/verify/:token" element={<VerifyToken />} />
                             </Route>
                             <Route path="/profile/:username" element={<Profile />} />

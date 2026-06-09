@@ -1,7 +1,10 @@
 import { Link } from 'react-router';
 import { ToggleLeft, Gamepad2, Trophy, Users, Radio, ArrowRight } from 'lucide-react';
+import useUser from './features/auth/hooks/useUser';
 
 const App = () => {
+    const { data: user } = useUser();
+
     return (
         <div className="min-h-dvh bg-background text-navy font-sans selection:bg-amber/30 selection:text-navy">
             <header className="max-w-5xl mx-auto px-6 pt-12 pb-16 md:py-24 flex flex-col md:flex-row items-center gap-12">
@@ -16,7 +19,7 @@ const App = () => {
 
                     <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center md:justify-start">
                         <Link 
-                            to="/auth/login" 
+                            to={!user ? "/auth/login" : '/guess'} 
                             className="inline-flex items-center justify-center gap-2 px-8 py-4 font-heading font-black text-lg text-white bg-primary border-3 border-terra-dark rounded-xl shadow-[4px_4px_0_var(--terra-dark)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--terra-dark)] transition-all"
                         >
                             Play Now <Gamepad2 className="w-5 h-5" />
@@ -103,12 +106,12 @@ const App = () => {
                     <p className="font-heading font-black text-xl text-navy">
                         Ready to test your musical knowledge?
                     </p>
-                    <Link 
+                    {!user && <Link 
                         to="/auth/register"
                         className="inline-flex items-center gap-2 px-6 py-3 font-heading font-black text-sm text-white bg-sage-dark border-2 border-navy rounded-lg shadow-[3px_3px_0_var(--navy)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_var(--navy)] transition-all"
                     >
                         Sign up and Play <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    </Link>}
                     <p className="text-xs text-muted-foreground pt-4">
                         &copy; {new Date().getFullYear()} AlbumGuessnr. Made with love for music lovers.
                     </p>
