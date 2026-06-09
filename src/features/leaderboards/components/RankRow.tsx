@@ -28,7 +28,7 @@ const RankRow = ({ user, idx, isMe }: { user: Leaderboard; idx: number; isMe?: b
                 </p>
             </div>
             <span className="text-sm font-bold text-terra-dark number shrink-0">
-                {formatScore(user.totalScore ?? user.accuracy)}
+                {formatScore(user.totalScore ?? user.accuracy)} {user.accuracy && '%'}
             </span>
         </div>
     );

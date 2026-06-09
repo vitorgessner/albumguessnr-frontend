@@ -10,6 +10,8 @@ const FriendsLeaderboard = () => {
     const { data: profile } = useProfile();
     const { friends, isPending } = useFriends(profile?.username);
 
+    friends?.sort((a,b) => b.receivedRequests.totalScore - a.receivedRequests.totalScore)
+
     const MEDAL: Record<number, string> = { 0: '🥇', 1: '🥈', 2: '🥉' };
 
     return (
