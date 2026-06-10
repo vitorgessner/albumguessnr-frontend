@@ -27,7 +27,6 @@ const Leaderboards = () => {
                     <h1 className="font-heading font-black text-2xl text-navy tracking-tight">
                         Leaderboards
                     </h1>
-                    <p className="text-sm text-muted-foreground mt-0.5">See who's on top</p>
                 </div>
 
                 <div className="flex gap-1 p-1 bg-muted rounded-xl border border-border mb-4">

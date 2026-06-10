@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useEffect } from 'react';
 import axios from '../utils/axios';
 import useAuthStore from '../../features/auth/stores/useAuthStore';
-import { Pencil, LogOut, Trophy, Calendar } from 'lucide-react';
+import { Pencil, LogOut, Trophy, Gamepad } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import useUser from '../../features/auth/hooks/useUser';
 import { useQueryClient } from '@tanstack/react-query';
@@ -27,9 +27,9 @@ const Header = () => {
 
     useEffect(() => {
         if (isModalOpen) {
-            queryClient.invalidateQueries({ queryKey: ['user'] })
+            queryClient.invalidateQueries({ queryKey: ['user'] });
         }
-    }, [queryClient, isModalOpen])
+    }, [queryClient, isModalOpen]);
 
     const handleLogout = async () => {
         setIsModalOpen(false);
@@ -48,7 +48,7 @@ const Header = () => {
     return (
         <>
             <header className="sticky top-0 flex items-center z-1000 p-3 w-full bg-(--card-light)">
-                <div className="flex justify-left lg:justify-center items-center grow pl-4 lg:pl-0">
+                <div className="flex justify-left xl:justify-center items-center grow pl-4 lg:pl-0">
                     <Link to={'/'}>
                         <h1 className="uppercase text-(--text) text-xl text-center font-black font-heading tracking-tight">
                             AlbumGuessnr
@@ -69,20 +69,37 @@ const Header = () => {
                 <div></div>
                 {!isPending && (
                     <div className="absolute right-5 flex items-center justify-right gap-5 text-navy tracking-tight font-heading font-semibold">
-                        {isAuthenticated && <Link to={'/guess'}>Guess</Link>}
+                        {/* {isAuthenticated && <Link to={'/guess'}>Guess</Link>} */}
                         {isAuthenticated && (
-                            <button className="cursor-pointer">
-                                <img
-                                    src={user?.profile.avatar_url}
-                                    className="w-10 h-10 rounded-full object-cover"
-                                    onClick={() => setIsModalOpen(!isModalOpen)}
-                                />
-                            </button>
+                            <div className="flex items-center gap-5">
+                                <button
+                                    className="hidden sm:flex items-center gap-2 border-2 py-1 px-2 rounded-lg amber-component"
+                                    onClick={() => {
+                                        navigate(`/leaderboards`);
+                                        setIsModalOpen(false);
+                                    }}
+                                >
+                                    Leaderboards <Trophy size={25}/>
+                                </button>
+                                <Link to={'/guess'} className='flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component'>
+                                    Guess <Gamepad size={30} className='mt-0.5' />
+                                </Link>
+                                <button onClick={handleLogout} className="hidden md:flex items-center gap-2 border-2 py-1 px-2 rounded-lg terra-component">
+                                    Logout <LogOut size={25} />
+                                </button>
+                                <button className="cursor-pointer">
+                                    <img
+                                        src={user?.profile.avatar_url}
+                                        className="w-10 h-10 rounded-full object-cover"
+                                        onClick={() => setIsModalOpen(!isModalOpen)}
+                                    />
+                                </button>
+                            </div>
                         )}
                     </div>
                 )}
                 {!isPending && isModalOpen && (
-                    <aside className="bg-(--primary-color) border-2 border-border rounded-lg fixed flex flex-col right-4 top-15 justify-center gap-3 w-55">
+                    <aside className="bg-(--primary-color) border-2 border-border rounded-lg fixed flex flex-col right-4 top-15 justify-center gap-3 w-55 text-navy font-heading font-semibold">
                         <div className="flex px-3 pt-3 gap-3">
                             <Link to={`/profile/${user?.profile.username}`}>
                                 <img
@@ -96,11 +113,18 @@ const Header = () => {
                                 <span>{user?.userStats.totalScore} points</span>
                             </div>
                         </div>
-                        <button className="bg-(--card-light) rounded-md py-1 border border-terra text-center mx-auto px-8 shadow-terra-ambar">
-                            Benefits pro
-                        </button>
-                        <div className="bg-(--card-light) rounded-b-lg flex justify-around py-2 w-full">
+                        <div className="bg-(--card-light) rounded-b-lg flex w-full">
                             <button
+                            className='hidden sm:flex sm:justify-center grow gap-2 md:py-2 rounded-b-lg items-center hover:bg-white'
+                                onClick={() => {
+                                    navigate(`/profile/${user?.profile.username}/edit`);
+                                    setIsModalOpen(false);
+                                }}
+                            >
+                                Edit profile <Pencil size={30} />
+                            </button>
+                            <button
+                            className='flex justify-center h-full py-2 rounded-bl-lg sm:hidden w-full gap-2 items-center hover:bg-white'
                                 onClick={() => {
                                     navigate(`/profile/${user?.profile.username}/edit`);
                                     setIsModalOpen(false);
@@ -108,16 +132,16 @@ const Header = () => {
                             >
                                 <Pencil size={30} />
                             </button>
-                            <button onClick={() => {
-                                navigate(`/leaderboards`);
-                                setIsModalOpen(false);
-                            }}>
+                            <button
+                                className='flex justify-center h-full py-2 w-full sm:hidden hover:bg-amber'
+                                onClick={() => {
+                                    navigate(`/leaderboards`);
+                                    setIsModalOpen(false);
+                                }}
+                            >
                                 <Trophy size={30} />
                             </button>
-                            <button>
-                                <Calendar size={30} />
-                            </button>
-                            <button onClick={handleLogout}>
+                            <button onClick={handleLogout} className='flex justify-center w-full sm:w-fit sm:px-3 h-full py-2 rounded-br-lg md:hidden hover:bg-terra'>
                                 <LogOut size={30} />
                             </button>
                         </div>
