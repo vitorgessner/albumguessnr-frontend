@@ -362,7 +362,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                 type="submit"
                                 disabled={isPending || !isImageLoaded}
                                 value={!isGuessed ? 'Guess' : 'Next'}
-                                className="sage-component w-full disabled:opacity-50 rounded-xl"
+                                className={`${!isGuessed ? "sage-component" : "amber-component"} w-full disabled:opacity-50 rounded-xl`}
                             />
                         </Form>
                     </section>
