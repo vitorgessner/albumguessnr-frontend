@@ -36,8 +36,8 @@ const Profile = () => {
             }}
         >
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
-                <section className="order-1 lg:order-2 min-w-0 w-full">
-                    <article className="w-full min-w-82 max-w-82 mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
+                <section className="order-1 lg:order-2 min-w-0 w-full h-full">
+                    <article className="w-full min-w-82 max-w-82 h-full mx-auto flex flex-col gap-4 p-5 text-center bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)]">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <img
                                 src={profile.avatar_url}
@@ -155,7 +155,7 @@ const Profile = () => {
                     </article>
                 </section>
 
-                <section className="w-full max-w-82 mx-auto order-3 min-w-0 min-h-103 h-full">
+                <section className={`w-full max-w-82 mx-auto order-3 min-w-0 min-h-100 max-h-117 h-full`}>
                     <FriendsLeaderboard />
                 </section>
             </div>

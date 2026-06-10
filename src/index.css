@@ -121,8 +121,24 @@
     @apply bg-secondary border-secondary shadow-[3px_3px_0_var(--secondary)]
   }
 
+  .terra-component {
+    @apply bg-terra-light border-terra shadow-[3px_3px_0_var(--terra)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
   .sage-component {
-    @apply bg-sage border-sage shadow-[3px_3px_0_var(--sage-dark)]
+    @apply bg-sage border-sage-dark shadow-[3px_3px_0_var(--sage-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
+  .navy-component {
+    @apply bg-(--navy-light) border-(--navy) shadow-[3px_3px_0_var(--navy)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
+  .amber-component {
+    @apply bg-amber border-amber-dark shadow-[3px_3px_0_var(--amber-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
+  .white-component {
+    @apply bg-white border-border shadow-[3px_3px_0_var(--border)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
   }
 
   .drop-terra-ambar {
