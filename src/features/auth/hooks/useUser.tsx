@@ -6,8 +6,8 @@ import useAuthStore from '../stores/useAuthStore';
 import { AxiosError } from 'axios';
 
 const useUser = () => {
-    const { setIsAuthenticated } = useAuthStore();
-    const { data, isPending, error, isSuccess, isLoading } = useQuery({
+    const { setIsAuthenticated, setInitialized } = useAuthStore();
+    const { data, isPending, error, isSuccess, isLoading, isError } = useQuery({
         queryKey: ['user'],
         queryFn: () => {
             const response: Promise<IUser | undefined | null> = axios
@@ -22,6 +22,12 @@ const useUser = () => {
         },
         retry: false,
     });
+
+    useEffect(() => {
+        if (isSuccess || isError) {
+          setInitialized();
+        }
+      }, [isSuccess, isError, setInitialized]);
 
     useEffect(() => {
         if (isSuccess && data) {
