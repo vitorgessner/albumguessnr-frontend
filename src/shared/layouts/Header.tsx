@@ -149,10 +149,12 @@ const Header = () => {
                 )}
                 {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
+            <p className='sticky top-13 z-10000 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores can be reset in the near future for official releases.</p>
             <ToastContainer />
             <main className="main-height">
                 <Outlet />
             </main>
+            <p className='sticky bottom-0 left-10 pl-2 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.1.2</p>
         </>
     );
 };
