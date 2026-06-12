@@ -165,10 +165,6 @@ const GuessContent = ({ user }: { user: IUser }) => {
         <>
             <div
                 className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-5 py-2 lg:main-height"
-                style={{
-                    minHeight: 'calc(100dvh - 58.5px)',
-                    paddingBottom: 'calc(56px + env(safe-area-inset-bottom))',
-                }}
             >
                 <div className="hidden lg:block">
                     <ConfigComponent />

@@ -29,11 +29,7 @@ const Profile = () => {
 
     return (
         <main
-            className="min-h-dvh py-6 pb-20 px-4"
-            style={{
-                minHeight: 'calc(100dvh - 58.5px)',
-                paddingBottom: 'calc(56px + env(safe-area-inset-bottom))',
-            }}
+            className="px-4 pt-4 flex-1"
         >
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
                 <section className="order-1 lg:order-2 min-w-0 w-full h-full">

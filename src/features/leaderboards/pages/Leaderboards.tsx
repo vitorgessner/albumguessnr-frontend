@@ -16,11 +16,7 @@ const Leaderboards = () => {
 
     return (
         <div
-            className="min-h-dvh bg-background"
-            style={{
-                minHeight: 'calc(100dvh - 58.5px)',
-                paddingBottom: 'calc(56px + env(safe-area-inset-bottom))',
-            }}
+            className="flex-1"
         >
             <div className="max-w-lg mx-auto px-4 pb-10">
                 <div className="pt-6 pb-4">
