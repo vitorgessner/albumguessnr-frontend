@@ -46,7 +46,7 @@ const Header = () => {
     };
 
     return (
-        <>
+        <div className="min-h-dvh flex flex-col">
             <header className="sticky top-0 flex items-center z-1000 p-3 w-full bg-(--card-light)">
                 <div className="flex justify-left xl:justify-center items-center grow pl-4 lg:pl-0">
                     <Link to={'/'}>
@@ -149,13 +149,13 @@ const Header = () => {
                 )}
                 {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
-            <p className='sticky top-13 z-10000 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores can be reset in the near future for official releases.</p>
+            <p className='sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores might reset in the near future for official releases.</p>
             <ToastContainer />
-            <main className="main-height">
+            <main className="flex-1">
                 <Outlet />
             </main>
-            <p className='sticky bottom-0 left-10 pl-2 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.1.2</p>
-        </>
+            <p className='sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.1.2</p>
+        </div>
     );
 };
 
