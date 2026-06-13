@@ -82,7 +82,7 @@ const Header = () => {
                                     Leaderboards <Trophy size={25}/>
                                 </button>
                                 <Link to={'/guess'} className='flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component'>
-                                    Guess <Gamepad size={30} className='mt-0.5' />
+                                    Play now <Gamepad size={30} className='mt-0.5' />
                                 </Link>
                                 <button onClick={handleLogout} className="hidden md:flex items-center gap-2 border-2 py-1 px-2 rounded-lg terra-component">
                                     Logout <LogOut size={25} />
@@ -149,7 +149,7 @@ const Header = () => {
                 )}
                 {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
-            <p className='sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores might reset in the near future for official releases.</p>
+            {user && <p className='sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores might reset in the near future for official releases.</p>}
             <ToastContainer />
             <main className="flex-1">
                 <Outlet />

@@ -1,4 +1,3 @@
-import type { Leaderboard } from '../hooks/useLeaderboards';
 import getAvatarColor from '../utils/getAvatarColor';
 import getInitials from '../utils/getInitials';
 
@@ -7,7 +6,7 @@ const Avatar = ({
     idx,
     size = 'md',
 }: {
-    user: Leaderboard;
+    user: { username: string, avatar_url: string };
     idx: number;
     size?: 'sm' | 'md' | 'lg';
 }) => {
@@ -15,7 +14,7 @@ const Avatar = ({
         size === 'lg'
             ? 'w-14 h-14 text-base'
             : size === 'md'
-              ? 'w-14 h-14 text-sm'
+              ? 'w-12 h-12 text-sm'
               : 'w-8 h-8 text-xs';
     return (
         <div

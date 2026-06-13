@@ -53,7 +53,7 @@ const Register = () => {
     };
 
     return (
-        <div className="flex flex-col md:flex-row justify-center items-center main-height gap-2">
+        <div className="flex flex-col justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
             <article
                 className="min-w-72 max-w-78 border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary"
                 aria-label="register-form"

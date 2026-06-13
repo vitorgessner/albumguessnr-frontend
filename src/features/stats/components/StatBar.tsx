@@ -9,7 +9,7 @@ const StatBar = ({
     max: number;
     color: string;
 }) => {
-    const percentage = max > 0 ? Math.round((value / max) * 100) : 0;
+    const percentage = max > 0 ? (value / max) * 100 : 0;
     return (
         <div className="flex flex-col gap-1">
             <div className="flex justify-between items-center">
