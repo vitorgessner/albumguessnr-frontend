@@ -9,6 +9,7 @@
 @custom-variant h-sm (@media (min-height: 667px));
 @custom-variant h-md (@media (min-height: 800px));
 @custom-variant h-lg (@media (min-height: 900px));
+@custom-variant 2xl (@media (min-width: 1700px));
 
 @layer base {
   * {

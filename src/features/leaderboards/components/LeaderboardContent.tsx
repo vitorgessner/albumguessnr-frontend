@@ -8,22 +8,24 @@ import RankRow from './RankRow';
 import SkeletonRow from './SkeletonRow';
 import { MONTHS } from '../constants/months';
 import { getEndOfWeek, getStartOfWeek } from '../utils/dateUtils';
+import { useLocation } from 'react-router';
 
 const LeaderboardContent = ({
     friends,
     period,
     category,
-    accuracy
+    accuracy,
+    limit
 }: {
     friends: boolean;
     period: Period;
     category: Category;
     accuracy: boolean;
+    limit?: boolean;
 }) => {
     const { data, isPending, error } = useLeaderboards({ friends, period, category, accuracy });
     const { data: loggedUser } = useUser();
-
-    console.log(category, period, data);
+    const location = useLocation()
 
     if (isPending) {
         return (
@@ -61,15 +63,15 @@ const LeaderboardContent = ({
 
     return (
         <div className="flex flex-col gap-4">
-            <h2 className='text-2xl w-fit px-5 py-0.5 mx-auto text-center text-navy tracking-wide font-black font-heading bg-sidebar-border rounded-md border-border border shadow-[2px_2px_0_var(--border)]'>
+            {location.pathname === '/leaderboards' && <h2 className='text-2xl w-fit px-5 py-0.5 mx-auto text-center text-navy tracking-wide font-black font-heading bg-sidebar-border rounded-md border-border border shadow-[2px_2px_0_var(--border)]'>
                 {!period && 'All time'}
                 {period === 'daily' && new Date().toLocaleDateString().slice(0, -5)}
                 {period === 'monthly' && MONTHS[new Date().getMonth()]}
                 {period === 'weekly' && getStartOfWeek().toLocaleDateString().slice(0, -5) + ' - ' + getEndOfWeek().toLocaleDateString().slice(0, -5)}
-            </h2>
+            </h2>}
 
             {top3.length > 0 && (
-                <div className="px-2 pt-4">
+                <div className={`px-2 ${location.pathname === '/leaderboards' ? 'pt-4' : 'pt-0'}`}>
                     <div className={`${!unique ? 'grid grid-cols-3 gap-1 items-end' : 'flex justify-center'}`}>
                         {top3.map((user, i) => (
                             <PodiumCard key={user.userId} user={user} idx={i} unique={unique}/>
@@ -80,9 +82,9 @@ const LeaderboardContent = ({
 
             {rest.length > 0 && (
                 <div className="bg-card border border-border rounded-xl overflow-hidden">
-                    {rest.map((user, i) => (
+                    {rest.map((user, i) => limit ? i < 7 ? (
                         <RankRow key={user.userId} user={user} idx={i + 3} isMe={loggedUser?.id === user.userId}/>
-                    ))}
+                    ) : null : <RankRow key={user.userId} user={user} idx={i + 3} isMe={loggedUser?.id === user.userId}/>)}
                 </div>
             )}
         </div>

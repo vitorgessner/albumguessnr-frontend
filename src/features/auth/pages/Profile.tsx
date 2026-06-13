@@ -29,7 +29,7 @@ const Profile = () => {
 
     return (
         <main
-            className="px-4 pt-4 flex-1"
+            className="px-4 pt-4 grow flex-1"
         >
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
                 <section className="order-1 lg:order-2 min-w-0 w-full h-full">

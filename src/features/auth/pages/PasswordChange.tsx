@@ -63,9 +63,9 @@ const PasswordChange = () => {
     };
 
     return (
-        <div className="flex flex-col md:flex-row justify-center items-center main-height gap-2">
+        <div className="flex flex-col justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
             <article
-                className={'border-2 border-border p-5 bg-(--primary-color)'}
+                className={'border-2 border-primary p-5 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary'}
                 aria-label="login-form"
                 data-testid="login-section"
             >
