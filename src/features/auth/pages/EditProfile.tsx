@@ -31,7 +31,7 @@ const EditProfile = () => {
         mutationFn: async (data) => {
             await axios.put(`/integration`, { lastfmUsername: data.get('lastfmUsername') });
             
-            await axios.patch(`/profile/${user?.profile.username}/edit`, data, {
+            await axios.patch(`/profile/${user?.profile.username.toLocaleLowerCase()}/edit`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -40,7 +40,7 @@ const EditProfile = () => {
             return data;
         },
         onSuccess: async (data) => {
-            navigate(`/profile/${data.get('username')}`);
+            navigate(`/profile/${data.get('username')?.toString().toLocaleLowerCase()}`);
             queryClient.invalidateQueries({ queryKey: ['user'] });
             queryClient.removeQueries({ queryKey: ['profile', user?.profile.username] });
             queryClient.invalidateQueries({ queryKey: ['friends'] });
@@ -141,7 +141,7 @@ const EditProfile = () => {
                         Username:{' '}
                         <Form.Input
                             type="text"
-                            defaultValue={user?.profile.username}
+                            defaultValue={user?.profile.displayUsername}
                             {...register('username', {
                                 required: 'Username is required',
                             })}
@@ -158,7 +158,7 @@ const EditProfile = () => {
                         LastFm Username:{' '}
                         <Form.Input
                             defaultValue={
-                                user?.lastfmIntegration && user?.lastfmIntegration.lastfmUsername
+                                user?.lastfmIntegration && user?.lastfmIntegration.lastfmDisplayUsername
                             }
                             type="text"
                             {...register('lastfmUsername')}

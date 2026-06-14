@@ -109,7 +109,7 @@ const Header = () => {
                                 />
                             </Link>
                             <div className="flex flex-col">
-                                <span>{user?.profile.username}</span>
+                                <span>{user?.profile.displayUsername}</span>
                                 <span>{user?.userStats.totalScore} points</span>
                             </div>
                         </div>

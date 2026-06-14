@@ -76,7 +76,7 @@ const Friends = ({ isPending }: { isPending: boolean }) => {
                                     />
 
                                     <span className="flex-1 text-sm font-bold text-navy truncate">
-                                        {friend.profile.username}
+                                        {friend.profile.displayUsername}
                                         {isMe && (
                                             <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-terra bg-terra/10 px-1.5 py-0.5 rounded-sm">
                                                 you

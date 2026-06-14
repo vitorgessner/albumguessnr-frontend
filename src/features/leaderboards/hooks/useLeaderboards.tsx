@@ -11,6 +11,7 @@ interface LeaderboardsProps {
 export interface Leaderboard {
     userId: string;
     username: string;
+    displayUsername: string;
     avatar_url: string;
     totalScore: number;
     accuracy: number;

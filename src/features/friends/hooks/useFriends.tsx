@@ -20,6 +20,7 @@ interface IFriends {
         totalScore: number;
         profile: {
             username: string;
+            displayUsername: string;
             avatar_url: string;
         };
     };
@@ -35,7 +36,8 @@ export interface IFriendsAlbums {
     id: string;
     profile: {
         avatar_url: string;
-        username: string
+        username: string;
+        displayUsername: string;
     },
     bestScore: number;
 }
