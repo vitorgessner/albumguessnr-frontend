@@ -22,12 +22,13 @@ const AlbumCover = ({
     };
 
     useEffect(() => {
-        if (isImageLoaded) {
+        if (isImageLoaded || !src) {
             clearTimer();
             startTimer();
         }
-    }, [startTimer, clearTimer, isImageLoaded]);
+    }, [startTimer, clearTimer, isImageLoaded, src]);
 
+    console.log(src)
     return (
         <div className="relative flex justify-center overflow-hidden mx-auto w-full rounded-sm lg:w-fit lg:max-w-fit border-2 border-border">
             {!isImageLoaded && (
@@ -44,7 +45,7 @@ const AlbumCover = ({
                 </div>
             )}
             <img
-                src={src}
+                src={src || `${import.meta.env.VITE_SUPABASE_STORAGE}/svgviewer-output.svg`}
                 onLoad={() => handleChange(true)}
                 onError={() => handleChange(true)}
                 alt=""
@@ -52,7 +53,7 @@ const AlbumCover = ({
                 draggable={false}
                 className={`${!isImageLoaded && 'hidden'} size-full w-full min-w-58 lg:min-w-58 lg:h-md:min-w-62 max-w-58 lg:max-w-58 lg:h-md:max-w-62 transition-opacity duration-300
                     ${!isImageLoaded ? 'opacity-0' : 'opacity-100'}
-                    ${!isGuessed ? 'blur-md' : ''}`}
+                    ${isGuessed || !src ? '' : 'blur-md'}`}
             />
         </div>
     );
