@@ -5,7 +5,7 @@ import type { RecentPlayersResponse } from "../types/playersTypes"
 export const useRecentPlayers = () => {
     const { data, isPending, error } = useQuery({
         queryKey: ['recent'],
-        queryFn: () => axios.get<RecentPlayersResponse>('/guess/recently').then(res => res.data.players)
+        queryFn: () => axios.get<RecentPlayersResponse>('/guess/recently').then(res => res.data.players),
     })
 
     return { data, isPending, error }
