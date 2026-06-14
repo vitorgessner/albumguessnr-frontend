@@ -28,7 +28,7 @@ const PodiumCard = ({
                 </Link>
             </div>
             <span className="text-base font-bold text-navy truncate max-w-18 text-center leading-tight">
-                {user.username}
+                {user.displayUsername}
             </span>
             <span
                 className={`text-xs font-bold px-2 py-0.5 rounded border ${medal.bg} ${medal.text} ${medal.shadow} number`}

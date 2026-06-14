@@ -19,7 +19,7 @@ const RankRow = ({ user, idx, isMe }: { user: Leaderboard; idx: number; isMe?: b
             </Link>
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-navy truncate">
-                    {user.username}
+                    {user.displayUsername}
                     {isMe && (
                         <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-terra bg-terra/10 px-1.5 py-0.5 rounded-sm">
                             you

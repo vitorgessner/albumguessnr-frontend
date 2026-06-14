@@ -11,11 +11,13 @@ export interface IMeResponse {
             updatedAt: Date;
             userId: string;
             username: string;
+            displayUsername: string;
         },
         lastfmIntegrationId: string,
         lastfmIntegration: {
             id: string,
             lastfmUsername: string,
+            lastfmDisplayUsername: string;
             lastSyncedAt: Date,
         }
         userStats: {
@@ -65,11 +67,13 @@ export interface IUser {
         updatedAt: Date;
         userId: string;
         username: string;
+        displayUsername: string;
     },
     lastfmIntegrationId: string,
     lastfmIntegration: {
         id: string,
         lastfmUsername: string,
+        lastfmDisplayUsername: string;
         lastSyncedAt: Date,
     }
 }
@@ -81,6 +85,7 @@ export interface IUserWithUsername {
     id: string;
     profile: {
         username: string;
+        displayUsername: string;
     },
 }
 
@@ -96,11 +101,13 @@ export interface IUserWithProfileAndLastfmIntegration {
         updatedAt: Date;
         userId: string;
         username: string;
+        displayUsername: string;
     },
     lastfmIntegrationId: string,
     lastfmIntegration: {
         id: string,
         lastfmUsername: string,
+        lastfmDisplayUsername: string;
         lastSyncedAt: Date,
     }
 }

@@ -11,6 +11,7 @@ interface IProfileResponse {
 export interface IProfile {
     id: string;
     username: string;
+    displayUsername: string;
     bio: string;
     avatar_url: string;
     user: {
@@ -32,6 +33,7 @@ export interface IProfile {
         }
         lastfmIntegration: {
             lastfmUsername: string;
+            lastfmDisplayUsername: string;
         };
         createdAt: Date;
         id: string;

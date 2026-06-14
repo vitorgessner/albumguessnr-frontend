@@ -49,7 +49,7 @@ const Login = () => {
         onSuccess: async (data) => {
             setResponse(data);
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            return navigate(`/profile/${data.username}`)
+            return navigate(`/profile/${data.username.toLocaleLowerCase()}`)
         },
         onError: (err) => {
             console.log(err.response);
