@@ -5,10 +5,21 @@ import LeaderboardContent from './features/leaderboards/components/LeaderboardCo
 import { useRecentPlayers } from './features/game/guess/hooks/useRecentPlayers';
 import { GuessRow } from './features/game/guess/components/GuessRow';
 import SkeletonRow from './features/leaderboards/components/SkeletonRow';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 const App = () => {
     const { data: user } = useUser();
-    const { data: recentPlayers, isPending } = useRecentPlayers();
+    const { data: recentPlayers, isPending, error } = useRecentPlayers();
+
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ['recent'] });
+        queryClient.invalidateQueries({
+            queryKey: ['leaderboards', false, 'daily', undefined, false],
+        });
+    }, [queryClient]);
 
     return !user ? (
         <div className="min-h-dvh bg-background text-navy font-sans selection:bg-amber/30 selection:text-navy">
@@ -134,62 +145,87 @@ const App = () => {
             </footer>
         </div>
     ) : (
-        <div className="flex flex-col lg:flex-row md:gap-6 xl:gap-12 2xl:gap-18 justify-center items-center lg:items-start">
-            <div className="grow flex-1 w-full max-w-md sm:max-w-lg">
-                <div className="pt-6 pb-2">
-                    <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
-                        Daily top ten
-                    </h1>
-                </div>
-                <div className="text-base">
-                    <LeaderboardContent
-                        friends={false}
-                        period={'daily'}
-                        category={undefined}
-                        accuracy={false}
-                        limit={true}
-                    />
-                </div>
-            </div>
-            <div className="pt-6 pb-4 flex-1 grow w-full max-w-md sm:max-w-lg">
-                <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
-                    Recent played
-                </h1>
-                <div className="bg-card border border-border rounded-xl overflow-hidden">
-                    <div
-                        className={`flex items-center justify-between gap-3 px-4 py-3 border-b border-border text-sm last:border-0 transition-colors`}
-                    >
-                        <div className="flex items-center gap-3">
-                            <p>Avatar</p>
-                            <p>Username</p>
-                        </div>
-                        <div className="flex items-center gap-5">
-                            <p>Score</p>
-                            <p>Date</p>
-                        </div>
+        <div>
+            <div className="flex flex-col lg:flex-row md:gap-6 xl:gap-12 2xl:gap-18 justify-center items-center lg:items-start">
+                <div className="grow flex-1 w-full max-w-md sm:max-w-lg">
+                    <div className="pt-6 pb-2">
+                        <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
+                            Daily top ten
+                        </h1>
                     </div>
-                    {
-                        isPending && <div className="bg-card border border-border rounded-xl overflow-hidden">
-                            {Array.from({ length: 8 }).map((_, i) => (
-                                <SkeletonRow key={i} />
-                            ))}
-                        </div>
-                    }
-                    {recentPlayers?.map((rp, i) => (
-                        <GuessRow player={rp} isMe={user.id === rp.userId} idx={i} key={rp.id} />
-                    ))}
+                    <div className="text-base">
+                        <LeaderboardContent
+                            friends={false}
+                            period={'daily'}
+                            category={undefined}
+                            accuracy={false}
+                            limit={true}
+                        />
+                    </div>
                 </div>
+                <div className="pt-6 pb-4 flex-1 grow w-full max-w-md sm:max-w-lg">
+                    <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
+                        Recent played
+                    </h1>
+                    <div className="bg-card border border-border rounded-xl overflow-hidden">
+                        <div
+                            className={`flex items-center justify-between gap-3 px-4 py-3 border-b border-border text-sm last:border-0 transition-colors`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <p>Avatar</p>
+                                <p>Username</p>
+                            </div>
+                            <div className="flex items-center gap-5">
+                                <p>Score</p>
+                                <p>Date</p>
+                            </div>
+                        </div>
+                        {isPending && (
+                            <div className="bg-card border border-border rounded-xl overflow-hidden">
+                                {Array.from({ length: 8 }).map((_, i) => (
+                                    <SkeletonRow key={i} />
+                                ))}
+                            </div>
+                        )}
+                        {error && (
+                            <div className="flex flex-col items-center justify-center py-12 gap-2 text-center px-4">
+                                <span className="text-4xl">⚠️</span>
+                                <p className="font-heading font-bold text-terra-dark">
+                                    Error loading recent played
+                                </p>
+                                <p className="text-sm text-muted-foreground">Try again later.</p>
+                            </div>
+                        )}
+                        {recentPlayers?.map((rp, i) => (
+                            <GuessRow
+                                player={rp}
+                                isMe={user.id === rp.userId}
+                                idx={i}
+                                key={rp.id}
+                            />
+                        ))}
+                    </div>
+                </div>
+                <Trophy
+                    size={180}
+                    color="#f2cc8f"
+                    className="hidden 2xl:block absolute left-15 top-90 opacity-40"
+                />
+                <Gamepad2
+                    size={180}
+                    color="#81b29a"
+                    className="hidden 2xl:block absolute right-15 top-90 opacity-25"
+                />
             </div>
-            <Trophy
-                size={180}
-                color="#f2cc8f"
-                className="hidden 2xl:block absolute left-15 top-90 opacity-40"
-            />
-            <Gamepad2
-                size={180}
-                color="#81b29a"
-                className="hidden 2xl:block absolute right-15 top-90 opacity-25"
-            />
+            <footer className="border-t-3 border-border bg-card px-6 text-center">
+                <div className="max-w-md mx-auto space-y-4">
+                    <p className="text-xs text-muted-foreground pt-4">
+                        &copy; {new Date().getFullYear()} AlbumGuessnr. Made with love for music
+                        lovers.
+                    </p>
+                    <p className="text-xs text-muted-foreground">contact: albumguessnr@gmail.com</p>
+                </div>
+            </footer>
         </div>
     );
 };
