@@ -118,9 +118,9 @@ const GuessContent = ({ user }: { user: IUser }) => {
             const guessObj: { album: string; artist?: string; genre?: string; year?: string } = {
                 album: data.album,
             };
-            if (config.artist) guessObj.artist = data.artist ?? '';
-            if (config.genre) guessObj.genre = data.genre ?? '';
-            if (config.year) guessObj.year = data.year ?? '';
+            if (config.artist && currentAlbum.album.artists.length > 0) guessObj.artist = data.artist ?? '';
+            if (config.genre && currentAlbum.album.genres.length > 0) guessObj.genre = data.genre ?? '';
+            if (config.year && currentAlbum.album.year) guessObj.year = data.year ?? '';
 
             const answers = guess(guessObj);
             setAnswers(answers);
@@ -164,7 +164,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
     return (
         <>
             <div
-                className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-5 py-2 lg:main-height"
+                className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-3 h-md:gap-5 py-1 h-md:py-2 lg:main-height"
             >
                 <div className="hidden lg:block">
                     <ConfigComponent />
@@ -185,7 +185,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                     </article>
 
                     <div
-                        className={`flex w-full max-w-xs lg:max-w-none mt-2 items-center ${
+                        className={`flex w-full max-w-xs lg:max-w-none mt-1 h-md:mt-2 items-center ${
                             timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'
                         }`}
                     >
@@ -210,7 +210,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                             onSubmit={handleSubmit(onGuess)}
                         >
                             <div
-                                className={`flex w-full flex-col gap-1.5 rounded-xl border-2 border-border bg-(--card-light) p-3 shadow-[3px_3px_0_var(--border)] ${
+                                className={`flex w-full flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-3 shadow-[3px_3px_0_var(--border)] ${
                                     isGuessed && 'pb-1'
                                 }`}
                             >
@@ -370,6 +370,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                             answers={answers}
                             index={index}
                             onTrackIndexChange={setIndex}
+                            focus={false}
                         />
                     </div>
                 ) : (
@@ -407,6 +408,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                         answers={answers}
                         index={index}
                         onTrackIndexChange={setIndex}
+                        focus={activeSheet === 'tracklist'}
                     />
                 </BottomSheet>
             )}
