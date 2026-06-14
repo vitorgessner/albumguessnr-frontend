@@ -227,6 +227,64 @@ const App = () => {
                 </div>
             </footer>
         </div>
+    ) : (
+        <div className="flex flex-col lg:flex-row md:gap-6 xl:gap-12 2xl:gap-18 justify-center items-center lg:items-start">
+            <div className="grow flex-1 w-full max-w-md sm:max-w-lg">
+                <div className="pt-6 pb-2">
+                    <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
+                        Daily top ten
+                    </h1>
+                </div>
+                <div className="text-base">
+                    <LeaderboardContent
+                        friends={false}
+                        period={'daily'}
+                        category={undefined}
+                        accuracy={false}
+                        limit={true}
+                    />
+                </div>
+            </div>
+            <div className="pt-6 pb-4 flex-1 grow w-full max-w-md sm:max-w-lg">
+                <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
+                    Recent played
+                </h1>
+                <div className="bg-card border border-border rounded-xl overflow-hidden">
+                    <div
+                        className={`flex items-center justify-between gap-3 px-4 py-3 border-b border-border text-sm last:border-0 transition-colors`}
+                    >
+                        <div className="flex items-center gap-3">
+                            <p>Avatar</p>
+                            <p>Username</p>
+                        </div>
+                        <div className="flex items-center gap-5">
+                            <p>Score</p>
+                            <p>Date</p>
+                        </div>
+                    </div>
+                    {
+                        isPending && <div className="bg-card border border-border rounded-xl overflow-hidden">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <SkeletonRow key={i} />
+                            ))}
+                        </div>
+                    }
+                    {recentPlayers?.map((rp, i) => (
+                        <GuessRow player={rp} isMe={user.id === rp.userId} idx={i} key={rp.id} />
+                    ))}
+                </div>
+            </div>
+            <Trophy
+                size={180}
+                color="#f2cc8f"
+                className="hidden 2xl:block absolute left-15 top-90 opacity-40"
+            />
+            <Gamepad2
+                size={180}
+                color="#81b29a"
+                className="hidden 2xl:block absolute right-15 top-90 opacity-25"
+            />
+        </div>
     );
 };
 
