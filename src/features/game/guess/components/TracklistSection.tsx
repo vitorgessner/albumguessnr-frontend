@@ -10,16 +10,20 @@ const TracklistSection = ({
     answers,
     index,
     onTrackIndexChange,
+    focus
 }: {
     answers: Answers;
     index: number | undefined;
     onTrackIndexChange: React.Dispatch<React.SetStateAction<number | undefined>>;
+    focus: boolean;
 }) => {
     const tracksRef = useRef<HTMLUListElement>(null);
-    const { register, handleSubmit, resetField } = useForm<TrackType>();
+    const { register, handleSubmit, resetField, setFocus } = useForm<TrackType>();
     const { currentAlbum, compareTrack, tries, incrementTries, resetTries } = useCompare();
     const { isFinished, setIsFinished, guessed } = useTrackStore();
     const guessedTracks = guessed.map((g) => g.name);
+
+    if (focus) setFocus('track')
 
     const onTrackTry: SubmitHandler<TrackType> = (data) => {
         incrementTries();
@@ -47,11 +51,11 @@ const TracklistSection = ({
 
     return (
         <section
-            className={`relative w-full flex flex-col overflow-hidden lg:border-2 lg:border-border lg:rounded-xl lg:shadow-[3px_3px_0_var(--border)] bg-(--card-light) lg:max-h-139 h-lg:max-h-159.5 ${
+            className={`relative w-full flex flex-col overflow-hidden lg:border-2 lg:border-border lg:rounded-xl lg:shadow-[3px_3px_0_var(--border)] bg-(--card-light) lg:max-h-120 h-md:max-h-139 h-lg:max-h-159.5 ${
                 currentAlbum.album.tracks.length === 0 && 'pb-3'
             }`}
         >
-            <div className="fixed lg:sticky top-13 left-0 right-0 lg:top-0 z-10 flex items-center justify-between bg-(--card-light) border-b-2 border-border px-5 py-3">
+            <div className="fixed lg:sticky top-13 left-0 right-0 lg:top-0 z-2 flex items-center justify-between bg-(--card-light) border-b-2 border-border px-5 py-3">
                 <div className="opacity-0 text-xs number">0/{currentAlbum.album.tracks.length}</div>
                 <h3 className="text-xl font-black font-heading tracking-tight text-navy">
                     Tracklist
