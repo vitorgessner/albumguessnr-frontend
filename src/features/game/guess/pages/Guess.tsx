@@ -60,6 +60,8 @@ const GuessSync = ({ user }: { user: IUser }) => {
             }),
         enabled: isSynced,
         refetchInterval: albums.length <= 0 ? 20000 : false,
+        gcTime: 0,
+        staleTime: 0,
     });
 
     const isFirstLoad = useRef(true);

@@ -27,8 +27,7 @@ const AlbumCover = ({
             startTimer();
         }
     }, [startTimer, clearTimer, isImageLoaded, src]);
-
-    console.log(src)
+    
     return (
         <div className="relative flex justify-center overflow-hidden mx-auto w-full rounded-sm lg:w-fit lg:max-w-fit border-2 border-border">
             {!isImageLoaded && (
