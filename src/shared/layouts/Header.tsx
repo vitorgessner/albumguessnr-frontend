@@ -154,7 +154,7 @@ const Header = () => {
             <main className="flex-1">
                 <Outlet />
             </main>
-            <p className='sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.1.2</p>
+            <p className='sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.1.3</p>
         </div>
     );
 };
