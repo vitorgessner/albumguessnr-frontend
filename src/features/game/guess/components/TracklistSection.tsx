@@ -51,7 +51,7 @@ const TracklistSection = ({
 
     return (
         <section
-            className={`relative w-full flex flex-col overflow-hidden lg:border-2 lg:border-border lg:rounded-xl lg:shadow-[3px_3px_0_var(--border)] bg-(--card-light) lg:max-h-120 h-md:max-h-139 h-lg:max-h-159.5 ${
+            className={`relative w-full flex flex-col overflow-hidden lg:border-2 lg:border-border lg:rounded-xl lg:shadow-[3px_3px_0_var(--border)] bg-(--card-light) lg:max-h-110 h-sm:max-h-132 h-lg:max-h-169 ${
                 currentAlbum.album.tracks.length === 0 && 'pb-3'
             }`}
         >

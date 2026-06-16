@@ -120,8 +120,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
             const guessObj: { album: string; artist?: string; genre?: string; year?: string } = {
                 album: data.album,
             };
-            if (config.artist && currentAlbum.album.artists.length > 0) guessObj.artist = data.artist ?? '';
-            if (config.genre && currentAlbum.album.genres.length > 0) guessObj.genre = data.genre ?? '';
+            if (config.artist && currentAlbum.album.artists.length > 0)
+                guessObj.artist = data.artist ?? '';
+            if (config.genre && currentAlbum.album.genres.length > 0)
+                guessObj.genre = data.genre ?? '';
             if (config.year && currentAlbum.album.year) guessObj.year = data.year ?? '';
 
             const answers = guess(guessObj);
@@ -165,29 +167,25 @@ const GuessContent = ({ user }: { user: IUser }) => {
 
     return (
         <>
-            <div
-                className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-3 h-md:gap-5 py-1 h-md:py-2 lg:main-height"
-            >
+            <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-3 h-md:gap-5 py-1 h-md:py-2 lg:main-height">
                 <div className="hidden lg:block">
                     <ConfigComponent />
                 </div>
 
-                <div className="flex flex-col items-center w-full lg:w-fit lg:min-w-62 lg:max-w-62 px-4 lg:px-0 order-1 lg:order-2">
-                    <article className="flex justify-center">
-                        <div className="w-fit max-w-fit h-fit max-h-fit">
-                            <AlbumCover
-                                key={currentAlbum.album.cover_url}
-                                src={currentAlbum.album.cover_url}
-                                isGuessed={isGuessed}
-                                onLoadingChange={setIsImageLoaded}
-                                startTimer={startTimer}
-                                clearTimer={clearTimer}
-                            />
-                        </div>
+                <div className="flex flex-col items-center w-fit px-4 lg:px-0 order-1 lg:order-2">
+                    <article className="flex justify-center w-full min-w-48 max-w-48 lg:h-sm:min-w-60 lg:h-sm:max-w-60">
+                        <AlbumCover
+                            key={currentAlbum.album.cover_url}
+                            src={currentAlbum.album.cover_url}
+                            isGuessed={isGuessed}
+                            onLoadingChange={setIsImageLoaded}
+                            startTimer={startTimer}
+                            clearTimer={clearTimer}
+                        />
                     </article>
 
                     <div
-                        className={`flex w-full max-w-xs lg:max-w-none mt-1 h-md:mt-2 items-center ${
+                        className={`flex w-full lg:min-w-48 lg:max-w-48 lg:h-sm:min-w-60 lg:h-sm:max-w-60 mt-0.5 h-sm:mt-2 items-center ${
                             timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'
                         }`}
                     >
@@ -199,20 +197,20 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                 </span>
                             </p>
                         )}
-                        <span className="border-2 border-border rounded-full bg-(--card-light) px-3 py-1 text-sm font-black number text-navy shadow-[2px_2px_0_var(--border)]">
+                        <span className="border-2 border-border rounded-full bg-(--card-light) px-1.5 h-sm:px-3 py-0.5 h-sm:py-1 text-xs h-sm:text-sm font-black number text-navy h-sm:shadow-[2px_2px_0_var(--border)]">
                             {minutes < 10 ? '0' + minutes : minutes}:
                             {seconds < 10 ? '0' + seconds : seconds}
                         </span>
                     </div>
 
-                    <section className="w-full max-w-xs lg:max-w-none mt-2">
+                    <section className="w-full lg:min-w-48 lg:max-w-48 lg:h-sm:min-w-60 lg:h-sm:max-w-60 text-xs h-sm:text-sm h-lg:text-base mt-0.5 h-sm:mt-2">
                         <Form
                             ref={formRef}
                             className="flex flex-col gap-2"
                             onSubmit={handleSubmit(onGuess)}
                         >
                             <div
-                                className={`flex w-full flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-3 shadow-[3px_3px_0_var(--border)] ${
+                                className={`flex w-full flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-2.5 h-sm:px-3 shadow-[3px_3px_0_var(--border)] ${
                                     isGuessed && 'pb-1'
                                 }`}
                             >
@@ -238,7 +236,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                     </Form.Label>
                                 )}
                                 {config.album && isGuessed && !correctAnswers.album && (
-                                    <span className="overflow-hidden text-left text-nowrap text-ellipsis text-sm text-terra-dark font-bold px-1">
+                                    <span
+                                        className="min-w-0 overflow-x-hidden text-left truncate text-ellipsis text-terra-dark font-bold px-1"
+                                        title={currentAlbum.album.normalizedName}
+                                    >
                                         {currentAlbum.album.normalizedName}
                                     </span>
                                 )}
@@ -266,7 +267,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                     </Form.Label>
                                 )}
                                 {config.artist && isGuessed && correctAnswers.artist === false && (
-                                    <span className="overflow-hidden text-left text-nowrap text-ellipsis text-sm text-terra-dark font-bold px-1">
+                                    <span
+                                        className="min-w-0 truncate overflow-hidden text-left text-nowrap text-ellipsis text-terra-dark font-bold px-1"
+                                        title={currentAlbum.album.artists.map(a => a.artist.normalizedName).join(', ')}
+                                    >
                                         {currentAlbum.album.artists.map((a, i, arr) =>
                                             i !== arr.length - 1
                                                 ? a.artist.normalizedName + ', '
@@ -276,7 +280,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                 )}
 
                                 <div className="flex justify-between gap-2">
-                                    <div className="flex flex-col flex-1">
+                                    <div className="flex flex-col flex-1 min-w-0 max-w-49 lg:max-w-30">
                                         {config.genre && (
                                             <Form.Label>
                                                 <Form.Input
@@ -285,7 +289,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                         isGuessed
                                                     }
                                                     placeholder="Any tag"
-                                                    className={`disabled:opacity-40 ${
+                                                    className={`disabled:opacity-40 flex-1 ${
                                                         config.genre &&
                                                         currentAlbum.album.genres.length > 0 &&
                                                         (isGuessed
@@ -302,7 +306,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                         )}
                                         {config.genre && isGuessed && (
                                             <div
-                                                className="max-w-48 lg:max-w-32 overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-sm text-terra-dark font-bold px-1"
+                                                title={currentAlbum.album.genres
+                                                    .map((g) => g.genre.name)
+                                                    .join(', ')}
+                                                className="flex-1 min-w-0 truncate overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-terra-dark font-bold px-1"
                                                 onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
                                                     if (e.deltaY !== 0) {
                                                         e.preventDefault();
@@ -347,7 +354,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             config.year &&
                                             isGuessed &&
                                             correctAnswers.year === false && (
-                                                <span className="text-sm text-terra-dark font-bold px-1">
+                                                <span className="text-terra-dark font-bold px-1">
                                                     {currentAlbum.album.year}
                                                 </span>
                                             )}
@@ -360,14 +367,14 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                 type="submit"
                                 disabled={isPending || !isImageLoaded}
                                 value={!isGuessed ? 'Guess' : 'Next'}
-                                className={`${!isGuessed ? "sage-component" : "amber-component"} w-full disabled:opacity-50 rounded-xl`}
+                                className={`${!isGuessed ? 'sage-component' : 'amber-component'} w-full disabled:opacity-50 rounded-lg text-xs h-sm:text-sm`}
                             />
                         </Form>
                     </section>
                 </div>
 
                 {config.tracklist ? (
-                    <div className="hidden lg:flex flex-col items-center w-[355.5px] text-center order-3">
+                    <div className="hidden lg:flex flex-col items-center w-[355.5px] h-full text-center order-3">
                         <TracklistSection
                             answers={answers}
                             index={index}

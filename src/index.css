@@ -6,10 +6,10 @@
 @import "@fontsource-variable/inter";
 
 @custom-variant dark (&:is(.dark *));
-@custom-variant h-sm (@media (min-height: 667px));
+@custom-variant h-sm (@media (min-height: 700px));
 @custom-variant h-md (@media (min-height: 800px));
 @custom-variant h-lg (@media (min-height: 900px));
-@custom-variant 2xl (@media (min-width: 1700px));
+@custom-variant 2xl (@media (min-width: 1530px));
 
 @layer base {
   * {
@@ -26,11 +26,11 @@
   }
 
   input {
-    @apply border-2 border-border bg-sidebar-border px-2 py-1 rounded-sm text-(--text-h) focus:outline-navy-light focus:outline-2 w-full
+    @apply border-2 border-border bg-sidebar-border px-2 py-1 rounded-sm text-sm h-sm:text-base text-(--text-h) focus:outline-navy-light focus:outline-2 w-full
   }
 
   textarea {
-    @apply border-2 border-border bg-sidebar-border px-2 py-1 text-(--text-h) w-full rounded-sm
+    @apply border-2 border-border bg-sidebar-border px-2 py-1 text-sm h-sm:text-base text-(--text-h) w-full rounded-sm
   }
   html {
     @apply font-sans;

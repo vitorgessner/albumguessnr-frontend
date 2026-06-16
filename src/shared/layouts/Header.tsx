@@ -46,7 +46,7 @@ const Header = () => {
     };
 
     return (
-        <div className="min-h-dvh flex flex-col">
+        <div className="h-dvh flex flex-col overflow-hidden">
             <header className="sticky top-0 flex items-center z-1000 p-3 w-full bg-(--card-light)">
                 <div className="flex justify-left xl:justify-center items-center grow pl-4 lg:pl-0">
                     <Link to={'/'}>
@@ -151,7 +151,7 @@ const Header = () => {
             </header>
             {user && <p className='sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores might reset in the near future for official releases.</p>}
             <ToastContainer />
-            <main className="flex-1">
+            <main className="flex-1 overflow-y-auto">
                 <Outlet />
             </main>
             <p className='sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.1.3</p>
