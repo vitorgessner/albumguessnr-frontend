@@ -29,7 +29,7 @@ const AlbumCover = ({
     }, [startTimer, clearTimer, isImageLoaded, src]);
     
     return (
-        <div className="relative flex justify-center overflow-hidden mx-auto w-full rounded-sm lg:w-fit lg:max-w-fit border-2 border-border">
+        <div className="relative flex justify-center overflow-hidden mx-auto w-full rounded-sm border-2 border-border">
             {!isImageLoaded && (
                 <div>
                     <div className="lg:hidden block">
@@ -50,7 +50,7 @@ const AlbumCover = ({
                 alt=""
                 onContextMenu={(e) => e.preventDefault()}
                 draggable={false}
-                className={`${!isImageLoaded && 'hidden'} size-full w-full min-w-58 lg:min-w-58 lg:h-md:min-w-62 max-w-58 lg:max-w-58 lg:h-md:max-w-62 transition-opacity duration-300
+                className={`${!isImageLoaded && 'hidden'} size-full w-full transition-opacity duration-300
                     ${!isImageLoaded ? 'opacity-0' : 'opacity-100'}
                     ${isGuessed || !src ? '' : 'blur-md'}`}
             />

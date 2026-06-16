@@ -82,7 +82,7 @@ const ConfigComponent = ({ inSheet }: { inSheet?: boolean }) => {
             onMouseLeave={() => setIsHovered(false)}
         >
             <aside
-                className={`flex flex-col left-0 ${!isGuessed ? '-mb-70' : '-mb-58'} pb-10 h-full min-w-dvw w-full lg:w-fit lg:min-w-fit lg:-ml-60 transition-all max-w-66 bg-(--card-light) border-t-2 border-border lg:bg-(--card-light) duration-400 ease-in-out translate-x-5 ${isHovered && `lg:translate-x-60`} ${isExpanded && `xl:translate-x-60 lg:translate-x-5`}`}
+                className={`flex flex-col left-0 ${!isGuessed ? '-mb-70' : '-mb-58'} pb-10 h-full min-w-dvw w-full lg:w-fit lg:min-w-fit lg:-ml-60 transition-all max-w-66 bg-(--card-light) border-t-2 border-border lg:bg-(--card-light) duration-400 ease-in-out translate-x-5 ${isHovered && `lg:translate-x-60`} ${isExpanded && `2xl:translate-x-60 lg:translate-x-5`}`}
             >
                 <div className="flex flex-col mx-auto pt-3 px-5 gap-3 text-lg bg-(--card-light) lg:bg-(--card-light) border-border">
                     <h2 className="text-2xl">Guessing options</h2>

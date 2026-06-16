@@ -72,27 +72,27 @@ const EditProfile = () => {
     if (error) return <span className="loading text-(--error-text)">{error.message}</span>;
 
     return (
-        <main className="flex flex-col justify-center items-center pt-1 gap-2">
+        <main className="flex flex-col justify-center items-center pt-2 h-lg:pt-12 gap-2">
             <article
                 className={
-                    'border-2 border-primary p-5 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary'
+                    'border-2 border-primary p-4 pb-2.5 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
                 }
                 aria-label="login-form"
                 data-testid="login-section"
             >
-                <h1 className="text-2xl text-center mb-2">Edit your profile</h1>
+                <h1 className="text-xl h-sm:text-2xl h-lg:text-3xl text-center mb-2">Edit your profile</h1>
                 <Form
                     className="flex flex-col gap-2"
                     encType="multipart/form-data"
                     onSubmit={handleSubmit(onProfileSubmit)}
                 >
                     <Form.Label
-                        className="relative bg-(--card-light) size-26 h-lg:size-32 rounded-full mx-auto z-2 cursor-pointer"
+                        className="relative bg-(--card-light) size-18 h-sm:size-22 h-lg:size-30 rounded-full mx-auto z-2 cursor-pointer"
                         htmlFor="file-upload"
                     >
                         <img
                             src={preview ?? user?.profile.avatar_url}
-                            className="size-26 h-lg:size-32 rounded-full mx-auto absolute object-cover object-center"
+                            className="size-18 h-sm:size-22 h-lg:size-30 rounded-full mx-auto absolute object-cover object-center"
                             alt=""
                         />
                         <Form.Input
@@ -176,7 +176,7 @@ const EditProfile = () => {
                         <Form.Textfield
                             defaultValue={user?.profile.bio}
                             {...register('bio')}
-                            rows={4}
+                            rows={3}
                             cols={20}
                         />
                     </Form.Label>
