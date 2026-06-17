@@ -22,6 +22,7 @@ import AlbumCover from '../components/AlbumCover';
 import BottomSheet from '../components/BottomSheet';
 import BottomNav from '../components/BottomNav';
 import TracklistSection from '../components/TracklistSection';
+import { LogErrorModal } from '../../album/components/LogErrorModal';
 
 export type Sheet = 'config' | 'friends' | 'tracklist' | null;
 
@@ -269,7 +270,9 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                 {config.artist && isGuessed && correctAnswers.artist === false && (
                                     <span
                                         className="min-w-0 truncate overflow-hidden text-left text-nowrap text-ellipsis text-terra-dark font-bold px-1"
-                                        title={currentAlbum.album.artists.map(a => a.artist.normalizedName).join(', ')}
+                                        title={currentAlbum.album.artists
+                                            .map((a) => a.artist.normalizedName)
+                                            .join(', ')}
                                     >
                                         {currentAlbum.album.artists.map((a, i, arr) =>
                                             i !== arr.length - 1
@@ -427,6 +430,8 @@ const GuessContent = ({ user }: { user: IUser }) => {
                 onToggle={toggleSheet}
                 hasTracklist={config.tracklist}
             />
+
+            <LogErrorModal currentAlbum={currentAlbum}/>
 
             <ToastContainer position="top-center" limit={1} autoClose={300} />
         </>

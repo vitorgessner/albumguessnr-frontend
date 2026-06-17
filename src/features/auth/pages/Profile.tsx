@@ -5,12 +5,14 @@ import ProfileSkeleton from '../components/ProfileSkeleton';
 import RequestButton from '@/features/friends/components/RequestButton';
 import FriendsLeaderboard from '../components/FriendsLeaderboard';
 import Stats from '@/features/stats/components/Stats';
+import useUser from '../hooks/useUser';
 
 type CenterTab = 'achievements' | 'stats';
 
 const Profile = () => {
     const [centerTab, setCenterTab] = useState<CenterTab>('stats');
     const { data: profile, isPending: isUserPending, error: userError } = useProfile();
+    const { data: user } = useUser();
 
     if (userError)
         return (
@@ -29,7 +31,7 @@ const Profile = () => {
 
     return (
         <main
-            className="px-4 pt-4 grow flex-1"
+            className="px-4 pt-2 h-sm:pt-4 grow flex-1"
         >
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
                 <section className="order-1 lg:order-2 min-w-0 w-full h-full">
@@ -38,7 +40,7 @@ const Profile = () => {
                             <img
                                 src={profile.avatar_url}
                                 alt={profile.username}
-                                className="rounded-full size-24 object-cover object-center border-2 border-border"
+                                className="rounded-full size-20 h-sm:size-24 object-cover object-center border-2 border-border"
                             />
                             <div className="min-w-0 w-full">
                                 <h1 className="text-2xl font-black font-heading tracking-tight text-navy leading-tight truncate">
@@ -102,7 +104,7 @@ const Profile = () => {
                             Member since {creationDate}
                         </p>
 
-                        <RequestButton />
+                        {user && <RequestButton />}
                     </article>
                 </section>
 

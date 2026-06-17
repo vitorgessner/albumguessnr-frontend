@@ -96,7 +96,7 @@ const RequestButton = () => {
         <>
             {!isOwnProfile &&
                 (showSkeleton ? (
-                    <div className='mt-1'> 
+                    <div> 
                         <Skeleton height={48}  borderRadius={8} />
                     </div>
                 ) : (
