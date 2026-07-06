@@ -12,6 +12,8 @@ import axios from '@/shared/utils/axios';
 import ResendEmailButton from '../components/ResendEmailButton';
 import useAuthStore from '../stores/useAuthStore';
 import { ToastContainer } from 'react-toastify';
+import { LoginSpotify } from '../components/LoginSpotify';
+import { LoginButtonSkeleton } from '../components/LoginButtonSkeleton';
 
 type LoginFormData = z.infer<typeof formSchema>;
 
@@ -65,7 +67,7 @@ const Login = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
+        <div className="flex justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
             <article
                 className={
                     'min-w-72 border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary'
@@ -123,6 +125,22 @@ const Login = () => {
                 </Form>
                 <Link to={'/auth/register'} className='text-(--loading-text) text-sm'>Do not have an account? Create one here</Link>
                 <ToastContainer />
+            </article>
+            <article
+                className={
+                    'min-w-72 h-[425px] border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary'
+                }
+            >
+                <div className='flex flex-col h-full justify-around'>
+                    <h1 className="text-2xl mb-4">Continue with</h1>
+                    <div className="flex flex-col gap-2">
+                        <LoginSpotify />
+                        <LoginButtonSkeleton />
+                        <LoginButtonSkeleton />
+                        <LoginButtonSkeleton />
+                        <LoginButtonSkeleton />
+                    </div>
+                </div>
             </article>
         </div>
     );

@@ -9,6 +9,8 @@ import type { FormResponse, ErrorResponse } from '../types/response';
 import { AxiosError } from 'axios';
 import axios from '@/shared/utils/axios';
 import { Link } from 'react-router';
+import { LoginSpotify } from '../components/LoginSpotify';
+import { LoginButtonSkeleton } from '../components/LoginButtonSkeleton';
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -53,15 +55,18 @@ const Register = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
+        <div className="flex justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
             <article
                 className="min-w-72 max-w-78 border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary"
                 aria-label="register-form"
                 data-testid="register-section"
             >
                 <h1 className="text-2xl">Create an account</h1>
-                <p className='mb-2 text-sm'>Join the most fun album guessing community</p>
-                <Form className="flex flex-col gap-2 mb-1 text-wrap" onSubmit={handleSubmit(onSubmit)}>
+                <p className="mb-2 text-sm">Join the most fun album guessing community</p>
+                <Form
+                    className="flex flex-col gap-2 mb-1 text-wrap"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
                     <Form.Label>
                         Email: <Form.Input type="email" {...register('email')} />
                     </Form.Label>
@@ -110,7 +115,25 @@ const Register = () => {
                         </span>
                     )}
                 </Form>
-                <Link to={'/auth/login'} className='text-(--loading-text) text-sm'>Already registered? Try logging in</Link>
+                <Link to={'/auth/login'} className="text-(--loading-text) text-sm">
+                    Already registered? Try logging in
+                </Link>
+            </article>
+            <article
+                className={
+                    'min-w-72 h-[461.9px] border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary'
+                }
+            >
+                <div className='flex flex-col h-full justify-around'>
+                    <h1 className="text-2xl mb-4">Continue with</h1>
+                    <div className="flex flex-col gap-2">
+                        <LoginSpotify />
+                        <LoginButtonSkeleton />
+                        <LoginButtonSkeleton />
+                        <LoginButtonSkeleton />
+                        <LoginButtonSkeleton />
+                    </div>
+                </div>
             </article>
         </div>
     );

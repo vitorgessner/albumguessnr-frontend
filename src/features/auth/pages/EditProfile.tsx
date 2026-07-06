@@ -158,7 +158,7 @@ const EditProfile = () => {
                         LastFm Username:{' '}
                         <Form.Input
                             defaultValue={
-                                user?.lastfmIntegration && user?.lastfmIntegration.lastfmDisplayUsername
+                                user?.lastfmIntegration ? user?.lastfmIntegration.lastfmDisplayUsername : 'FishingDonut'
                             }
                             type="text"
                             {...register('lastfmUsername')}
