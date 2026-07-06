@@ -30,7 +30,7 @@ const Profile = () => {
     const creationDate = `${date.getDate()}/${month}/${date.getFullYear()}`;
 
     return (
-        <main
+        <div
             className="px-4 pt-2 h-sm:pt-4 grow flex-1"
         >
             <div className="max-w-5xl mx-auto flex flex-col profile-grid gap-4">
@@ -157,7 +157,7 @@ const Profile = () => {
                     <FriendsLeaderboard />
                 </section>
             </div>
-        </main>
+        </div>
     );
 };
 
