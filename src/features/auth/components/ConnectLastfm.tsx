@@ -1,17 +1,22 @@
+import axios from '@/shared/utils/axios';
 import useUser from '../hooks/useUser';
 import { X } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const ConnectLastfm = () => {
     const { data: user } = useUser();
+    const queryClient = useQueryClient();
 
     const lastfmAccount = user?.accounts.find((a) => a.provider === 'lastfm');
 
     const connectLastfm = async () => {
         window.location.href = import.meta.env.VITE_API_URL + '/login/lastfm';
+        await queryClient.invalidateQueries({ queryKey: ['user'] });
     };
 
     const disconnectLastfm = async () => {
-
+        await axios.delete('/provider/lastfm');
+        await queryClient.invalidateQueries({ queryKey: ['user'] });
     }
 
     return (
