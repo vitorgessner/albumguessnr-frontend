@@ -69,7 +69,6 @@ const Header = () => {
                 <div></div>
                 {!isPending && (
                     <div className="absolute right-5 flex items-center justify-right gap-5 text-navy tracking-tight font-heading font-semibold">
-                        {/* {isAuthenticated && <Link to={'/guess'}>Guess</Link>} */}
                         {isAuthenticated && (
                             <div className="flex items-center gap-5">
                                 <button

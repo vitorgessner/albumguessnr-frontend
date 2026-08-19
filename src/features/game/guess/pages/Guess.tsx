@@ -37,29 +37,29 @@ const Guess = () => {
 const GuessSync = ({ user }: { user: IUser }) => {
     const { albums, setAlbums, resetIndex } = useGuessStore();
 
-    const {
-        isPending,
-        error,
-        isSuccess: isSynced,
-    } = useQuery({
-        queryKey: ['sync', user?.lastfmIntegration.lastfmUsername],
-        queryFn: async () => axios.get('/game'),
-    });
+    // const {
+    //     isPending,
+    //     error,
+    //     isSuccess: isSynced,
+    // } = useQuery({
+    //     queryKey: ['sync', user?.lastfmIntegration.lastfmUsername],
+    //     queryFn: async () => axios.get('/game'),
+    // });
 
     const {
         isLoading: isAlbumsLoading,
-        error: albumsErrors,
+        // error: albumsErrors,
         isRefetching,
         dataUpdatedAt,
     } = useQuery({
-        queryKey: ['albums', user?.lastfmIntegration.lastfmUsername],
+        queryKey: ['albums', user.profile.displayUsername],
         queryFn: async () =>
             axios.get<FetchResponse>('/integration/albums').then((res) => {
                 shuffle(res.data.albums);
                 setAlbums(res.data.albums);
                 return res.data.albums;
             }),
-        enabled: isSynced,
+        // enabled: isSynced,
         refetchInterval: albums.length <= 0 ? 20000 : false,
         gcTime: 0,
         staleTime: 0,
@@ -74,10 +74,10 @@ const GuessSync = ({ user }: { user: IUser }) => {
         resetIndex();
     }, [dataUpdatedAt, resetIndex]);
 
-    if (isPending) return <span className="loading">Fetching user albums...</span>;
+    // if (isPending) return <span className="loading">Fetching user albums...</span>;
     if (isAlbumsLoading) return <span className="loading">Loading albums...</span>;
-    if (error || albumsErrors)
-        return <span className="loading text-(--error-text)">{error?.message}</span>;
+    // if (error || albumsErrors)
+    //     return <span className="loading text-(--error-text)">{error?.message}</span>;
     if (albums.length <= 0)
         return <div className="loading">Preparing your albums, this may take a few minutes...</div>;
     if (isRefetching) return <div className="loading">Loading more albums...</div>;

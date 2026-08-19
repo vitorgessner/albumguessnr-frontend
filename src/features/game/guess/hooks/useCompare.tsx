@@ -132,7 +132,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
         if (index < albums.length - 1) {
             return incrementIndex();
         }
-        queryClient.invalidateQueries({ queryKey: ['albums', user?.lastfmIntegration.lastfmUsername] })
+        queryClient.invalidateQueries({ queryKey: ['albums', user?.profile.displayUsername] })
     }
 
     const normalizeData = (data: string) => {

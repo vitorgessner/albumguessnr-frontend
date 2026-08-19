@@ -46,12 +46,12 @@ const Profile = () => {
                                 <h1 className="text-2xl font-black font-heading tracking-tight text-navy leading-tight truncate">
                                     {profile.displayUsername}
                                 </h1>
-                                <p className="text-xs text-muted-foreground mt-0.5">
+                                {/* <p className="text-xs text-muted-foreground mt-0.5">
                                     <span className="font-bold text-terra-dark">
                                         {profile.user.lastfmIntegration.lastfmDisplayUsername}
                                     </span>{' '}
                                     on Last.fm
-                                </p>
+                                </p> */}
                             </div>
                         </div>
 
