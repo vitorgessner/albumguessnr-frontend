@@ -8,9 +8,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { FormResponse, ErrorResponse } from '../types/response';
 import { AxiosError } from 'axios';
 import axios from '@/shared/utils/axios';
-import { Link } from 'react-router';
-import { LoginSpotify } from '../components/LoginSpotify';
-import { LoginButtonSkeleton } from '../components/LoginButtonSkeleton';
+import { Link, useSearchParams } from 'react-router';
+import { LoginGoogle } from '../components/LoginGoogle';
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -19,6 +18,9 @@ const Register = () => {
         status: string;
         message: string;
     } | null>();
+    const [searchParams] = useSearchParams();
+
+    const message = searchParams.get('message');
 
     const queryClient = useQueryClient();
 
@@ -115,25 +117,13 @@ const Register = () => {
                         </span>
                     )}
                 </Form>
+                <div className="flex gap-2 justify-center mt-4">
+                    <LoginGoogle />
+                </div>
+                <p className="text-red-600 py-2">{message}</p>
                 <Link to={'/auth/login'} className="text-(--loading-text) text-sm">
                     Already registered? Try logging in
                 </Link>
-            </article>
-            <article
-                className={
-                    'min-w-72 h-[461.9px] border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary'
-                }
-            >
-                <div className='flex flex-col h-full justify-around'>
-                    <h1 className="text-2xl mb-4">Continue with</h1>
-                    <div className="flex flex-col gap-2">
-                        <LoginSpotify />
-                        <LoginButtonSkeleton />
-                        <LoginButtonSkeleton />
-                        <LoginButtonSkeleton />
-                        <LoginButtonSkeleton />
-                    </div>
-                </div>
             </article>
         </div>
     );
