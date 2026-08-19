@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from '../../../shared/utils/axios';
-import type { IMeResponse, IUser } from '../../../shared/types/user';
+import type { IUser } from '../../../shared/types/user';
 import { useEffect } from 'react';
 import useAuthStore from '../stores/useAuthStore';
 import { AxiosError } from 'axios';
@@ -11,7 +11,7 @@ const useUser = () => {
         queryKey: ['user'],
         queryFn: () => {
             const response: Promise<IUser | undefined | null> = axios
-                .get<IMeResponse>('/me')
+                .get('/me')
                 .then((res) => res.data.user)
                 .catch((err) => {
                     console.log(err);

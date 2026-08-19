@@ -1,6 +1,5 @@
 export type AllowedData = {
     username: string,
-    lastfmUsername: string,
     bio: string,
     pfp: FileList
 }

@@ -145,8 +145,8 @@ const App = () => {
             </footer>
         </div>
     ) : (
-        <div>
-            <div className="flex flex-col lg:flex-row md:gap-6 xl:gap-12 2xl:gap-18 justify-center items-center lg:items-start">
+        <div className='flex flex-col h-full'>
+            <div className="grow flex-1 flex flex-col lg:flex-row md:gap-6 xl:gap-12 2xl:gap-18 justify-center items-center lg:items-start">
                 <div className="grow flex-1 w-full max-w-md sm:max-w-lg">
                     <div className="pt-6 pb-2">
                         <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
@@ -167,7 +167,7 @@ const App = () => {
                     <h1 className="font-heading font-black text-2xl text-center text-navy tracking-tight">
                         Recent played
                     </h1>
-                    <div className="bg-card border border-border rounded-xl overflow-hidden">
+                    <div className="bg-card border border-border rounded-xl overflow-hidden mt-8">
                         <div
                             className={`flex items-center justify-between gap-3 px-4 py-3 border-b border-border text-sm last:border-0 transition-colors`}
                         >
@@ -204,6 +204,7 @@ const App = () => {
                                 key={rp.id}
                             />
                         ))}
+                        {!recentPlayers || recentPlayers.length < 1 && <div className='text-center p-4 font-heading font-bold tracking-tight text-navy'>No recent players</div>}
                     </div>
                 </div>
                 <Trophy
