@@ -31,10 +31,6 @@ export interface IProfile {
             guessedTracks: number,
             rightGuessedTracks: number
         }
-        lastfmIntegration: {
-            lastfmUsername: string;
-            lastfmDisplayUsername: string;
-        };
         createdAt: Date;
         id: string;
         totalScore: number;

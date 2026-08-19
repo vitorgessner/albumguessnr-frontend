@@ -10,6 +10,8 @@ import type { ErrorResponse } from '../types/response';
 import type { AllowedData } from '../types/editProfileResponse';
 import appendToFormData from '../utils/appendToFormData';
 import { useState } from 'react';
+import { ConnectSpotify } from '../components/ConnectSpotify';
+import { ConnectLastfm } from '../components/ConnectLastfm';
 
 const EditProfile = () => {
     const { data: user, isPending: isUserPending, error } = useUser();
@@ -21,7 +23,6 @@ const EditProfile = () => {
         register,
         handleSubmit,
         formState: { errors },
-        setError,
     } = useForm<AllowedData>({ mode: 'onChange' });
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -29,8 +30,6 @@ const EditProfile = () => {
 
     const { mutate, isPending } = useMutation<FormData, AxiosError<ErrorResponse>, FormData>({
         mutationFn: async (data) => {
-            await axios.put(`/integration`, { lastfmUsername: data.get('lastfmUsername') });
-            
             await axios.patch(`/profile/${user?.profile.username.toLocaleLowerCase()}/edit`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -48,7 +47,6 @@ const EditProfile = () => {
         onError: (err) => {
             if (err instanceof AxiosError && err.response) {
                 err.message = err.response.data.message;
-                setError('lastfmUsername', err)
                 return console.log(err.response);
             }
             console.log(err);
@@ -59,7 +57,6 @@ const EditProfile = () => {
         setIsModalOpen(false);
         const formData = new FormData();
         appendToFormData(formData, 'username', data.username);
-        appendToFormData(formData, 'lastfmUsername', data.lastfmUsername);
         appendToFormData(formData, 'bio', data.bio);
         appendToFormData(formData, 'pfp', data.pfp[0]);
 
@@ -72,7 +69,7 @@ const EditProfile = () => {
     if (error) return <span className="loading text-(--error-text)">{error.message}</span>;
 
     return (
-        <main className="flex flex-col justify-center items-center pt-2 h-lg:pt-12 gap-2">
+        <main className="flex justify-center items-center pt-2 h-lg:pt-12 gap-2">
             <article
                 className={
                     'border-2 border-primary p-4 pb-2.5 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
@@ -80,7 +77,9 @@ const EditProfile = () => {
                 aria-label="login-form"
                 data-testid="login-section"
             >
-                <h1 className="text-xl h-sm:text-2xl h-lg:text-3xl text-center mb-2">Edit your profile</h1>
+                <h1 className="text-xl h-sm:text-2xl h-lg:text-3xl text-center mb-2 title">
+                    Edit your profile
+                </h1>
                 <Form
                     className="flex flex-col gap-2"
                     encType="multipart/form-data"
@@ -112,9 +111,13 @@ const EditProfile = () => {
                                     acceptedFormats: (files) => {
                                         if (files.length === 0) return true;
                                         return (
-                                            ['image/jpeg', 'image/png', 'image/svg', 'image/gif'].includes(
-                                                files[0]?.type
-                                            ) || 'File format must be JPEG or PNG'
+                                            [
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/svg',
+                                                'image/gif',
+                                            ].includes(files[0]?.type) ||
+                                            'File format must be JPEG or PNG'
                                         );
                                     },
                                 },
@@ -155,23 +158,6 @@ const EditProfile = () => {
                     )}
 
                     <Form.Label>
-                        LastFm Username:{' '}
-                        <Form.Input
-                            defaultValue={
-                                user?.lastfmIntegration && user?.lastfmIntegration.lastfmDisplayUsername
-                            }
-                            type="text"
-                            {...register('lastfmUsername')}
-                        />
-                    </Form.Label>
-
-                    {errors.lastfmUsername && (
-                        <span className="text-(--error-text) text-right text-sm">
-                            {errors.lastfmUsername.message}
-                        </span>
-                    )}
-
-                    <Form.Label>
                         Bio:{' '}
                         <Form.Textfield
                             defaultValue={user?.profile.bio}
@@ -202,6 +188,22 @@ const EditProfile = () => {
                 >
                     Cancel
                 </button>
+            </article>
+            <article
+                className={
+                    'flex flex-col gap-8 border-2 border-primary p-4 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
+                }
+            >
+                <div>
+                    <h1 className="title text-xl">Providers</h1>
+                    <p className="w-xs">
+                        Connect to at least one of these providers to be able to play
+                    </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <ConnectSpotify />
+                    <ConnectLastfm />
+                </div>
             </article>
         </main>
     );
