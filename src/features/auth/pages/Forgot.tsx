@@ -2,7 +2,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import Form from '../components/form/Form';
 import { useMutation } from '@tanstack/react-query';
 import axios from '@/shared/utils/axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import type { ErrorResponse, FormResponse } from '../types/response';
 import * as z from 'zod';
@@ -14,6 +14,10 @@ type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 const Forgot = () => {
     const [response, setResponse] = useState<FormResponse | null>();
     const [errorMessage, setErrorMessage] = useState<string>('');
+
+    useEffect(() => {
+        document.title = "Forgot password";
+    }, [])
 
     const {
         register,

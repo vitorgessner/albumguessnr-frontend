@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import type { ErrorResponse, FormResponse } from '../types/response';
 import { AxiosError } from 'axios';
@@ -16,6 +16,10 @@ const PasswordChange = () => {
     const [response, setResponse] = useState<FormResponse | null>();
     const [errorMessage, setErrorMessage] = useState<string>('');
     const { passwordResetToken } = useParams();
+
+    useEffect(() => {    
+        document.title = "Password change";
+    }, [])
 
     const {
         register,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StarIcon, CalendarDays, Music2, Disc3, ChartNoAxesColumn, Target } from 'lucide-react';
 import useProfile from '../hooks/useProfile';
 import ProfileSkeleton from '../components/ProfileSkeleton';
@@ -13,6 +13,10 @@ const Profile = () => {
     const [centerTab, setCenterTab] = useState<CenterTab>('stats');
     const { data: profile, isPending: isUserPending, error: userError } = useProfile();
     const { data: user } = useUser();
+
+    useEffect(() => {
+        document.title = "Profile | " + user?.profile.displayUsername;
+    }, [user?.profile.displayUsername])
 
     if (userError)
         return (
