@@ -20,6 +20,7 @@ import VerifyToken from './features/auth/components/VerifyToken.tsx';
 import { SkeletonTheme } from 'react-loading-skeleton';
 import Leaderboards from './features/leaderboards/pages/Leaderboards.tsx';
 import Test from './features/auth/components/Test.tsx';
+import { PrivacyPolicy } from './shared/pages/PrivacyPolicy.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
                             <Route path="/" element={<App />} />
                             <Route path="/leaderboards" element={<Leaderboards />} />
                             <Route element={<UnprotectedRoute />}>
+                                <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
                                 <Route path="/auth/register" element={<Register />} />
                                 <Route path="/auth/login" element={<Login />} />
                                 <Route path="/auth/forgot" element={<Forgot />} />
