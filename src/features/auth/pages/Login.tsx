@@ -4,19 +4,23 @@ import * as z from 'zod';
 import { formSchema } from '../schemas/formSchema';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ErrorResponse, FormResponseWithUsername} from '../types/response';
+import type { ErrorResponse, FormResponseWithUsername } from '../types/response';
 import { AxiosError } from 'axios';
 import axios from '@/shared/utils/axios';
 import ResendEmailButton from '../components/ResendEmailButton';
 import useAuthStore from '../stores/useAuthStore';
 import { ToastContainer } from 'react-toastify';
+import { LoginGoogle } from '../components/LoginGoogle';
 
 type LoginFormData = z.infer<typeof formSchema>;
 
 const Login = () => {
+    const [searchParams] = useSearchParams();
     const { setIsLoggingOut } = useAuthStore();
+
+    const message = searchParams.get('message');
 
     useEffect(() => {
         setIsLoggingOut(false);
@@ -49,7 +53,7 @@ const Login = () => {
         onSuccess: async (data) => {
             setResponse(data);
             queryClient.invalidateQueries({ queryKey: ['user'] });
-            return navigate(`/profile/${data.username.toLocaleLowerCase()}`)
+            return navigate(`/profile/${data.username.toLocaleLowerCase()}`);
         },
         onError: (err) => {
             console.log(err.response);
@@ -65,7 +69,7 @@ const Login = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
+        <div className="flex justify-center items-center max-w-90 h-full grow pt-8 mx-auto gap-2">
             <article
                 className={
                     'min-w-72 border-2 border-primary p-5 bg-(--card-light) text-center rounded-lg three-dimension-primary'
@@ -74,7 +78,7 @@ const Login = () => {
                 data-testid="login-section"
             >
                 <h1 className="text-2xl">Login</h1>
-                <p className='text-sm mb-2'>Welcome back!</p>
+                <p className="text-sm mb-2">Welcome back!</p>
                 <Form className="flex flex-col gap-2 mb-1" onSubmit={handleSubmit(onSubmit)}>
                     <Form.Label>
                         Email:
@@ -121,7 +125,13 @@ const Login = () => {
                         </span>
                     )}
                 </Form>
-                <Link to={'/auth/register'} className='text-(--loading-text) text-sm'>Do not have an account? Create one here</Link>
+                <div className="flex gap-2 justify-center mt-4">
+                    <LoginGoogle />
+                </div>
+                <p className="text-red-600 py-2">{message}</p>
+                <Link to={'/auth/register'} className="text-(--loading-text) text-sm">
+                    Do not have an account? Create one here
+                </Link>
                 <ToastContainer />
             </article>
         </div>

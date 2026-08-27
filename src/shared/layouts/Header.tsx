@@ -69,7 +69,6 @@ const Header = () => {
                 <div></div>
                 {!isPending && (
                     <div className="absolute right-5 flex items-center justify-right gap-5 text-navy tracking-tight font-heading font-semibold">
-                        {/* {isAuthenticated && <Link to={'/guess'}>Guess</Link>} */}
                         {isAuthenticated && (
                             <div className="flex items-center gap-5">
                                 <button
@@ -151,7 +150,7 @@ const Header = () => {
             </header>
             {user && <p className='sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)'>This is a beta version, keep in mind that scores might reset in the near future for official releases.</p>}
             <ToastContainer />
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 grow overflow-y-auto">
                 <Outlet />
             </main>
             <p className='sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light'>v0.2.0</p>

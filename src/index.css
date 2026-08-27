@@ -38,6 +38,10 @@
 }
 
 @layer utilities {
+  .title {
+    @apply font-heading font-bold tracking-tight
+  }
+
   .number {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
@@ -136,6 +140,14 @@
     @apply bg-sage border-sage-dark shadow-[3px_3px_0_var(--sage-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
   }
 
+  .spotify-component {
+    @apply bg-(--spotify) border-(--spotify-dark) shadow-[3px_3px_0_var(--spotify-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
+  .lastfm-component {
+    @apply bg-(--lastfm) border-(--lastfm-dark) shadow-[3px_3px_0_var(--lastfm-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
   .navy-component {
     @apply bg-(--navy-light) border-(--navy) shadow-[3px_3px_0_var(--navy)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
   }
@@ -164,6 +176,10 @@
     .removeFriendButton {
       @apply w-full py-2 border-2 border-terra-dark rounded-lg bg-primary shadow-[3px_3px_0_var(--accent)] hover:bg-(--primary-light) hover:border-primary hover:shadow-[3px_3px_0_var(--accent)]
     }
+
+    .providerButton {
+      @apply flex items-center gap-2 font-heading tracking-tight font-bold w-full justify-center text-navy bg-sidebar-border rounded-md p-2 px-3 border-2 bg-white border-border shadow-[3px_3px_0_var(--border)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+    }
   }
 }
  
@@ -189,6 +205,10 @@
   --navy:           #3d405b;
   --navy-light:     #6b6fa0;
   --navy-extra-light: #9ea2d2;
+  --spotify: #1DD05D;
+  --spotify-dark: #01AB47;
+  --lastfm: #D31F27;
+  --lastfm-dark: #981800;
 
   --toastify-color-light: var(--sidebar-border);
   --toastify-color-error: var(--terra-light);
