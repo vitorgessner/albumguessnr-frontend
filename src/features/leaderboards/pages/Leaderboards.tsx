@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PERIODS, type Period } from '../constants/periods';
 import { CATEGORIES, type Category } from '../constants/categories';
 import LeaderboardContent from '../components/LeaderboardContent';
@@ -13,6 +13,28 @@ const Leaderboards = () => {
     const [activeCategory, setActiveCategory] = useState<Category>(undefined);
     const [activeMode, setActiveMode] = useState<Mode>(undefined);
     const { data } = useUser();
+
+    useEffect(() => {
+        const categories = [];
+        
+        categories.push(activeTab)
+        if (activePeriod) {
+            categories.push(activePeriod)
+        }
+        categories.filter((c) => c !== activePeriod)
+        
+        if (activeCategory) {
+            categories.push(activeCategory)
+        }
+        categories.filter((c) => c !== activeCategory)
+        
+        if (activeMode) {
+            categories.push(activeMode)
+        }
+        categories.filter((c) => c !== activeMode)
+        
+        document.title = "Leaderboards | " + categories.join(' | ');
+    }, [activeTab, activePeriod, activeCategory, activeMode])
 
     return (
         <div

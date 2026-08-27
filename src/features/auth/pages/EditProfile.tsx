@@ -9,7 +9,7 @@ import useAuthStore from '../stores/useAuthStore';
 import type { ErrorResponse } from '../types/response';
 import type { AllowedData } from '../types/editProfileResponse';
 import appendToFormData from '../utils/appendToFormData';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConnectSpotify } from '../components/ConnectSpotify';
 import { ConnectLastfm } from '../components/ConnectLastfm';
 
@@ -18,6 +18,10 @@ const EditProfile = () => {
 
     const [, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState<string | null>(null);
+
+    useEffect(() => {
+        document.title = "Edit profile | " + user?.profile.username;
+    }, [user?.profile.username])
 
     const {
         register,

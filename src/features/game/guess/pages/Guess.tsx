@@ -111,6 +111,10 @@ const GuessContent = ({ user }: { user: IUser }) => {
         },
     });
 
+    useEffect(() => {
+        document.title = "Guess";
+    }, [])
+
     const toggleSheet = (sheet: Sheet) => setActiveSheet((prev) => (prev === sheet ? null : sheet));
 
     const onGuess: SubmitHandler<GuessType> = async (data) => {

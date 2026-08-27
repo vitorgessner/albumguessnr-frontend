@@ -16,6 +16,10 @@ const App = () => {
 
     const queryClient = useQueryClient();
 
+    useEffect(() => {
+        document.title = "AlbumGuessnr";
+    }, [])
+
     const loadAnalyticsScript = () => {
         if (CookieConsent.acceptedCategory('analytics') && import.meta.env.PROD) {
             if (
@@ -46,7 +50,7 @@ const App = () => {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
           
-            gtag('config', '${import.meta.env.VITE_GTAG_ID}');
+            gtag('config', '${import.meta.env.VITE_GTAG_ID}', { send_page_view: false } );
         `;
 
             document.head.appendChild(script2);

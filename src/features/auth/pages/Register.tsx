@@ -2,7 +2,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import Form from '../components/form/Form';
 import * as z from 'zod';
 import { registerSchema } from '../schemas/formSchema';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { FormResponse, ErrorResponse } from '../types/response';
@@ -23,6 +23,10 @@ const Register = () => {
     const message = searchParams.get('message');
 
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        document.title = "Register";
+    }, [])
 
     const {
         register,

@@ -20,6 +20,10 @@ const Login = () => {
     const [searchParams] = useSearchParams();
     const { setIsLoggingOut } = useAuthStore();
 
+    useEffect(() => {
+        document.title = "Login";
+    }, [])
+
     const message = searchParams.get('message');
 
     useEffect(() => {
