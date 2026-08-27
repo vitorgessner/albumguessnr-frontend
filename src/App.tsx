@@ -7,12 +7,124 @@ import { GuessRow } from './features/game/guess/components/GuessRow';
 import SkeletonRow from './features/leaderboards/components/SkeletonRow';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import 'vanilla-cookieconsent/dist/cookieconsent.css';
+import * as CookieConsent from 'vanilla-cookieconsent';
 
 const App = () => {
     const { data: user } = useUser();
     const { data: recentPlayers, isPending, error } = useRecentPlayers();
 
     const queryClient = useQueryClient();
+
+    const loadAnalyticsScript = () => {
+        if (CookieConsent.acceptedCategory('analytics') && import.meta.env.PROD) {
+            if (
+                document.querySelector(
+                    `script[src="https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}"]`
+                )
+            ) {
+                console.log('Analytics script already working');
+                return;
+            }
+
+            console.log('accepted analytics cookie');
+            const script = document.createElement('script');
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}`;
+            script.async = true;
+
+            document.head.appendChild(script);
+            script.onload = () => {
+                console.log('loaded analytics script');
+            };
+            script.onerror = () => {
+                throw new Error('Failed to load analytics script');
+            };
+
+            const script2 = document.createElement('script');
+            script2.textContent = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+          
+            gtag('config', '${import.meta.env.VITE_GTAG_ID}');
+        `;
+
+            document.head.appendChild(script2);
+
+            script2.onerror = () => {
+                throw new Error('Failed to load analytics script2');
+            };
+
+            console.log('loaded analytics script 2');
+        }
+    };
+
+    useEffect(() => {
+        CookieConsent.run({
+            categories: {
+                necessary: {
+                    enabled: true,
+                    readOnly: true,
+                },
+                analytics: {},
+            },
+            language: {
+                default: 'en',
+                translations: {
+                    en: {
+                        consentModal: {
+                            title: 'We use cookies 🍪',
+                            description: `We're a university graduating project! We use essential cookies to keep the site running smoothly, and optional analytics cookies to understand how people use AlbumGuessnr — this data directly helps our academic project. Tracking will only be enabled with your explicit consent.`,
+                            acceptAllBtn: 'Accept all',
+                            acceptNecessaryBtn: 'Reject all',
+                            showPreferencesBtn: 'Manage individual preferences',
+                        },
+                        preferencesModal: {
+                            title: 'Manage cookie preferences',
+                            acceptAllBtn: 'Accept all',
+                            acceptNecessaryBtn: 'Reject all',
+                            savePreferencesBtn: 'Accept current selection',
+                            closeIconLabel: 'Close modal',
+                            sections: [
+                                {
+                                    title: 'Tracking technologies and your consent',
+                                    description:
+                                        'Cookies are small files that websites place on your device to remember preferences and understand how the site is used. You can change your mind about these at any time.',
+                                },
+                                {
+                                    title: 'Strictly Necessary cookies',
+                                    description:
+                                        "These cookies are essential for the site to work properly — for example, keeping you logged in. They can't be disabled.",
+                                    linkedCategory: 'necessary',
+                                },
+                                {
+                                    title: 'Performance and Analytics',
+                                    description:
+                                        "AlbumGuessnr is part of an academic research project, and these cookies help us understand how people actually use the app — like which screens get the most attention and whether people come back to play again. All data is anonymized and can't be used to identify you. It's a big help for our research, but totally optional!",
+                                    linkedCategory: 'analytics',
+                                },
+                            ],
+                        },
+                    },
+                },
+            },
+            onConsent: () => {
+                loadAnalyticsScript();
+            },
+            onChange: function ({ changedCategories }) {
+                if (!changedCategories.includes('analytics')) {
+                    return;
+                }
+
+                loadAnalyticsScript();
+
+                if (!CookieConsent.acceptedCategory('analytics')) {
+                    CookieConsent.eraseCookies(['_gid', /^_ga/]);
+                    location.reload();
+                }
+            },
+        });
+    }, []);
 
     useEffect(() => {
         queryClient.invalidateQueries({ queryKey: ['recent'] });
@@ -70,6 +182,14 @@ const App = () => {
                     </div>
                 </div>
             </header>
+
+            <button
+                type="button"
+                data-cc="show-preferencesModal"
+                className="absolute right-5 bottom-5 w-13 h-13 text-3xl rounded-full amber-component"
+            >
+                🍪
+            </button>
 
             <section className="border-t-3 border-border bg-sidebar-border/30 py-16 px-6">
                 <div className="max-w-5xl mx-auto">
@@ -137,15 +257,23 @@ const App = () => {
                     >
                         Sign up and Play <ArrowRight className="w-4 h-4" />
                     </Link>
-                    <p className="text-xs text-muted-foreground pt-4">
-                        &copy; {new Date().getFullYear()} AlbumGuessnr. Made with love for music
-                        lovers.
-                    </p>
+                    <ul className='flex gap-1 items-center pt-4'>
+                        <li>
+                            <p className="text-xs text-muted-foreground">
+                                &copy; {new Date().getFullYear()} AlbumGuessnr. Made with love for
+                                music lovers.
+                            </p>
+                        </li>
+                        <li className='text-xs hover:underline'>
+                            <a href={location.origin + '/privacyPolicy'} className='text-muted-foreground'>Privacy Policy</a>
+                        </li>
+                    </ul>
+                    <p className="text-xs text-muted-foreground">contact: albumguessnr@gmail.com</p>
                 </div>
             </footer>
         </div>
     ) : (
-        <div className='flex flex-col h-full'>
+        <div className="flex flex-col h-full">
             <div className="grow flex-1 flex flex-col lg:flex-row md:gap-6 xl:gap-12 2xl:gap-18 justify-center items-center lg:items-start">
                 <div className="grow flex-1 w-full max-w-md sm:max-w-lg">
                     <div className="pt-6 pb-2">
@@ -204,7 +332,12 @@ const App = () => {
                                 key={rp.id}
                             />
                         ))}
-                        {!recentPlayers || recentPlayers.length < 1 && <div className='text-center p-4 font-heading font-bold tracking-tight text-navy'>No recent players</div>}
+                        {!recentPlayers ||
+                            (recentPlayers.length < 1 && (
+                                <div className="text-center p-4 font-heading font-bold tracking-tight text-navy">
+                                    No recent players
+                                </div>
+                            ))}
                     </div>
                 </div>
                 <Trophy
