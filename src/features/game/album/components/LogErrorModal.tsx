@@ -62,10 +62,10 @@ export const LogErrorModal = ({ currentAlbum }: { currentAlbum: Album }) => {
         <Dialog>
             <DialogTrigger asChild>
                 <button
-                    className="absolute right-5 bottom-18 lg:bottom-5 dark-terra-component rounded-full p-2 disabled:opacity-40 disabled:cursor-auto disabled:hover:translate-0 disabled:hover:shadow-[3px_3px_0_var(--terra-dark)]"
+                    className="absolute h-13 w-13 right-5 bottom-18 lg:bottom-5 dark-terra-component rounded-full p-2 disabled:opacity-40 disabled:cursor-auto disabled:hover:translate-0 disabled:hover:shadow-[3px_3px_0_var(--terra-dark)]"
                     disabled={!isGuessed}
                 >
-                    <NotebookPen stroke="white" />
+                    <NotebookPen stroke="white" width={35} height={35}/>
                 </button>
             </DialogTrigger>
             <DialogContent className="rounded-lg p-4 bg-white border-primary border-2">

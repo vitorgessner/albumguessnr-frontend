@@ -22,6 +22,7 @@ import Leaderboards from './features/leaderboards/pages/Leaderboards.tsx';
 import Test from './features/auth/components/Test.tsx';
 import { PrivacyPolicy } from './shared/pages/PrivacyPolicy.tsx';
 import { Analytics } from './shared/components/Analytics.tsx';
+import { DailyAlbumPage } from './features/game/dailyAlbum/pages/DailyAlbumPage.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -43,6 +44,7 @@ createRoot(document.getElementById('root')!).render(
                                 <Route path="/verify/:token" element={<VerifyToken />} />
                             </Route>
                             <Route path="/profile/:username" element={<Profile />} />
+                            <Route path="/dailyAlbum/" element={<DailyAlbumPage />} />
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/profile/:username/edit" element={<EditProfile />} />
                                 <Route path="/guess" element={<Guess />} />

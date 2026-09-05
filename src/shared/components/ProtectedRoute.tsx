@@ -4,12 +4,12 @@ import useUser from "@/features/auth/hooks/useUser";
 
 const ProtectedRoute = () => {
     const { isAuthenticated, isLoggingOut, isInitializing } = useAuthStore();
-    const { isPending } = useUser();
+    const { data, isPending } = useUser();
 
     if (isInitializing) return null;
 
 
-    if (!isAuthenticated && !isLoggingOut && !isPending) {
+    if (!isAuthenticated && !isLoggingOut && !isPending || data?.isGuest) {
         return <Navigate to={'/auth/login'} state={{ message: 'Not authenticated', intentional: false }} />;
     }
 

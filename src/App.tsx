@@ -8,7 +8,6 @@ import SkeletonRow from './features/leaderboards/components/SkeletonRow';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
-import * as CookieConsent from 'vanilla-cookieconsent';
 
 const App = () => {
     const { data: user } = useUser();
@@ -19,116 +18,6 @@ const App = () => {
     useEffect(() => {
         document.title = "AlbumGuessnr";
     }, [])
-
-    const loadAnalyticsScript = () => {
-        if (CookieConsent.acceptedCategory('analytics') && import.meta.env.PROD) {
-            if (
-                document.querySelector(
-                    `script[src="https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}"]`
-                )
-            ) {
-                console.log('Analytics script already working');
-                return;
-            }
-
-            console.log('accepted analytics cookie');
-            const script = document.createElement('script');
-            script.src = `https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}`;
-            script.async = true;
-
-            document.head.appendChild(script);
-            script.onload = () => {
-                console.log('loaded analytics script');
-            };
-            script.onerror = () => {
-                throw new Error('Failed to load analytics script');
-            };
-
-            const script2 = document.createElement('script');
-            script2.textContent = `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-          
-            gtag('config', '${import.meta.env.VITE_GTAG_ID}', { send_page_view: false } );
-        `;
-
-            document.head.appendChild(script2);
-
-            script2.onerror = () => {
-                throw new Error('Failed to load analytics script2');
-            };
-
-            console.log('loaded analytics script 2');
-        }
-    };
-
-    useEffect(() => {
-        CookieConsent.run({
-            categories: {
-                necessary: {
-                    enabled: true,
-                    readOnly: true,
-                },
-                analytics: {},
-            },
-            language: {
-                default: 'en',
-                translations: {
-                    en: {
-                        consentModal: {
-                            title: 'We use cookies 🍪',
-                            description: `We're a university graduating project! We use essential cookies to keep the site running smoothly, and optional analytics cookies to understand how people use AlbumGuessnr — this data directly helps our academic project. Tracking will only be enabled with your explicit consent.`,
-                            acceptAllBtn: 'Accept all',
-                            acceptNecessaryBtn: 'Reject all',
-                            showPreferencesBtn: 'Manage individual preferences',
-                        },
-                        preferencesModal: {
-                            title: 'Manage cookie preferences',
-                            acceptAllBtn: 'Accept all',
-                            acceptNecessaryBtn: 'Reject all',
-                            savePreferencesBtn: 'Accept current selection',
-                            closeIconLabel: 'Close modal',
-                            sections: [
-                                {
-                                    title: 'Tracking technologies and your consent',
-                                    description:
-                                        'Cookies are small files that websites place on your device to remember preferences and understand how the site is used. You can change your mind about these at any time.',
-                                },
-                                {
-                                    title: 'Strictly Necessary cookies',
-                                    description:
-                                        "These cookies are essential for the site to work properly — for example, keeping you logged in. They can't be disabled.",
-                                    linkedCategory: 'necessary',
-                                },
-                                {
-                                    title: 'Performance and Analytics',
-                                    description:
-                                        "AlbumGuessnr is part of an academic research project, and these cookies help us understand how people actually use the app — like which screens get the most attention and whether people come back to play again. All data is anonymized and can't be used to identify you. It's a big help for our research, but totally optional!",
-                                    linkedCategory: 'analytics',
-                                },
-                            ],
-                        },
-                    },
-                },
-            },
-            onConsent: () => {
-                loadAnalyticsScript();
-            },
-            onChange: function ({ changedCategories }) {
-                if (!changedCategories.includes('analytics')) {
-                    return;
-                }
-
-                loadAnalyticsScript();
-
-                if (!CookieConsent.acceptedCategory('analytics')) {
-                    CookieConsent.eraseCookies(['_gid', /^_ga/]);
-                    location.reload();
-                }
-            },
-        });
-    }, []);
 
     useEffect(() => {
         queryClient.invalidateQueries({ queryKey: ['recent'] });
@@ -152,9 +41,9 @@ const App = () => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center md:justify-start">
-                        <button className="inline-flex items-center justify-center gap-2 px-8 py-4 font-heading font-black text-lg text-white bg-primary border-3 border-terra-dark rounded-xl shadow-[4px_4px_0_var(--terra-dark)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--terra-dark)] transition-all opacity-50 text-nowrap">
-                            Play Daily Album (soon) <Gamepad2 className="w-5 h-5" />
-                        </button>
+                        <Link to={import.meta.env.DEV ? 'http://127.0.0.1:5173/dailyAlbum' : 'https://albumguessnr.com/dailyAlbum'} className="inline-flex items-center justify-center gap-2 px-8 py-4 font-heading font-black text-lg text-white bg-primary border-3 border-terra-dark rounded-xl shadow-[4px_4px_0_var(--terra-dark)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--terra-dark)] transition-all text-nowrap">
+                            Guess Daily Album <Gamepad2 className="w-5 h-5" />
+                        </Link>
                         <Link
                             to="/leaderboards"
                             className="inline-flex items-center justify-center gap-2 px-8 py-4 font-heading font-black text-lg text-navy bg-card border-3 border-border rounded-xl shadow-[4px_4px_0_var(--border)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--border)] transition-all text-nowrap"
@@ -186,14 +75,6 @@ const App = () => {
                     </div>
                 </div>
             </header>
-
-            <button
-                type="button"
-                data-cc="show-preferencesModal"
-                className="absolute right-5 bottom-5 w-13 h-13 text-3xl rounded-full amber-component"
-            >
-                🍪
-            </button>
 
             <section className="border-t-3 border-border bg-sidebar-border/30 py-16 px-6">
                 <div className="max-w-5xl mx-auto">
