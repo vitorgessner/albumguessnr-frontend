@@ -5,6 +5,7 @@ export interface IUser {
     mainAccountId: string | null;
     userStats: IStats;
     profile: IProfile;
+    isGuest: boolean;
     accounts: Array<IAccount>;
 }
 

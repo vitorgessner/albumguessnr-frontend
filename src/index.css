@@ -140,6 +140,10 @@
     @apply bg-sage border-sage-dark shadow-[3px_3px_0_var(--sage-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
   }
 
+  .light-sage-component {
+    @apply bg-(--sage-light) border-sage shadow-[3px_3px_0_var(--sage)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
+  }
+
   .spotify-component {
     @apply bg-(--spotify) border-(--spotify-dark) shadow-[3px_3px_0_var(--spotify-dark)] hover:shadow-none transition hover:translate-x-[2px] hover:translate-y-[2px]
   }

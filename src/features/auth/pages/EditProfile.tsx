@@ -118,7 +118,7 @@ const EditProfile = () => {
                                             [
                                                 'image/jpeg',
                                                 'image/png',
-                                                'image/svg',
+                                                'image/svg+xml',
                                                 'image/gif',
                                             ].includes(files[0]?.type) ||
                                             'File format must be JPEG or PNG'

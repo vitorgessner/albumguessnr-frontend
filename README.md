@@ -1,119 +1,314 @@
-# AlbumGuessnr — Frontend
+# AlbumGuessnr — Frontend - EN
 
-Este projeto consiste no Projeto Integrador do curso de Sistemas para Internet na Univali.
+This project is the frontend interface for AlbumGuessnr, the music album guessing game. It consumes the backend API (authentication, music provider sync, game logic, daily album, leaderboards, and social features) and delivers the game experience in the browser.
 
-O projeto se trata de um jogo de adivinhação de álbuns musicais integrado (atualmente apenas) ao Last.fm. O sistema segue um fluxo de puxar álbuns ouvidos pelo usuário usando seu username do Last.fm, normalizar nomes de álbuns, artistas, gêneros, tracks retirando palavras referentes a versionamento (como version, remastered, edition), salvar no banco e exibir ao usuário a capa do álbum borrada permitindo que ele adivinhe o que queira.
+Quick summary:
+- React + Vite client written in TypeScript
+- Stateful logic with Zustand
+- Requests via Axios + TanStack Query
+- Styling with Tailwind CSS
+
+## What's new
+
+- OAuth integrations used by the frontend
+- required Vite environment variables
+- Google Analytics implementation
+- new daily album feature
 
 ## Stack
 
-- **Framework**: React
-- **Linguagem**: TypeScript
-- **Gerenciamento de estado**: Zustand
-- **Formulários**: React Hook Form
-- **Validação de dados**: Zod
-- **Data fetching**: TanStack Query (React Query)
-- **HTTP Client**: Axios (com interceptor de refresh token)
-- **Estilização**: Tailwind CSS
-- **Deploy**: Vercel
+- Framework: React + Vite
+- Language: TypeScript
+- State: Zustand
+- Data fetching: TanStack Query (React Query)
+- HTTP client: Axios (with an interceptor for refresh token)
+- Forms: React Hook Form
+- Validation: Zod
+- Styling: Tailwind CSS
 
-## Estrutura
+## Structure (summary)
 
 ```
 src/
 ├── features/
-│   ├── auth/
-│   │   ├── components/   # Form, Label, Input reutilizáveis
-│   │   ├── hooks/        # useUser
-│   │   └── stores/       # useAuthStore
-│   └── game/
-│       └── guess/
-│           ├── components/  # Guess, GuessSync, GuessContent
-│           ├── hooks/       # useCompare
-│           ├── stores/      # useGuessStore, useTrackStore
-│           ├── types/       # GuessType, albumTypes
-│           └── utils/       # shuffle
-└── shared/
-    ├── utils/    # Axios configurado com interceptor
-    └── types/    # IUser e outros tipos compartilhados
+│ ├── auth/ # login, registration, authentication components and hooks
+│ └── game/guess/ # guessing flow, components, hooks, and stores
+└── shared/ # utils (axios, types), shared components
 ```
+
+
+## Main frontend responsibilities
+
+- Authentication (including OAuth links for Spotify / Google / Last.fm)
+- Syncing and requesting albums from the backend (/integration/albums)
+- Gameplay: showing blurred covers, collecting guesses, showing results
+- Displaying public profiles, leaderboards, and user statistics
+- Integrating with Supabase storage for images (via URL provided by the backend)
+- Sending analytics events (optional, via Vite env)
+
+## Authentication
+
+- The backend keeps the JWT in an HttpOnly cookie; the frontend never handles the token directly
+- Axios is configured with an interceptor that, on a 401, attempts /refresh and retries the request
+- OAuth: the frontend starts the flow by redirecting to the backend routes:
+  - /login/spotify
+  - /login/google
+  - /login/lastfm
+  These routes handle the OAuth handshake; the backend redirects back to the frontend after authentication
+
+## Music provider integration
+
+- The frontend triggers syncs (e.g., via `/game` or integration actions) and consumes albums already normalized by the backend
+- Normalization (removing edition suffixes, versioning, normalizing names) is done by the backend, and the frontend uses the `normalized*` fields for comparison
+- The backend may process syncs asynchronously (RabbitMQ); the frontend simply triggers the sync and waits for the result to be available via the API
+
+## Daily Album (daily challenge)
+
+- The backend provides endpoints for the daily album; the frontend consumes:
+  - `GET /daily/album` — get today's album for the user
+  - `POST /daily/album/try` — submit a daily guess attempt
+  - `GET /daily/album/statistics` — individual statistics
+  - `GET /daily/album/overall/statistics` — global statistics
+
+## Social and Leaderboards
+
+- Friendships, requests, and public profiles are supported by the backend; relevant routes used by the frontend:
+  - `GET /profile/:username`
+  - `GET /leaderboards/...`
+  - `GET /friend/...`
+  - `GET /stats/:username`
+
+## Game flow (summary)
+
+1. `useUser` fetches the authenticated user (`GET /me`)
+2. `GuessSync` triggers the backend sync and waits for completion
+3. The frontend requests albums via `GET /integration/albums`
+4. Albums arrive normalized, get shuffled (`shuffle`), and are stored in `useGuessStore`
+5. `GuessContent` displays the album with the blurred cover and the configured guessing fields
+6. `useCompare` uses `normalized*` fields to compare answers
+7. On submit, the frontend calls `POST /guess` to record the attempt and receives the result (score, isNewBestScore, updates)
+
+## Normalization and data
+
+- The frontend relies on the normalized fields (`normalizedName`, `normalizedArtist`, `normalizedName` on tracks/genres) provided by the backend
+- Comparisons are case-, accent-, punctuation-, and edition-suffix-insensitive
+
+## Relevant backend routes (quick reference)
+
+- Health: `GET /health`
+- Session: `GET /me`, `POST /refresh`, `DELETE /logout`
+- Auth: `POST /login`, `POST /register`, `POST /forgot`, `PUT /passwordChange/:token`, `GET /verify/:token`, `POST /resendVerification`, `GET /guest`/`POST /guest`
+- OAuth: `GET /login/google`, `GET /google/callback`, `GET /login/spotify`, `GET /spotify/callback`, `GET /login/lastfm`
+- Integration: `GET /integration/albums`, `DELETE /provider/spotify`, `DELETE /provider/lastfm`
+- Game: `POST /guess`, `GET /guess/:albumId`, `GET /guess/recently`
+- Daily album: `GET /daily/album`, `POST /daily/album/try`, `GET /daily/album/statistics` (see section above)
+- Profiles / Leaderboards / Stats: `GET /profile/:username`, `GET /leaderboards/...`, `GET /stats/:username`
+
+## Environment variables (Vite)
+
+Place a `.env` or `.env.local` file at the project root with the variables below (example):
+
+- VITE_API_URL — base URL of the backend API (e.g., https://api.albumguessnr.example)
+- VITE_SUPABASE_STORAGE — base URL of the Supabase storage used for images (SVG fallback)
+- VITE_GTAG_ID — (optional) Google Analytics measurement ID for sending events via gtag
+
+Note: the project uses `import.meta.env.VITE_*` wherever these variables are needed.
+
+## Running locally
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create the environment file (copy a local example):
+
+```bash
+# create .env with the required VITE_* variables
+```
+
+3. Run in development mode (Vite):
+
+```bash
+npm run dev
+```
+
+4. Build for production:
+
+```bash
+npm run build
+```
+
+5. Serve the build (preview):
+
+```bash
+npm run preview
+```
+
+## Available scripts
+
+- `npm run dev` — runs Vite in development mode
+- `npm run build` — compiles TypeScript and generates the Vite build
+- `npm run preview` — serves the generated build (preview)
+- `npm run lint` — runs ESLint
+- `npm run test` — runs tests with Vitest
+
+---
+
+# AlbumGuessnr — Frontend - PT-BR
+
+Este projeto é a interface frontend do AlbumGuessnr, o jogo de adivinhação de álbuns musicais. Ele consome a API do backend (autenticação, sync com provedores de música, game logic, daily album, leaderboards e social) e oferece a experiência de jogo no navegador.
+
+Resumo rápido:
+- Cliente React + Vite escrito em TypeScript
+- Stateful logic com Zustand
+- Requisições via Axios + TanStack Query
+- Estilização com Tailwind CSS
+
+## O que é novo
+
+- integrações OAuth que o frontend usa
+- variáveis de ambiente Vite necessárias
+- google analytics implementado
+- nova feature de álbum diário
+
+## Stack
+
+- Framework: React + Vite
+- Linguagem: TypeScript
+- State: Zustand
+- Data fetching: TanStack Query (React Query)
+- HTTP client: Axios (com interceptor para refresh token)
+- Forms: React Hook Form
+- Validation: Zod
+- Styling: Tailwind CSS
+
+## Estrutura (resumo)
+
+```
+src/
+├── features/
+│   ├── auth/        # login, registro, componentes e hooks de autenticação
+│   └── game/guess/  # fluxo de adivinhação, components, hooks e stores
+└── shared/          # utils (axios, types), componentes compartilhados
+```
+
+## Principais responsabilidades do frontend
+
+- Autenticação (incluindo links OAuth para Spotify / Google / Last.fm)
+- Sincronizar e requisitar álbuns do backend (/integration/albums)
+- Jogar: mostrar capas borradas, coletar tentativas, mostrar resultado
+- Exibir perfis públicos, leaderboards e estatísticas de usuário
+- Integrar com Supabase storage para imagens (via URL fornecida pelo backend)
+- Enviar eventos de analytics (opcional, via Vite env)
 
 ## Autenticação
 
-- JWT armazenado em HttpOnly cookie (gerenciado pelo backend)
-- Axios interceptor: em caso de 401, tenta refresh token automaticamente e retenta a requisição original
+- O backend mantém JWT em cookie HttpOnly; o frontend não manipula o token diretamente
+- Axios está configurado com um interceptor que, em caso de 401, tenta /refresh e reexecuta a requisição
+- OAuth: o frontend inicia o fluxo redirecionando para as rotas do backend:
+  - /login/spotify
+  - /login/google
+  - /login/lastfm
+  Essas rotas abrigam o handshake OAuth; o backend redireciona de volta ao frontend após a autenticação
 
-## Fluxo do jogo
+## Integração com provedores musicais
 
-1. `useUser` busca o usuário autenticado
-2. `GuessSync` dispara o sync via `/game`
-3. Após sync concluído, busca álbuns via `/integration/albums`
-4. Álbuns são embaralhados (`shuffle`) e armazenados no `useGuessStore`
-5. `GuessContent` exibe o álbum atual (capa borrada) e os campos de adivinhação
-6. `useCompare` compara as respostas com os dados normalizados do banco
-7. Ao clicar em "Guess": revela capa, calcula pontuação, armazena registro de tentativa, incrementar stats do usuário e incrementa score total do user (caso tenha sido o melhor do dia para aquele álbum)
-8. Ao esgotar os álbuns: invalida a query e busca novo lote
+- O frontend aciona sincronizações (por exemplo, via `/game` ou ações de integração) e consome os álbuns já normalizados pelo backend
+- A normalização (remover sufixos de edição, versionamento, normalizar nomes) é feita pelo backend e o frontend usa os campos `normalized*` para comparação
+- O backend pode processar syncs assíncronos (RabbitMQ); o frontend apenas dispara e espera o resultado disponível via API
 
-## Stores (Zustand)
+## Daily Album (desafio diário)
 
-### `useGuessStore`
-Estado central do jogo:
-- `albums`: lista de álbuns do lote atual
-- `index`: álbum atual
-- `isGuessed`: se o usuário já submeteu a tentativa
-- `config`: campos que o usuário quer adivinhar
-- `correctAnswers`: estado das respostas do usuário
+- O backend possui endpoints para daily album; o frontend deve consumir:
+  - `GET /daily/album` — obter o álbum do dia para o usuário
+  - `POST /daily/album/try` — submeter tentativa no daily
+  - `GET /daily/album/statistics` — estatísticas individuais
+  - `GET /daily/album/overall/statistics` — estatísticas globais
 
-### `useTrackStore`
-Estado para adivinhação iterativa de tracklist:
-- `guessed`: tracks já tentadas com resultado (`{ name, isCorrect }`)
-- `remaining`: número de tentativas restantes
+## Social e Leaderboards
 
-### `useScoringScore`
-Estado para ux de newBestScore
-- `isNewBestScore`: define se é a melhor pontuação para o álbum adivinhado
+- Amizades, solicitações e perfis públicos são suportados pelo backend; rotas relevantes que o frontend usa:
+  - `GET /profile/:username`
+  - `GET /leaderboards/...`
+  - `GET /friend/...`
+  - `GET /stats/:username`
 
-## Comparação de respostas
+## Fluxo do jogo (resumido)
 
-Toda comparação usa os campos normalizados vindos do banco (`normalizedName`, `normalizedArtist`, `normalizedName` das tracks/gêneros). O usuário não precisa acertar capitalização, pontuação ou sufixos de edição.
+1. `useUser` busca o usuário autenticado (`GET /me`)
+2. `GuessSync` dispara a sincronização do backend e aguarda conclusão
+3. Frontend requisita álbuns via `GET /integration/albums`
+4. Álbuns chegam normalizados e são embaralhados (`shuffle`) e guardados no `useGuessStore`
+5. `GuessContent` exibe o álbum com a capa borrada e os campos configurados para adivinhação
+6. `useCompare` usa `normalized*` para comparar respostas
+7. Ao submeter, frontend chama `POST /guess` para registrar a tentativa e recebe o resultado (score, isNewBestScore, atualizações)
 
-## O que está feito
+## Normalização e dados
 
-- [x] Tela de login e registro
-- [x] Interceptor de refresh token
-- [x] Fluxo de sync + busca de álbuns
-- [x] Exibição do álbum com capa borrada
-- [x] Adivinhação de nome do álbum e artista
-- [x] Feedback visual (borda verde/vermelha nos inputs)
-- [x] Revelação do resultado e avanço para próximo álbum
-- [x] Embaralhamento dos álbuns
-- [x] Adivinhação de gênero/tag
-- [x] Adivinhação de tracklist (fluxo iterativo: digita uma track por vez, feedback imediato, "Guess" revela o restante)
-- [x] Refatoração do `useGuessStore` com `config` (quais campos o usuário quer adivinhar) e `answersState` (resultado de cada campo)
-- [x] Forgot/reset password
-- [x] Adivinhação de ano (input numérico, desabilitado se `album.year === null`)
-- [x] Timer in-game
-- [x] Validação com Zod
-- [x] Exibir quantas vezes o usuário adivinhou o álbum
-- [x] Melhorar Responsividade
-- [x] Trancar os inputs no loading da imagem do álbum
-- [x] Melhorias de UX e correção de bugs
-- [x] Ver perfil de outros usuários
-- [x] Adicionar outros usuários, como amigos
-- [x] Ao adivinhar um álbum, exibir amigos que adivinharam também
-- [x] Ganhar pontos ao acertar características do álbum
-- [x] Ganhar pontos de acordo com a velocidade da tentativa
-- [x] Leaderboard de pontos entre amigos
-- [x] Leaderboard global
-- [x] Visualização de estatísticas no perfil do usuário
+- O frontend confia nos campos normalizados (`normalizedName`, `normalizedArtist`, `normalizedName` em tracks/gêneros) fornecidos pelo backend
+- Comparações são feitas sem considerar maiúsculas/minúsculas, acentos, pontuação ou sufixos de edição
 
-## O que está aberto / falta fazer
+## Rotas backend relevantes (referência rápida)
 
-- [ ] Preloading da imagem do próximo álbum
-- [ ] Gerar nova lista de álbuns ao sair da página de Guess
-- [ ] Zod Schemas na edição de perfil
+- Saúde: `GET /health`
+- Sessão: `GET /me`, `POST /refresh`, `DELETE /logout`
+- Auth: `POST /login`, `POST /register`, `POST /forgot`, `PUT /passwordChange/:token`, `GET /verify/:token`, `POST /resendVerification`, `GET /guest`/`POST /guest`
+- OAuth: `GET /login/google`, `GET /google/callback`, `GET /login/spotify`, `GET /spotify/callback`, `GET /login/lastfm`
+- Integration: `GET /integration/albums`, `DELETE /provider/spotify`, `DELETE /provider/lastfm`
+- Game: `POST /guess`, `GET /guess/:albumId`, `GET /guess/recently`
+- Daily album: `GET /daily/album`, `POST /daily/album/try`, `GET /daily/album/statistics` (ver seção acima)
+- Profiles / Leaderboards / Stats: `GET /profile/:username`, `GET /leaderboards/...`, `GET /stats/:username`
 
-## Decisões de design
+## Variáveis de ambiente (Vite)
 
-- **Tracklist é iterativa**: ao contrário dos outros campos (submit único), tracks têm um ciclo próprio de input → verificação → limpeza → repetição, justificando store e formulário separados
-- **Singles ignorados**: álbuns sem tracklist não são exibidos no jogo
-- **Normalização no frontend**: comparações usam sempre os campos `normalized*` do banco, nunca os nomes originais
+Coloque um arquivo `.env` ou `.env.local` na raiz com as variáveis abaixo (exemplo):
+
+- VITE_API_URL — URL base da API do backend (ex: https://api.albumguessnr.example)
+- VITE_SUPABASE_STORAGE — URL base do storage do Supabase usado para imagens (fallback SVG)
+- VITE_GTAG_ID — (opcional) Google Analytics measurement ID para envio de eventos via gtag
+
+Observação: o projeto usa `import.meta.env.VITE_*` nos pontos onde essas variáveis são necessárias.
+
+## Rodando localmente
+
+1. Instalar dependências:
+
+```bash
+npm install
+```
+
+2. Criar arquivo de ambiente (copiar um exemplo localmente):
+
+```bash
+# criar .env com as VITE_* necessárias
+```
+
+3. Rodar em desenvolvimento (Vite):
+
+```bash
+npm run dev
+```
+
+4. Build para produção:
+
+```bash
+npm run build
+```
+
+5. Servir build (preview):
+
+```bash
+npm run preview
+```
+
+## Scripts disponíveis
+
+- `npm run dev` — roda Vite em modo de desenvolvimento
+- `npm run build` — compila TypeScript e gera build do Vite
+- `npm run preview` — serve a build gerada (preview)
+- `npm run lint` — executa ESLint
+- `npm run test` — executa testes com Vitest
+
+---
