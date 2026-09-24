@@ -26,7 +26,7 @@ const App = () => {
         });
     }, [queryClient]);
 
-    return !user ? (
+    return !user || user.isGuest ? (
         <div className="min-h-dvh bg-background text-navy font-sans selection:bg-amber/30 selection:text-navy">
             <header className="max-w-5xl mx-auto px-6 pt-12 pb-16 md:py-24 flex flex-col md:flex-row items-center gap-12">
                 <div className="flex-1 space-y-6 text-center md:text-left">

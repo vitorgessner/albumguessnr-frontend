@@ -258,6 +258,7 @@
   --secondary-foreground:   var(--navy);
  
   --muted:                  #efe3d5;
+  --muted-shadow:           rgba(0, 0, 0, 0.607);
   --muted-foreground:       var(--navy-light);
  
   --accent:                 var(--terra-dark);

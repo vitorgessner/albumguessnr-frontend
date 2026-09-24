@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserStatistics } from '../hooks/useUserStatistics';
 import useUser from '@/features/auth/hooks/useUser';
@@ -26,7 +26,13 @@ export const DailyAlbumPageContent = ({
     dailyAlbumNumber: number;
     totalGuessesCount: number;
 }) => {
+    useEffect(() => {
+        document.title = "Daily Album";
+    }, [])
+
     const { data: user } = useUser();
+
+    const divRef = useRef<HTMLDivElement>(null);
 
     const { userDailyAlbumStatistics, isPending } = useUserStatistics(
         user?.id,
@@ -88,7 +94,7 @@ export const DailyAlbumPageContent = ({
 
     return (
         <main className="min-h-dvh pb-20 px-4 py-6 selection:bg-amber/80">
-            <div className="max-w-4xl mx-auto flex flex-col gap-5">
+            <div ref={divRef} className="max-w-4xl mx-auto flex flex-col gap-5">
                 <Header totalGuessesCount={totalGuessesCount} />
                 <LastfmHints dailyAlbum={dailyAlbum} />
 
@@ -99,6 +105,7 @@ export const DailyAlbumPageContent = ({
                         isFinished={isFinished}
                         setGuessRows={setGuessRows}
                         setIsFinished={setIsFinished}
+                        divRef={divRef}
                     />
                 )}
 
@@ -117,7 +124,7 @@ export const DailyAlbumPageContent = ({
                 )}
 
                 {isFinished && !isPending && !isRowsLoading && (
-                    <div className='flex flex-col lg:flex-row items-center justify-center gap-5'>
+                    <div className='flex flex-col lg:flex-row items-center justify-center gap-5 resultBannerDiv'>
                         <ResultBanner
                             tries={tryCount}
                             album={dailyAlbum}
@@ -133,6 +140,10 @@ export const DailyAlbumPageContent = ({
 };
 
 export const DailyAlbumPage = () => {
+    useEffect(() => {
+        document.title = "Daily Album";
+    }, [])
+
     const { data, isPending, error } = useQuery<{
         dailyAlbum: DailyAlbum;
         dailyAlbumNumber: number;

@@ -3,9 +3,8 @@ import useUser from '../hooks/useUser';
 import { X } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
-export const ConnectSpotify = () => {
+export const ConnectSpotify = ({ mainAccountId }: { mainAccountId?: string | null }) => {
     const queryClient = useQueryClient();
-
     const { data: user } = useUser();
 
     const spotifyAccount = user?.accounts.find((a) => a.provider === 'spotify');
@@ -18,7 +17,7 @@ export const ConnectSpotify = () => {
     const disconnectSpotify = async () => {
         await axios.delete('/provider/spotify');
         await queryClient.invalidateQueries({ queryKey: ['user'] });
-    }
+    };
 
     return (
         <>
@@ -28,11 +27,31 @@ export const ConnectSpotify = () => {
                     Connect Spotify
                 </button>
             )}
-            {spotifyAccount && 
-                <button onClick={disconnectSpotify} className='providerButton spotify-component bg-[#1DD05D] flex gap-1 items-center text-white'>
-                    <X size={30}/>
-                    {spotifyAccount.displayUsername} on Spotify
-                </button>}
+            {spotifyAccount &&
+                (spotifyAccount.id === mainAccountId ? (
+                    <div>
+                        <button
+                            onClick={disconnectSpotify}
+                            className="relative providerButton spotify-component bg-[#1DD05D] flex gap-1 items-center text-white"
+                        >
+                            <X size={30} />
+                            {spotifyAccount.displayUsername} on Spotify
+                            <span className="absolute right-1 bottom-0 text-xs text-[#0f6a2f] font-normal">
+                                main provider
+                            </span>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={disconnectSpotify}
+                            className="providerButton spotify-component bg-[#1DD05D] flex gap-1 items-center text-white"
+                        >
+                            <X size={30} />
+                            {spotifyAccount.displayUsername} on Spotify
+                        </button>
+                    </div>
+                ))}
         </>
     );
 };

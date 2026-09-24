@@ -11,7 +11,7 @@ export const ResultBanner = ({
     album: DailyAlbum;
     nthPlayer: number | null;
 }) => {
-    const string = nthPlayer?.toString();
+    const string = (nthPlayer ?? 1).toString();
     const ordinal =
         string?.endsWith('1') && string !== '11'
             ? 'st'
@@ -24,7 +24,7 @@ export const ResultBanner = ({
     const timeLeft = useTimerToMidnightUtc();
     return (
         <div
-            className={`max-w-md w-full mx-auto rounded-xl border-2 p-4 flex flex-col items-center gap-3 text-center shadow-[3px_3px_0_var(--sage-dark)] bg-sage/20 border-success`}
+            className={`resultBanner max-w-md w-full mx-auto rounded-xl border-2 p-4 flex flex-col items-center gap-3 text-center shadow-[3px_3px_0_var(--sage-dark)] bg-sage/20 border-success`}
         >
             <span className="text-4xl"><AwardIcon size={46} stroke='#5d8f7a'/></span>
             <div>
@@ -53,8 +53,8 @@ export const ResultBanner = ({
                         )}
                     </div>
                 </div>
-                <a href={`https://rateyourmusic.com/release/album/${album.album.normalizedArtist}/${album.album.normalizedName.split(' ').join('-')}`} className="text-xs text-muted-foreground underline">
-                    https://rateyourmusic.com/release/album/{album.album.normalizedArtist}/{album.album.normalizedName.split(' ').join('-')}
+                <a href={`https://rateyourmusic.com/release/album/${album.album.normalizedArtist.split(' ').join('-')}/${album.album.normalizedName.split(' ').join('-')}`} className="text-xs text-muted-foreground underline">
+                    https://rateyourmusic.com/release/album/{album.album.normalizedArtist.split(' ').join('-')}/{album.album.normalizedName.split(' ').join('-')}
                 </a>
             </div>
             <p className="font-black font-heading text-sm text-navy">

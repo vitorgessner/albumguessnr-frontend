@@ -18,10 +18,12 @@ const EditProfile = () => {
 
     const [, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [providerError, setProviderError] = useState<string | null>(null);
+    const [mainProvider, setMainProvider] = useState(user?.mainAccountId);
 
     useEffect(() => {
-        document.title = "Edit profile | " + user?.profile.username;
-    }, [user?.profile.username])
+        document.title = 'Edit profile | ' + user?.profile.username;
+    }, [user?.profile.username]);
 
     const {
         register,
@@ -66,6 +68,56 @@ const EditProfile = () => {
 
         mutate(formData);
         if (preview) URL.revokeObjectURL(preview);
+    };
+
+    const lastfmAccount = user?.accounts.find((a) => a.provider === 'lastfm');
+    const spotifyAccount = user?.accounts.find((a) => a.provider === 'spotify');
+
+    useEffect(() => {
+        const setProvider = () => {
+            if (user?.mainAccountId) {
+                setMainProvider(user.mainAccountId);
+            }
+        }
+
+        setProvider();
+    }, [user]);
+
+    const { mutate: mutateProvider, isPending: isProviderPending } = useMutation({
+        mutationKey: ['provider', user?.id],
+        mutationFn: async (mainAccountId: string) => {
+            const response = await axios.put('/mainProvider', { accountId: mainAccountId });
+            return response.data;
+        },
+    });
+
+    const onProviderChange = async () => {
+        if (isProviderPending) {
+            return;
+        }
+
+        if (!lastfmAccount || !spotifyAccount) {
+            return setProviderError(
+                'You need at least two providers connected to change between them'
+            );
+        }
+
+        const nextProviderId =
+            mainProvider === lastfmAccount.id ? spotifyAccount.id : lastfmAccount.id;
+
+        mutateProvider(nextProviderId, {
+            onSuccess(data) {
+                setMainProvider(data.mainProvider.id);
+
+                queryClient.invalidateQueries({
+                    queryKey: ['provider', user?.id],
+                });
+
+                queryClient.invalidateQueries({
+                    queryKey: ['user'],
+                });
+            },
+        });
     };
 
     if (isUserPending) return <span className="loading">Loading...</span>;
@@ -205,8 +257,12 @@ const EditProfile = () => {
                     </p>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <ConnectSpotify />
-                    <ConnectLastfm />
+                    <ConnectSpotify mainAccountId={mainProvider} />
+                    <ConnectLastfm mainAccountId={mainProvider} />
+                    <button className="providerButton" onClick={onProviderChange}>
+                        Change main provider
+                    </button>
+                    <p className="text-right text-sm text-red-600">{providerError}</p>
                 </div>
             </article>
         </main>

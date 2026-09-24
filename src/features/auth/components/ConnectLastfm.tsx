@@ -3,7 +3,7 @@ import useUser from '../hooks/useUser';
 import { X } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
-export const ConnectLastfm = () => {
+export const ConnectLastfm = ({ mainAccountId }: { mainAccountId?: string | null }) => {
     const { data: user } = useUser();
     const queryClient = useQueryClient();
 
@@ -17,7 +17,7 @@ export const ConnectLastfm = () => {
     const disconnectLastfm = async () => {
         await axios.delete('/provider/lastfm');
         await queryClient.invalidateQueries({ queryKey: ['user'] });
-    }
+    };
 
     return (
         <>
@@ -28,15 +28,31 @@ export const ConnectLastfm = () => {
                 </button>
             )}
 
-            {lastfmAccount && (
-                <button
-                    onClick={disconnectLastfm}
-                    className="providerButton lastfm-component flex gap-1 items-center text-white"
-                >
-                    <X size={30}/>
-                    {lastfmAccount?.displayUsername} on Lastfm
-                </button>
-            )}
+            {lastfmAccount &&
+                (lastfmAccount.id === mainAccountId ? (
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={disconnectLastfm}
+                            className="relative providerButton lastfm-component flex gap-1 items-center text-white"
+                        >
+                            <X size={30} />
+                            {lastfmAccount?.displayUsername} on Lastfm
+                            <span className="absolute right-1 bottom-0 text-xs text-[#5b0c0c] font-normal">
+                                main provider
+                            </span>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={disconnectLastfm}
+                            className="providerButton lastfm-component flex gap-1 items-center text-white"
+                        >
+                            <X size={30} />
+                            {lastfmAccount?.displayUsername} on Lastfm
+                        </button>
+                    </div>
+                ))}
         </>
     );
 };

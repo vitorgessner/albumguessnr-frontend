@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
 import axios from '@/shared/utils/axios';
 import { buildGuessRow } from '../utils/buildGuessRow';
@@ -14,6 +14,7 @@ type SearchBarProps = {
     isFinished: boolean;
     setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
     dailyAlbum: DailyAlbum;
+    divRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export const SearchBar = ({
@@ -22,6 +23,7 @@ export const SearchBar = ({
     isFinished,
     setIsFinished,
     dailyAlbum,
+    divRef,
 }: SearchBarProps) => {
     const { data: user } = useUser();
     const [query, setQuery] = useState('');
@@ -30,6 +32,16 @@ export const SearchBar = ({
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (divRef && !divRef.current) return;
+
+        const div = divRef.current;
+        const banner = div?.querySelector('resultBannerDiv resultBanner');
+        if (!banner) return;
+
+        banner.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, [divRef]);
 
     const handleSearch = (value: string) => {
         setQuery(value);
@@ -41,7 +53,7 @@ export const SearchBar = ({
         debounceRef.current = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const res = await axios.post('/daily/find', { title: value });
+                const res = await axios.post('/daily/find', { attempt: value });
                 setCandidates(res.data.possibleAlbums ?? []);
             } catch {
                 setCandidates([]);
@@ -78,9 +90,17 @@ export const SearchBar = ({
             };
             await axios.put(`/daily/album/overall/statistics`, data);
 
-            queryClient.invalidateQueries({ queryKey: ['daily', user?.profile.username]})
-            queryClient.invalidateQueries({ queryKey: ['overall', user?.profile.username]})
-            queryClient.invalidateQueries({ queryKey: ['daily']})
+            await queryClient.invalidateQueries({ queryKey: ['daily'] });
+            await queryClient.invalidateQueries({ queryKey: ['daily', user?.profile.username] });
+            await queryClient.invalidateQueries({ queryKey: ['overall', user?.profile.username] });
+
+            if (divRef && !divRef.current) return;
+
+            const div = divRef.current;
+            const banner = div?.querySelector('resultBannerDiv resultBanner');
+            if (!banner) return;
+
+            banner.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
     };
 
@@ -93,7 +113,7 @@ export const SearchBar = ({
                     onChange={(e) => handleSearch(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            handleSelect(candidates[0])
+                            handleSelect(candidates[0]);
                         }
                     }}
                     placeholder="Search album..."

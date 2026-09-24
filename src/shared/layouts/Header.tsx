@@ -183,7 +183,7 @@ const Header = () => {
                         </h1>
                     </Link>
                     {!isPending &&
-                        !isAuthenticated &&
+                        (!isAuthenticated || user?.isGuest) &&
                         !(
                             path.pathname === '/auth/login' || path.pathname === '/auth/register'
                         ) && (
@@ -197,7 +197,7 @@ const Header = () => {
                 {/* <div></div> */}
                 {!isPending && (
                     <div className="absolute right-5 flex items-center justify-right gap-5 text-navy tracking-tight font-heading font-semibold">
-                        {isAuthenticated && (
+                        {isAuthenticated && !user?.isGuest && (
                             <div className="flex items-center gap-5">
                                 <button
                                     className="hidden md:flex items-center gap-2 border-2 py-1 px-2 rounded-lg amber-component"
@@ -318,7 +318,7 @@ const Header = () => {
                 🍪
             </button>
             <p className="sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light">
-                v0.2.0
+                v0.3.1
             </p>
         </div>
     );
