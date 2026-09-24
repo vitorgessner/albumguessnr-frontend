@@ -37,7 +37,7 @@ export const OverallStatistics = () => {
         );
     }
 
-    const shouldShowMessageToRegister = !user || user.isGuest && (userDailyAlbumOverallStatistics?.maxStreak ?? 0) > 1;
+    const shouldShowMessageToRegister = user?.isGuest && (userDailyAlbumOverallStatistics?.totalGuessed ?? 0) > 1;
     
     return (
         <>
