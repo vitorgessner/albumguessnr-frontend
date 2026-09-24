@@ -91,8 +91,8 @@ export const SearchBar = ({
             await axios.put(`/daily/album/overall/statistics`, data);
 
             await queryClient.invalidateQueries({ queryKey: ['daily'] });
-            await queryClient.invalidateQueries({ queryKey: ['daily', user?.profile.username] });
-            await queryClient.invalidateQueries({ queryKey: ['overall', user?.profile.username] });
+            await queryClient.invalidateQueries({ queryKey: ['daily', user?.id] });
+            await queryClient.invalidateQueries({ queryKey: ['overall', user?.id] });
 
             if (divRef && !divRef.current) return;
 
