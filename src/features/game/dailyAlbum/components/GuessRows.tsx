@@ -25,7 +25,7 @@ export const GuessRows = ({ guessRows }: { guessRows: GuessRow[] }) => {
         <div className="flex flex-col gap-2">
             <div ref={scrollRef} className="overflow-x-auto scrollbar-none pb-1">
                 <div className="flex flex-col gap-2" style={{ minWidth: 'max-content' }}>
-                    <div className="flex justify-center items-center gap-2 pl-[92px] lg:pl-[101px]">
+                    <div className="flex justify-center items-center gap-2 pl-[102px] lg:pl-[110px]">
                         <ColHeader width={COL_WIDTHS.album}>Album</ColHeader>
                         <ColHeader width={COL_WIDTHS.numeric}>Year</ColHeader>
                         <ColHeader width={COL_WIDTHS.numeric}>

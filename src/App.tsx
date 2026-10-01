@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { ToggleLeft, Gamepad2, Trophy, Users, Radio, ArrowRight } from 'lucide-react';
+import { ToggleLeft, Gamepad2, Trophy, Users, Radio } from 'lucide-react';
 import useUser from './features/auth/hooks/useUser';
 import LeaderboardContent from './features/leaderboards/components/LeaderboardContent';
 import { useRecentPlayers } from './features/game/guess/hooks/useRecentPlayers';
@@ -130,32 +130,6 @@ const App = () => {
                     </div>
                 </div>
             </section>
-
-            <footer className="border-t-3 border-border bg-card py-12 px-6 text-center">
-                <div className="max-w-md mx-auto space-y-4">
-                    <p className="font-heading font-black text-xl text-navy">
-                        Ready to test your musical knowledge?
-                    </p>
-                    <Link
-                        to="/auth/register"
-                        className="inline-flex items-center gap-2 px-6 py-3 font-heading font-black text-sm text-white bg-sage-dark border-2 border-navy rounded-lg shadow-[3px_3px_0_var(--navy)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_var(--navy)] transition-all"
-                    >
-                        Sign up and Play <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <ul className='flex gap-1 items-center pt-4'>
-                        <li>
-                            <p className="text-xs text-muted-foreground">
-                                &copy; {new Date().getFullYear()} AlbumGuessnr. Made with love for
-                                music lovers.
-                            </p>
-                        </li>
-                        <li className='text-xs hover:underline'>
-                            <a href={location.origin + '/privacyPolicy'} className='text-muted-foreground'>Privacy Policy</a>
-                        </li>
-                    </ul>
-                    <p className="text-xs text-muted-foreground">contact: albumguessnr@gmail.com</p>
-                </div>
-            </footer>
         </div>
     ) : (
         <div className="flex flex-col h-full">
@@ -236,15 +210,6 @@ const App = () => {
                     className="hidden 2xl:block absolute right-15 top-90 opacity-25"
                 />
             </div>
-            <footer className="border-t-3 border-border bg-card px-6 text-center">
-                <div className="max-w-md mx-auto space-y-4">
-                    <p className="text-xs text-muted-foreground pt-4">
-                        &copy; {new Date().getFullYear()} AlbumGuessnr. Made with love for music
-                        lovers.
-                    </p>
-                    <p className="text-xs text-muted-foreground">contact: albumguessnr@gmail.com</p>
-                </div>
-            </footer>
         </div>
     );
 };
