@@ -8,6 +8,7 @@ import useUser from '../../features/auth/hooks/useUser';
 import { useQueryClient } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
 import * as CookieConsent from 'vanilla-cookieconsent';
+import { Footer } from './Footer';
 
 const Header = () => {
     const { data: user, isPending } = useUser();
@@ -302,13 +303,14 @@ const Header = () => {
             </header>
             {user && (
                 <p className="sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)">
-                    This is a beta version, keep in mind that scores might reset in the near future
+                    This is a beta version, keep in mind that scores and stats might reset in the near future
                     for official releases.
                 </p>
             )}
             <ToastContainer />
-            <main className="flex-1 grow overflow-y-auto">
+            <main className="flex flex-col flex-1 grow overflow-y-auto justify-between">
                 <Outlet />
+                <Footer />
             </main>
             <button
                 type="button"

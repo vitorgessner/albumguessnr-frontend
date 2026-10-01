@@ -52,7 +52,7 @@ export const GuessRowItem = ({
     const { album } = row;
     return (
         <div className="flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="number font-heading text-navy font-black">
+            <div className="number min-w-[33px] text-right font-heading text-navy font-black">
                 #{totalRows - 1 - index + 1}
             </div>
             <div className="shrink-0 w-14 h-14 rounded-lg border-2 border-border overflow-hidden bg-muted">

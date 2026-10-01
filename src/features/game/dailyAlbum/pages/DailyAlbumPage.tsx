@@ -93,7 +93,7 @@ export const DailyAlbumPageContent = ({
     const nthPlayerToGuess = userDailyAlbumStatistics?.nthPlayerToGuess;
 
     return (
-        <main className="min-h-dvh pb-20 px-4 py-6 selection:bg-amber/80">
+        <div className="pb-20 px-4 py-6 selection:bg-amber/80">
             <div ref={divRef} className="max-w-4xl mx-auto flex flex-col gap-5">
                 <Header totalGuessesCount={totalGuessesCount} />
                 <LastfmHints dailyAlbum={dailyAlbum} />
@@ -135,7 +135,7 @@ export const DailyAlbumPageContent = ({
                 )}
                 <OverallStatistics />
             </div>
-        </main>
+        </div>
     );
 };
 

@@ -78,7 +78,7 @@ export const ShareCard = ({
                 </p>
                 <p className="font-bold font-heading text-lg text-navy max-w-sm">
                     I guessed the <span className="text-sage-dark">#{dailyAlbumNumber}</span> daily
-                    album in <span className="text-sage-dark">#AlbumGuessnr</span> in{' '}
+                    album on <span className="text-sage-dark">#AlbumGuessnr</span> in{' '}
                     <span className="text-sage-dark">{guessRows.length} tr{guessRows.length === 1 ? 'y' : 'ies'}</span>
                 </p>
             </div>
