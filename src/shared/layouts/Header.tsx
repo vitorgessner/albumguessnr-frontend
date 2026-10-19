@@ -312,13 +312,13 @@ const Header = () => {
                 <Outlet />
                 <Footer />
             </main>
-            <button
+            {document.title !== 'Guess' && <button
                 type="button"
                 data-cc="show-preferencesModal"
                 className="absolute z-1000000 left-5 bottom-5 w-13 h-13 text-3xl rounded-full amber-component"
             >
                 🍪
-            </button>
+            </button>}
             <p className="sticky bottom-0 z-10000 bg-transparent pl-4 font-bold tracking-tight font-heading text-xs text-navy-light">
                 v0.3.1
             </p>

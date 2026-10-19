@@ -27,17 +27,14 @@ export const DailyAlbumPageContent = ({
     totalGuessesCount: number;
 }) => {
     useEffect(() => {
-        document.title = "Daily Album";
-    }, [])
+        document.title = 'Daily Album';
+    }, []);
 
     const { data: user } = useUser();
 
     const divRef = useRef<HTMLDivElement>(null);
 
-    const { userDailyAlbumStatistics, isPending } = useUserStatistics(
-        user?.id,
-        dailyAlbum.albumId
-    );
+    const { userDailyAlbumStatistics, isPending } = useUserStatistics(user?.id, dailyAlbum.albumId);
 
     const [guessRows, setGuessRows] = useState<GuessRow[]>([]);
     const [isFinished, setIsFinished] = useState(false);
@@ -96,7 +93,9 @@ export const DailyAlbumPageContent = ({
         <div className="pb-20 px-4 py-6 selection:bg-amber/80">
             <div ref={divRef} className="max-w-4xl mx-auto flex flex-col gap-5">
                 <Header totalGuessesCount={totalGuessesCount} />
-                <LastfmHints dailyAlbum={dailyAlbum} />
+                <div className='flex justify-center items-center gap-2'>
+                    <LastfmHints dailyAlbum={dailyAlbum} />
+                </div>
 
                 {!isFinished && (
                     <SearchBar
@@ -109,8 +108,9 @@ export const DailyAlbumPageContent = ({
                     />
                 )}
 
-                {isRowsLoading && <GuessRowsSkeleton guessRows={3}/>}
-                {!isRowsLoading && <GuessRows guessRows={guessRows}/>}
+                {isRowsLoading && <GuessRowsSkeleton guessRows={3} />}
+                {!isRowsLoading && <GuessRows guessRows={guessRows} />}
+
                 <Legend />
 
                 {guessRows.length === 0 && !isFinished && (
@@ -124,13 +124,13 @@ export const DailyAlbumPageContent = ({
                 )}
 
                 {isFinished && !isPending && !isRowsLoading && (
-                    <div className='flex flex-col lg:flex-row items-center justify-center gap-5 resultBannerDiv'>
+                    <div className="flex flex-col lg:flex-row items-center justify-center gap-5 resultBannerDiv">
                         <ResultBanner
                             tries={tryCount}
                             album={dailyAlbum}
                             nthPlayer={nthPlayerToGuess ?? null}
                         />
-                        <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows}/>
+                        <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows} />
                     </div>
                 )}
                 <OverallStatistics />
@@ -141,8 +141,8 @@ export const DailyAlbumPageContent = ({
 
 export const DailyAlbumPage = () => {
     useEffect(() => {
-        document.title = "Daily Album";
-    }, [])
+        document.title = 'Daily Album';
+    }, []);
 
     const { data, isPending, error } = useQuery<{
         dailyAlbum: DailyAlbum;

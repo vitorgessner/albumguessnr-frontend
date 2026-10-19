@@ -7,7 +7,7 @@ export const Footer = () => {
     return (
         <footer className="border-t-3 border-border bg-card py-6 px-6 text-center">
             <div className="max-w-md mx-auto space-y-4">
-                {(user && user.isGuest || !user && (document.title !== 'Register' && document.title !== 'Login')) && <div>
+                {(!user && (document.title !== 'Register' && document.title !== 'Login')) && <div>
                     <p className="font-heading font-black text-xl text-navy mb-3">
                         Ready to test your musical knowledge?
                     </p>

@@ -11,14 +11,13 @@ export function buildGuessRow(guessed: AlbumCandidate, daily: DailyAlbum): Guess
     const targetDescriptors = daily.album.descriptors.filter((_, i) => i < 3)
     const guessedDescriptors = guessed.descriptors.filter((_, i) => i < 3)
     
-
     return {
         album: guessed,
         year: compareYear(guessed.year, daily.album.year),
         artists: compareArray(guessedArtistIds, targetArtistIds),
-        genres: compareArray(guessedGenreIds, targetGenreIds),
+        genres: { status: compareArray(guessedGenreIds, targetGenreIds).status, values: guessed.genres.map(genre => genre.genre.name) },
         rymRating: compareRating(guessed.rymRating, daily.album.rymRating),
         rymRanking: compareRanking(guessed.rymRanking, daily.album.rymRanking),
-        descriptors: compareArray(guessedDescriptors, targetDescriptors),
+        descriptors: { status: compareArray(guessedDescriptors, targetDescriptors).status, values: guessed.descriptors },
     };
 }

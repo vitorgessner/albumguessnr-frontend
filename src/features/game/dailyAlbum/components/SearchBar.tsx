@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react';
+import { Eye, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
 import axios from '@/shared/utils/axios';
@@ -7,6 +7,8 @@ import type { DailyAlbum } from '../types/DailyAlbum';
 import type { GuessRow } from '../types/GuessRow';
 import { useQueryClient } from '@tanstack/react-query';
 import useUser from '@/features/auth/hooks/useUser';
+import { calculatePeriod } from '../utils/calculatePeriod';
+import { calculateArrayCategories } from '../utils/calculateArrayCategories';
 
 type SearchBarProps = {
     guessRows: GuessRow[];
@@ -31,7 +33,36 @@ export const SearchBar = ({
     const [isSearching, setIsSearching] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const [period, setPeriod] = useState<string>('all-time');
+    const [isPeriodCorrect, setIsPeriodCorrect] = useState<boolean>(false);
+    const [genres, setGenres] = useState<string[]>([]);
+    const [isGenresCorrect, setIsGenresCorrect] = useState<boolean>(false);
+    const [descriptors, setDescriptors] = useState<string[]>([]);
+    const [isDescriptorsCorrect, setIsDescriptorsCorrect] = useState<boolean>(false);
+
     const queryClient = useQueryClient();
+
+    const calculatePossibleAlbumsUrl = (newRows: GuessRow) => {
+        if (newRows) {
+            if (!isPeriodCorrect) {
+                const calculatedPeriod = calculatePeriod(newRows, period);
+                setPeriod(calculatedPeriod.value);
+                setIsPeriodCorrect(calculatedPeriod.isCorrect);
+            }
+
+            if (!isGenresCorrect) {
+                const calculatedGenres = calculateArrayCategories(newRows, genres, true);
+                setGenres(calculatedGenres.values);
+                setIsGenresCorrect(calculatedGenres.isCorrect);
+            }
+
+            if (!isDescriptorsCorrect) {
+                const calculatedDescriptors = calculateArrayCategories(newRows, descriptors, false);
+                setDescriptors(calculatedDescriptors.values);
+                setIsDescriptorsCorrect(calculatedDescriptors.isCorrect);
+            }
+        }
+    };
 
     useEffect(() => {
         if (divRef && !divRef.current) return;
@@ -76,6 +107,7 @@ export const SearchBar = ({
 
         try {
             await axios.post(`/daily/album/try`, { guessedAlbumId: candidate.id });
+            calculatePossibleAlbumsUrl(row);
         } catch {
             /* silencioso */
         }
@@ -104,8 +136,29 @@ export const SearchBar = ({
         }
     };
 
+    const baseUrl = encodeURI(
+        `https://rateyourmusic.com/charts/popular/album/${period}/${genres.length >= 1 ? 'g:' + genres.join(',').replace(' ', '-') : ''}${descriptors.length >= 1 ? '/d:' + descriptors.join(',').replace(' ', '-') : ''}`
+    );
+
     return (
         <div className="relative">
+            {guessRows.length >= 5 ? (
+                <a
+                    href={baseUrl}
+                    target="_blank"
+                    className="flex justify-center items-center gap-2 text-xs font-heading font-black text-muted-foreground text-center underline mb-4"
+                >
+                    <Eye size={14} /> See possible albums within the tips
+                </a>
+            ) : (
+                <p className="flex justify-center items-center gap-2 text-xs font-heading font-black text-muted-foreground mb-4">
+                    {' '}
+                    <div>
+                        <span className="text-primary">{Math.abs(guessRows.length - 5)}</span> tries
+                        until you can see possible albums
+                    </div>
+                </p>
+            )}
             <div className="flex items-center gap-2 bg-(--card-light) border-2 border-border rounded-xl px-3 py-2 shadow-[3px_3px_0_var(--border)] focus-within:border-terra transition-colors">
                 <Search size={16} className="text-muted-foreground shrink-0" />
                 <input

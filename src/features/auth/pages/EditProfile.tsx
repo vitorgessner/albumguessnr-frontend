@@ -125,7 +125,7 @@ const EditProfile = () => {
     if (error) return <span className="loading text-(--error-text)">{error.message}</span>;
 
     return (
-        <main className="flex justify-center items-center pt-2 h-lg:pt-12 gap-2">
+        <main className="flex flex-col md:flex-row justify-center items-center pt-2 h-lg:pt-12 gap-4">
             <article
                 className={
                     'border-2 border-primary p-4 pb-2.5 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
