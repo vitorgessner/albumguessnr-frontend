@@ -53,7 +53,7 @@ export const ResultBanner = ({
                         )}
                     </div>
                 </div>
-                <a href={`https://rateyourmusic.com/release/album/${album.album.normalizedArtist.split(' ').join('-')}/${album.album.normalizedName.split(' ').join('-')}`} className="text-xs text-muted-foreground underline">
+                <a href={`https://rateyourmusic.com/release/album/${album.album.normalizedArtist.split(' ').join('-')}/${album.album.normalizedName.split(' ').join('-')}`} target='_blank' className="text-xs text-muted-foreground underline">
                     https://rateyourmusic.com/release/album/{album.album.normalizedArtist.split(' ').join('-')}/{album.album.normalizedName.split(' ').join('-')}
                 </a>
             </div>
