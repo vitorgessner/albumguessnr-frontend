@@ -101,7 +101,7 @@ export const SearchBar = ({
         const alreadyGuessed = guessRows.some((row) => row.album.id === candidate.id);
         if (alreadyGuessed || isFinished) return;
 
-        const row = buildGuessRow(candidate, dailyAlbum);
+        const row = buildGuessRow(candidate, dailyAlbum, candidate.count + 1);
         const newRows = [row, ...guessRows];
         setGuessRows(newRows);
 
@@ -199,11 +199,10 @@ export const SearchBar = ({
                                     key={c.id}
                                     onClick={() => !alreadyGuessed && handleSelect(c)}
                                     disabled={alreadyGuessed}
-                                    className={`w-full flex items-center gap-3 px-4 py-2.5 border-b border-border last:border-0 text-left transition-colors ${
-                                        alreadyGuessed
-                                            ? 'opacity-40 cursor-not-allowed'
-                                            : 'hover:bg-muted/40'
-                                    }`}
+                                    className={`w-full flex items-center gap-3 px-4 py-2.5 border-b border-border last:border-0 text-left transition-colors ${alreadyGuessed
+                                        ? 'opacity-40 cursor-not-allowed'
+                                        : 'hover:bg-muted/40'
+                                        }`}
                                 >
                                     <img
                                         src={c.cover_url}

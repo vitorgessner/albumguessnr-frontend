@@ -61,13 +61,13 @@ export const DailyAlbumPageContent = ({
             if (candidateAlbumsIds) {
                 const candidateAlbums = await Promise.all(
                     candidateAlbumsIds.map((candidate) =>
-                        axios.get<{ album: AlbumCandidate }>(`/album/${candidate}`)
+                        axios.get<{ album: AlbumCandidate, count: number }>(`/album/${candidate}`)
                     )
                 );
 
                 const rows = await Promise.all(
                     candidateAlbums.map((album) => {
-                        return buildGuessRow(album.data.album, dailyAlbum);
+                        return buildGuessRow(album.data.album, dailyAlbum, album.data.count);
                     })
                 );
 
@@ -152,13 +152,17 @@ export const DailyAlbumPage = () => {
     }>({
         queryKey: ['daily'],
         queryFn: async () => {
-            const response = await axios.get('/daily/album');
+            const response = await axios.get('/daily/album', {
+                headers: {
+                    Authorization: `Bearer ${import.meta.env.VITE_CRON_API_KEY}`,
+                }
+            });
             return response.data;
         },
     });
 
     if (isPending) return <div className="loading">Loading daily album...</div>;
-    if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
+    if (error) return <div className="loading text-(--error-text)">{error.response.data.message}</div>;
 
     const { dailyAlbum, dailyAlbumNumber, dailyAlbumTotalGuessesCount } = data;
     return (

@@ -29,7 +29,7 @@ const Friends = ({ isPending }: { isPending: boolean }) => {
 
     const isEmpty =
         friendsGuessed?.length === 0 ||
-        friendsGuessed?.every((f) => f.bestScore === undefined || f.bestScore === null);
+        friendsGuessed?.every((f) => (f.bestScore === undefined || f.bestScore === null) && f.bestScore !== 0);
 
     return (
         <article className="flex flex-col h-full max-h-99 bg-(--card-light) lg:border-2 lg:border-border rounded-xl lg:shadow-[3px_3px_0_var(--border)] overflow-hidden">
@@ -47,7 +47,7 @@ const Friends = ({ isPending }: { isPending: boolean }) => {
                     </li>
                 ) : (
                     friendsGuessed?.map((friend, i) => {
-                        if (friend.bestScore === undefined || friend.bestScore === null)
+                        if ((friend.bestScore === undefined || friend.bestScore === null) && friend.bestScore !== 0)
                             return null;
                         const isMe = friend.id === user?.id;
                         return (

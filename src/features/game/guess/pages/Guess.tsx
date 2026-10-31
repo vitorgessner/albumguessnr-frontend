@@ -30,7 +30,7 @@ const Guess = () => {
     const { data: user, isPending, error } = useUser();
 
     if (isPending) return <div className="loading">Loading...</div>;
-    if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
+    if (error) return <div className="loading text-(--error-text)">{error.response.data.message}</div>;
     return <GuessSync user={user!} />;
 };
 
@@ -88,13 +88,13 @@ const GuessContent = ({ user }: { user: IUser }) => {
     const { setIsFinished, isFinished } = useTrackStore();
     const { setGuess, setAnswers, answers, isPending } = useGuess(minutes * 60 + seconds);
 
-    const { data: timesGuessed, isSuccess } = useQuery({
+    const { data: userGuessStats, isSuccess } = useQuery({
         queryKey: ['stats', currentAlbum?.albumId],
         queryFn: async () => {
-            const res = await axios.get<{ timesGuessed: number }>(
+            const res = await axios.get<{ timesGuessed: number, lastTimeGuessed: string, timesListened: number }>(
                 `/guess/${currentAlbum?.albumId}`
             );
-            return res.data.timesGuessed ?? -1;
+            return res.data;
         },
     });
 
@@ -177,18 +177,36 @@ const GuessContent = ({ user }: { user: IUser }) => {
                     </article>
 
                     <div
-                        className={`flex w-full lg:min-w-48 lg:max-w-48 lg:h-sm:min-w-60 lg:h-sm:max-w-60 mt-0.5 h-sm:mt-2 items-center ${
-                            timesGuessed && timesGuessed >= 1 ? 'justify-between' : 'justify-end'
-                        }`}
+                        className={`flex justify-between w-full lg:min-w-48 lg:max-w-48 lg:h-sm:min-w-60 lg:h-sm:max-w-60 mt-0.5 h-sm:mt-2 items-center ${currentAlbum && currentAlbum.lastTimeListened ? 'justify-between' : 'justify-end'
+                            }`}
                     >
-                        {isSuccess && timesGuessed >= 1 && (
-                            <p className="text-xs text-muted-foreground">
-                                Guessed{' '}
-                                <span className="font-bold text-navy">
-                                    {timesGuessed === 1 ? '1 time' : `${timesGuessed} times`}
-                                </span>
-                            </p>
-                        )}
+                        <div>
+                            {isSuccess && userGuessStats.timesGuessed >= 1 && (
+                                <p className="text-xs text-muted-foreground">
+                                    Guessed{' '}
+                                    <span className="font-bold text-navy">
+                                        {userGuessStats.timesGuessed === 1 ? '1 time' : `${userGuessStats.timesGuessed} times`}
+                                    </span>
+                                </p>
+                            )}
+                            {isSuccess && currentAlbum.timesListened >= 1 && (
+                                <p className="text-xs text-muted-foreground">
+                                    Listened{' '}
+                                    <span className="font-bold text-navy">
+                                        {currentAlbum.timesListened === 1 ? '1 time' : `${currentAlbum.timesListened} times`}
+                                    </span>
+                                </p>
+                            )}
+
+                            {isSuccess && userGuessStats.lastTimeGuessed && (
+                                <p className="text-xs text-muted-foreground">
+                                    Last time guessed: {' '}
+                                    <span className="font-bold text-navy">
+                                        {new Date(userGuessStats.lastTimeGuessed).toLocaleDateString('en-US')}
+                                    </span>
+                                </p>
+                            )}
+                        </div>
                         <span className="border-2 border-border rounded-full bg-(--card-light) px-1.5 h-sm:px-3 py-0.5 h-sm:py-1 text-xs h-sm:text-sm font-black number text-navy h-sm:shadow-[2px_2px_0_var(--border)]">
                             {minutes < 10 ? '0' + minutes : minutes}:
                             {seconds < 10 ? '0' + seconds : seconds}
@@ -202,9 +220,8 @@ const GuessContent = ({ user }: { user: IUser }) => {
                             onSubmit={handleSubmit(onGuess)}
                         >
                             <div
-                                className={`flex w-full flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-2.5 h-sm:px-3 shadow-[3px_3px_0_var(--border)] ${
-                                    isGuessed && 'pb-1'
-                                }`}
+                                className={`flex w-full flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-2.5 h-sm:px-3 shadow-[3px_3px_0_var(--border)] ${isGuessed && 'pb-1'
+                                    }`}
                             >
                                 {config.album && (
                                     <Form.Label>
@@ -213,15 +230,14 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             disabled={
                                                 !currentAlbum.album.normalizedName || isGuessed
                                             }
-                                            className={`disabled:opacity-40 ${
-                                                config.album &&
+                                            className={`disabled:opacity-40 ${config.album &&
                                                 currentAlbum.album.normalizedName &&
                                                 (isGuessed
                                                     ? correctAnswers.album
                                                         ? 'border-success'
                                                         : 'border-error'
                                                     : 'border-border')
-                                            }`}
+                                                }`}
                                             {...register('album')}
                                             autoComplete="off"
                                         />
@@ -243,16 +259,15 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             disabled={
                                                 currentAlbum.album.artists.length <= 0 || isGuessed
                                             }
-                                            className={`disabled:opacity-40 ${
-                                                config.artist &&
+                                            className={`disabled:opacity-40 ${config.artist &&
                                                 currentAlbum.album.artists &&
                                                 (isGuessed
                                                     ? correctAnswers.artist
                                                         ? 'border-success'
                                                         : correctAnswers.artist === false &&
-                                                          'border-error'
+                                                        'border-error'
                                                     : 'border-border')
-                                            }`}
+                                                }`}
                                             {...register('artist')}
                                             autoComplete="off"
                                         />
@@ -283,16 +298,15 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                         isGuessed
                                                     }
                                                     placeholder="Any tag"
-                                                    className={`disabled:opacity-40 flex-1 ${
-                                                        config.genre &&
+                                                    className={`disabled:opacity-40 flex-1 ${config.genre &&
                                                         currentAlbum.album.genres.length > 0 &&
                                                         (isGuessed
                                                             ? correctAnswers.genre
                                                                 ? 'border-success'
                                                                 : correctAnswers.genre === false &&
-                                                                  'border-error'
+                                                                'border-error'
                                                             : 'border-border')
-                                                    }`}
+                                                        }`}
                                                     {...register('genre')}
                                                     autoComplete="off"
                                                 />
@@ -329,16 +343,15 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                     disabled={!currentAlbum.album.year || isGuessed}
                                                     placeholder="Year"
                                                     type="number"
-                                                    className={`w-full disabled:opacity-40 ${
-                                                        config.year &&
+                                                    className={`w-full disabled:opacity-40 ${config.year &&
                                                         currentAlbum.album.year &&
                                                         (isGuessed
                                                             ? correctAnswers.year
                                                                 ? 'border-success'
                                                                 : correctAnswers.year === false &&
-                                                                  'border-error'
+                                                                'border-error'
                                                             : 'border-border')
-                                                    }`}
+                                                        }`}
                                                     {...register('year')}
                                                     autoComplete="off"
                                                 />
@@ -422,7 +435,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                 hasTracklist={config.tracklist}
             />
 
-            <LogErrorModal currentAlbum={currentAlbum}/>
+            <LogErrorModal currentAlbum={currentAlbum} />
 
             <ToastContainer position="top-center" limit={1} autoClose={300} />
         </>

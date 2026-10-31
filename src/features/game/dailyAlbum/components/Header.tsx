@@ -26,9 +26,6 @@ export const Header = ({ totalGuessesCount }: { totalGuessesCount: number | unde
                                 <li className='list-disc'>
                                     Currently all daily album data comes from a dataset of the most popular albums in RateYourMusic based in 2022. The plan is to update that soon.
                                 </li>
-                                <li className='list-disc'>
-                                    Planning to add tips after some tries (probably the possible albums within the discovered categories).
-                                </li>
                             </ul>
                         </DialogDescription>
                     </DialogContent>

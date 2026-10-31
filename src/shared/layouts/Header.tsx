@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import useAuthStore from '../../features/auth/stores/useAuthStore';
 import { Pencil, LogOut, Trophy, Gamepad, Calendar } from 'lucide-react';
@@ -9,8 +9,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
 import * as CookieConsent from 'vanilla-cookieconsent';
 import { Footer } from './Footer';
+import { useAdblockDetector } from '@scthakuri/adblock-detector';
 
 const Header = () => {
+    const [consent, setConsent] = useState(false);
+    const { detected } = useAdblockDetector();
     const { data: user, isPending } = useUser();
     const { isAuthenticated, setIsLoggingOut, setIsAuthenticated } = useAuthStore();
     const queryClient = useQueryClient();
@@ -48,7 +51,7 @@ const Header = () => {
     };
 
     const loadAnalyticsScript = () => {
-        if (CookieConsent.acceptedCategory('analytics') && import.meta.env.PROD) {
+        if (CookieConsent.acceptedCategory('analytics')) {
             if (
                 document.querySelector(
                     `script[src="https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}"]`
@@ -140,23 +143,78 @@ const Header = () => {
                 },
             },
             disablePageInteraction: true,
-            onConsent: () => {
-                loadAnalyticsScript();
+            onFirstConsent: () => {
+                if (CookieConsent.acceptedCategory('analytics')) {
+                    loadAnalyticsScript();
+                    setConsent(true);
+                }
             },
-            onChange: function ({ changedCategories }) {
-                if (!changedCategories.includes('analytics')) {
-                    return;
+            onConsent: () => {
+                if (CookieConsent.acceptedCategory('analytics')) {
+                    loadAnalyticsScript();
+                    setConsent(true);
+                }
+            },
+            onChange: async function ({ changedCategories }) {
+                console.log(changedCategories);
+                if (CookieConsent.acceptedCategory('analytics')) {
+                    setConsent(true);
+                    loadAnalyticsScript();
                 }
 
-                loadAnalyticsScript();
-
                 if (!CookieConsent.acceptedCategory('analytics')) {
-                    CookieConsent.eraseCookies(['_gid', /^_ga/]);
+                    setConsent(false);
+
+                    const gtagId = import.meta.env.VITE_GTAG_ID;
+                    if (gtagId) {
+                        window[`ga-disable-${gtagId}`] = true;
+                    }
+
+                    const hostname = window.location.hostname;
+                    const parts = hostname.split('.');
+                    const baseDomain = parts.length > 2 ? `.${parts.slice(-2).join('.')}` : `.${hostname}`;
+
+                    const gaCookies = document.cookie.split(';').filter(c => /_ga.*/.test(c.trim().split('=')[0]));
+
+                    gaCookies.forEach(cookieStr => {
+                        const name = cookieStr.trim().split('=')[0];
+
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${hostname};`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${baseDomain};`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${hostname};`;
+                    });
+
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     location.reload();
                 }
             },
         });
     }, []);
+
+    useEffect(() => {
+        const detectAdBlock = async () => {
+            if (detected && consent && !localStorage.getItem('blocked')) {
+                localStorage.setItem('blocked', '');
+                return await axios.post('/metrics/blocked', null, {
+                    headers: {
+                        Authorization: `Bearer ${import.meta.env.VITE_CRON_API_KEY}`
+                    }
+                });
+            }
+
+            if (!detected && consent && !localStorage.getItem('checked')) {
+                localStorage.setItem('checked', '');
+                return await axios.post('metrics/checked', null, {
+                    headers: {
+                        Authorization: `Bearer ${import.meta.env.VITE_CRON_API_KEY}`
+                    }
+                });
+            }
+        }
+
+        detectAdBlock();
+    }, [detected, consent]);
 
     const avatar_url = user && user.profile ? user.profile.avatar_url : 'https://niipndjhivstawptgjsp.supabase.co/storage/v1/object/public/profilePictures/uploads/default.svg';
 

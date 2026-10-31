@@ -3,6 +3,7 @@ export interface IUser {
     emailVerified: true;
     createdAt: Date;
     mainAccountId: string | null;
+    mainAccount: IAccount;
     userStats: IStats;
     profile: IProfile;
     isGuest: boolean;
@@ -46,7 +47,7 @@ export interface IAccount {
     expiresAt: Date | null;
     username: string;
     displayUsername: string;
-    lastSyncedAt: Date | null;
+    lastSyncedAt: string | null;
     syncCursor: number;
     syncStatus: SyncStatus;
     syncingTimestamp: Date | null;

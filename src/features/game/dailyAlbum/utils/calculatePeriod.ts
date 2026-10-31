@@ -22,17 +22,20 @@ export const calculatePeriod = (row: GuessRow, oldPeriod: string) => {
 
 const calculateWhenOldPeriodIsAllTime = (row: GuessRow) => {
     if (row.year.direction === 'down') {
-        return { value: `1959-${row.year.value}`, isCorrect: false };
+        const year = Number(row.year.value) - 1;
+        return { value: `1959-${String(year)}`, isCorrect: false };
     }
 
-    return { value: `${row.year.value}-2022`, isCorrect: false };
+    const year = Number(row.year.value) + 1;
+    return { value: `${String(year)}-2022`, isCorrect: false };
 };
 
 const calculateWhenYearIsLower = (row: GuessRow, oldPeriod: string) => {
     const [lowerYear, higherYear] = oldPeriod.split('-');
 
-    if (Number(row.year.value) < Number(higherYear)) {
-        return { value: `${lowerYear}-${row.year.value}`, isCorrect: false };
+    if (Number(row.year.value) <= Number(higherYear)) {
+        const year = Number(row.year.value) - 1;
+        return { value: `${lowerYear}-${String(year)}`, isCorrect: false };
     }
 
     return { value: oldPeriod, isCorrect: false };
@@ -45,5 +48,6 @@ const calculateWhenYearIsHigher = (row: GuessRow, oldPeriod: string) => {
         return { value: oldPeriod, isCorrect: false };
     }
 
-    return { value: `${row.year.value}-${higherYear}`, isCorrect: false };
+    const year = Number(row.year.value) + 1;
+    return { value: `${year}-${higherYear}`, isCorrect: false };
 }

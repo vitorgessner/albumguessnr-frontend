@@ -3,7 +3,7 @@ import type { DailyAlbum } from "../types/DailyAlbum";
 import type { GuessRow } from "../types/GuessRow";
 import { compareArray, compareRanking, compareRating, compareYear } from "./compareFunctions";
 
-export function buildGuessRow(guessed: AlbumCandidate, daily: DailyAlbum): GuessRow {
+export function buildGuessRow(guessed: AlbumCandidate, daily: DailyAlbum, count: number = 1): GuessRow {
     const targetArtistIds = daily.album.artists.map(a => a.artist.id).filter((_, i) => i < 3)
     const targetGenreIds = daily.album.genres.map(g => g.genre.id).filter((_, i) => i < 3)
     const guessedArtistIds = guessed.artists.map(a => a.artist.id).filter((_, i) => i < 3)
@@ -19,5 +19,6 @@ export function buildGuessRow(guessed: AlbumCandidate, daily: DailyAlbum): Guess
         rymRating: compareRating(guessed.rymRating, daily.album.rymRating),
         rymRanking: compareRanking(guessed.rymRanking, daily.album.rymRanking),
         descriptors: { status: compareArray(guessedDescriptors, targetDescriptors).status, values: guessed.descriptors },
+        count
     };
 }

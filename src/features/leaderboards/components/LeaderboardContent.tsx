@@ -65,9 +65,9 @@ const LeaderboardContent = ({
         <div className="flex flex-col gap-4">
             {location.pathname === '/leaderboards' && <h2 className='text-2xl w-fit px-5 py-0.5 mx-auto text-center text-navy tracking-wide font-black font-heading bg-sidebar-border rounded-md border-border border shadow-[2px_2px_0_var(--border)]'>
                 {!period && 'All time'}
-                {period === 'daily' && new Date().toLocaleDateString().slice(0, -5)}
+                {period === 'daily' && new Date().toLocaleDateString('en-US').slice(0, -5)}
                 {period === 'monthly' && MONTHS[new Date().getMonth()]}
-                {period === 'weekly' && getStartOfWeek().toLocaleDateString().slice(0, -5) + ' - ' + getEndOfWeek().toLocaleDateString().slice(0, -5)}
+                {period === 'weekly' && getStartOfWeek().toLocaleDateString('en-US').slice(0, -5) + ' - ' + getEndOfWeek().toLocaleDateString('en-US').slice(0, -5)}
             </h2>}
 
             {top3.length > 0 && (

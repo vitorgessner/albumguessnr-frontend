@@ -34,8 +34,8 @@ createRoot(document.getElementById('root')!).render(
                         <Route element={<Header />}>
                             <Route path="/" element={<App />} />
                             <Route path="/leaderboards" element={<Leaderboards />} />
-                            <Route element={<UnprotectedRoute />}>
                                 <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+                            <Route element={<UnprotectedRoute />}>
                                 <Route path="/auth/register" element={<Register />} />
                                 <Route path="/auth/login" element={<Login />} />
                                 <Route path="/auth/forgot" element={<Forgot />} />

@@ -44,7 +44,7 @@ export const GuessRow = ({
                     {score < 10 ? 0 + score : score}
                 </span>
                 <span className="text-base font-bold text-navy number shrink-0">
-                    {date.toLocaleDateString().substring(0, 5) +
+                    {date.toLocaleDateString('en-US').substring(0, 5) +
                         ' - ' +
                         date.toLocaleTimeString().substring(0, 5)}
                 </span>
