@@ -21,7 +21,7 @@ declare global {
 
 const Header = () => {
     const [consent, setConsent] = useState(false);
-    const { detected } = useAdblockDetector();
+    const { detected, loading } = useAdblockDetector();
     const { data: user, isPending } = useUser();
     const { isAuthenticated, setIsLoggingOut, setIsAuthenticated } = useAuthStore();
     const queryClient = useQueryClient();
@@ -202,27 +202,21 @@ const Header = () => {
 
     useEffect(() => {
         const detectAdBlock = async () => {
-            if (detected && consent && !localStorage.getItem('blocked')) {
-                localStorage.setItem('blocked', '');
-                return await axios.post('/metrics/blocked', null, {
-                    headers: {
-                        Authorization: `Bearer ${import.meta.env.VITE_CRON_API_KEY}`
-                    }
-                });
+            if (!loading && detected && consent && !localStorage.getItem('blocked')) {
+                localStorage.removeItem('checked');
+                localStorage.setItem('blocked', 'blocked');
+                return await axios.post('/metrics/blocked');
             }
 
-            if (!detected && consent && !localStorage.getItem('checked')) {
-                localStorage.setItem('checked', '');
-                return await axios.post('metrics/checked', null, {
-                    headers: {
-                        Authorization: `Bearer ${import.meta.env.VITE_CRON_API_KEY}`
-                    }
-                });
+            if (!loading && !detected && consent && !localStorage.getItem('checked')) {
+                localStorage.removeItem('blocked');
+                localStorage.setItem('checked', 'checked');
+                return await axios.post('metrics/checked');
             }
         }
 
         detectAdBlock();
-    }, [detected, consent]);
+    }, [detected, consent, loading]);
 
     const avatar_url = user && user.profile ? user.profile.avatar_url : 'https://niipndjhivstawptgjsp.supabase.co/storage/v1/object/public/profilePictures/uploads/default.svg';
 
