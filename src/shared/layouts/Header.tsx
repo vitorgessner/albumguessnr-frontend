@@ -11,6 +11,14 @@ import * as CookieConsent from 'vanilla-cookieconsent';
 import { Footer } from './Footer';
 import { useAdblockDetector } from '@scthakuri/adblock-detector';
 
+declare global {
+    interface Window {
+      [key: `ga-disable-${string}`]: boolean;
+    }
+  }
+  
+  export {};
+
 const Header = () => {
     const [consent, setConsent] = useState(false);
     const { detected } = useAdblockDetector();
