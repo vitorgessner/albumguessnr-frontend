@@ -152,11 +152,7 @@ export const DailyAlbumPage = () => {
     }>({
         queryKey: ['daily'],
         queryFn: async () => {
-            const response = await axios.get('/daily/album', {
-                headers: {
-                    Authorization: `Bearer ${import.meta.env.VITE_CRON_API_KEY}`,
-                }
-            });
+            const response = await axios.get('/daily/album');
             return response.data;
         },
     });
