@@ -16,6 +16,7 @@ import { buildGuessRow } from '../utils/buildGuessRow';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
 import { GuessRowsSkeleton } from '../components/skeletons/GuessRowsSkeleton';
 import { ShareCard } from '../components/ShareCard';
+import { AxiosError } from 'axios';
 
 export const DailyAlbumPageContent = ({
     dailyAlbum,
@@ -158,7 +159,8 @@ export const DailyAlbumPage = () => {
     });
 
     if (isPending) return <div className="loading">Loading daily album...</div>;
-    if (error) return <div className="loading text-(--error-text)">{error.response.data.message}</div>;
+    if (error instanceof AxiosError) return <div className="loading text-(--error-text)">{error.response?.data.message}</div>;
+    if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
 
     const { dailyAlbum, dailyAlbumNumber, dailyAlbumTotalGuessesCount } = data;
     return (

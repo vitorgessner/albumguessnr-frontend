@@ -132,7 +132,8 @@ const EditProfile = () => {
 
     if (isUserPending) return <span className="loading">Loading...</span>;
 
-    if (error) return <span className="loading text-(--error-text)">{error.response.data.message}</span>;
+    if (error instanceof AxiosError) return <span className="loading text-(--error-text)">{error.response?.data.message}</span>;
+    if (error) return <span className="loading text-(--error-text)">{error.message}</span>;
 
     return (
         <main className="flex flex-col md:flex-row justify-center items-center pt-2 h-lg:pt-12 gap-4">

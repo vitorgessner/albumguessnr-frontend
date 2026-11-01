@@ -44,7 +44,7 @@ export const ShareCard = ({
     guessRows: GuessRow[];
 }) => {
     const [isCopied, setIsCopied] = useState(false);
-    const aditionalTries = guessRows.length - 5 > 0 ? guessRows.length - 5 : null;
+    const additionalTries = guessRows.length - 5 > 0 ? guessRows.length - 5 : null;
 
     const onCopy = () => {
         let string = '';
@@ -59,8 +59,8 @@ export const ShareCard = ({
             }
         });
 
-        if (aditionalTries) {
-            string += `➕${tryEmojis[aditionalTries]}`;
+        if (additionalTries) {
+            string += `➕${tryEmojis[additionalTries]}`;
         }
         navigator.clipboard.writeText(
             `I guessed the #${dailyAlbumNumber} daily album in #AlbumGuessnr in ${guessRows.length} tries\n${string}\nhttps://albumguessnr.com/dailyAlbum`
@@ -87,9 +87,9 @@ export const ShareCard = ({
                     <div className="font-black font-heading w-full text-center text-navy truncate">
                         {guessRows.map((row, i) => i < 5 && <Row guessRow={row} key={i} />)}
                     </div>
-                    {aditionalTries && (
+                    {additionalTries && (
                         <p className="text-md text-center text-muted-foreground">
-                            ➕{tryEmojis[aditionalTries]}
+                            ➕{tryEmojis[additionalTries]}
                         </p>
                     )}
                 </div>

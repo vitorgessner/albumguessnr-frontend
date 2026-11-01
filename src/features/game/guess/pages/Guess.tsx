@@ -23,6 +23,7 @@ import BottomSheet from '../components/BottomSheet';
 import BottomNav from '../components/BottomNav';
 import TracklistSection from '../components/TracklistSection';
 import { LogErrorModal } from '../../album/components/LogErrorModal';
+import { AxiosError } from 'axios';
 
 export type Sheet = 'config' | 'friends' | 'tracklist' | null;
 
@@ -30,7 +31,8 @@ const Guess = () => {
     const { data: user, isPending, error } = useUser();
 
     if (isPending) return <div className="loading">Loading...</div>;
-    if (error) return <div className="loading text-(--error-text)">{error.response.data.message}</div>;
+    if (error instanceof AxiosError) return <div className="loading text-(--error-text)">{error.response?.data.message}</div>;
+    if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
     return <GuessSync user={user!} />;
 };
 
