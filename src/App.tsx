@@ -163,7 +163,7 @@ const App = () => {
                                 <p>Username</p>
                             </div>
                             <div className="flex items-center gap-5">
-                                <p>Score</p>
+                                <p className='text-sage-dark'>Score</p>
                                 <p>Date</p>
                             </div>
                         </div>
