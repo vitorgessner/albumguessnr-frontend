@@ -3,7 +3,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 import axios from '../../../../shared/utils/axios';
 import type { GuessType, TrackType } from '../types/guessTypes';
-import type { FetchResponse } from '../types/albumTypes';
+import type { AlbumsQuantityResponse, FetchResponse } from '../types/albumTypes';
 import useGuessStore from '../stores/useGuessStore';
 import useCompare from '../hooks/useCompare';
 import shuffle from '../utils/shuffle';
@@ -64,6 +64,16 @@ const GuessSync = ({ user }: { user: IUser }) => {
         }
         resetIndex();
     }, [dataUpdatedAt, resetIndex]);
+
+    useQuery({
+        queryKey: ['albumsQuantity', user.profile.displayUsername],
+        queryFn: async () => {
+            const response = await axios.get<AlbumsQuantityResponse>('/integration/albums/quantity');
+            if (response.data.quantity < 100) {
+                await axios.get('/sync');
+            }
+        }
+    });
 
     if (isAlbumsLoading) return <span className="loading">Loading albums...</span>;
 
