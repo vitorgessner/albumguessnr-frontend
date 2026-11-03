@@ -65,19 +65,14 @@ const Header = () => {
                     `script[src="https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}"]`
                 )
             ) {
-                console.log('Analytics script already working');
                 return;
             }
 
-            console.log('accepted analytics cookie');
             const script = document.createElement('script');
             script.src = `https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}`;
             script.async = true;
 
             document.head.appendChild(script);
-            script.onload = () => {
-                console.log('loaded analytics script');
-            };
             script.onerror = () => {
                 throw new Error('Failed to load analytics script');
             };
@@ -96,8 +91,6 @@ const Header = () => {
             script2.onerror = () => {
                 throw new Error('Failed to load analytics script2');
             };
-
-            console.log('loaded analytics script 2');
         }
     };
 
@@ -367,12 +360,12 @@ const Header = () => {
                 )}
                 {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
-            {user && (
+            {/* {user && (
                 <p className="sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)">
                     This is a beta version, keep in mind that scores and stats might reset in the near future
                     for official releases.
                 </p>
-            )}
+            )} */}
             <ToastContainer />
             <main className="flex flex-col flex-1 grow overflow-y-auto justify-between">
                 <Outlet />

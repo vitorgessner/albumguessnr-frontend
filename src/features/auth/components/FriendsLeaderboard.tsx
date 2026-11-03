@@ -10,7 +10,7 @@ const FriendsLeaderboard = () => {
     const { data: profile } = useProfile();
     const { friends, isPending } = useFriends(profile?.username);
 
-    friends?.sort((a,b) => b.receivedRequests.totalScore - a.receivedRequests.totalScore)
+    friends?.sort((a,b) => b.receivedRequests.userStats.totalScore - a.receivedRequests.userStats.totalScore)
 
     const MEDAL: Record<number, string> = { 0: '🥇', 1: '🥈', 2: '🥉' };
 
@@ -83,7 +83,7 @@ const FriendsLeaderboard = () => {
 
                                     <span className="flex items-center gap-1 text-sm font-black text-terra-dark number shrink-0">
                                         <Star size={12} fill="var(--terra)" stroke="var(--terra)" />
-                                        {friend.receivedRequests.totalScore}
+                                        {friend.receivedRequests.userStats.totalScore}
                                     </span>
                                 </li>
                             </Link>

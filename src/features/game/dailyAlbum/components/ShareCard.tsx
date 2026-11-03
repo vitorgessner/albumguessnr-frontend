@@ -63,7 +63,7 @@ export const ShareCard = ({
             string += `➕${tryEmojis[additionalTries]}`;
         }
         navigator.clipboard.writeText(
-            `I guessed the #${dailyAlbumNumber} daily album in #AlbumGuessnr in ${guessRows.length} tries\n${string}\nhttps://albumguessnr.com/dailyAlbum`
+            `I guessed the #${dailyAlbumNumber} daily album on #AlbumGuessnr in ${guessRows.length} tries\n${string}\nhttps://albumguessnr.com/dailyAlbum`
         );
         setIsCopied(true);
     };
