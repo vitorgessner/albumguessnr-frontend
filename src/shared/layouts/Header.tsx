@@ -271,7 +271,13 @@ const Header = () => {
                                 </button>
                                 <Link
                                     to={'/guess'}
-                                    className="flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component"
+                                    className="flex sm:hidden items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component"
+                                >
+                                    <Gamepad size={30} className="mt-0.5" />
+                                </Link>
+                                <Link
+                                    to={'/guess'}
+                                    className="hidden sm:flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component"
                                 >
                                     Guess now <Gamepad size={30} className="mt-0.5" />
                                 </Link>
