@@ -169,7 +169,7 @@ export const SearchBar = ({
                             handleSelect(candidates[0]);
                         }
                     }}
-                    placeholder="Search album..."
+                    placeholder="Search album, artist or year..."
                     className="flex-1 bg-transparent outline-none text-sm font-bold text-navy placeholder:text-muted-foreground placeholder:font-normal border-none"
                     autoComplete="off"
                 />
