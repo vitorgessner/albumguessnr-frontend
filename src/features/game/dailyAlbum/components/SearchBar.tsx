@@ -2,20 +2,18 @@ import { Eye, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
 import axios from '@/shared/utils/axios';
-import { buildGuessRow } from '../utils/buildGuessRow';
-import type { DailyAlbum } from '../types/DailyAlbum';
 import type { GuessRow } from '../types/GuessRow';
 import { useQueryClient } from '@tanstack/react-query';
 import useUser from '@/features/auth/hooks/useUser';
 import { calculatePeriod } from '../utils/calculatePeriod';
 import { calculateArrayCategories } from '../utils/calculateArrayCategories';
+import { isDailyAlbum } from '../utils/isDailyAlbum';
 
 type SearchBarProps = {
     guessRows: GuessRow[];
     setGuessRows: React.Dispatch<React.SetStateAction<GuessRow[]>>;
     isFinished: boolean;
     setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
-    dailyAlbum: DailyAlbum;
     divRef: React.RefObject<HTMLDivElement | null>;
 };
 
@@ -24,7 +22,6 @@ export const SearchBar = ({
     setGuessRows,
     isFinished,
     setIsFinished,
-    dailyAlbum,
     divRef,
 }: SearchBarProps) => {
     const { data: user } = useUser();
@@ -101,7 +98,8 @@ export const SearchBar = ({
         const alreadyGuessed = guessRows.some((row) => row.album.id === candidate.id);
         if (alreadyGuessed || isFinished) return;
 
-        const row = buildGuessRow(candidate, dailyAlbum);
+        const response = await axios.get(`/daily/row/${candidate.id}`)
+        const row = response.data.row;
         const newRows = [row, ...guessRows];
         setGuessRows(newRows);
 
@@ -112,7 +110,7 @@ export const SearchBar = ({
             /* silencioso */
         }
 
-        const correct = candidate.id === dailyAlbum.albumId;
+        const correct = isDailyAlbum(row);
         if (correct) {
             setIsFinished(true);
 

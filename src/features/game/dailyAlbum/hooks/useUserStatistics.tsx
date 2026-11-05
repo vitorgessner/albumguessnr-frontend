@@ -18,11 +18,11 @@ export interface UserDailyAlbumStatistics {
     }[];
 }
 
-export const useUserStatistics = (userId: string | undefined, albumId: string) => {
+export const useUserStatistics = (userId: string | undefined, date?: string) => {
     const { data, isPending, error } = useQuery<{ userDailyAlbumStatistics: UserDailyAlbumStatistics, totalGuesses: number }>({
         queryKey: ['daily', userId],
         queryFn: async () => {
-            const response = await axios.get(`/daily/album/statistics?albumId=${albumId}`);
+            const response = await axios.get(!date ? `/daily/album/statistics` : `/daily/album/statistics?date=${date}`);
             return response.data
         },
     });

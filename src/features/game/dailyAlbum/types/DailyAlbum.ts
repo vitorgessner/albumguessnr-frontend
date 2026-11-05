@@ -1,8 +1,6 @@
 export interface DailyAlbum {
     date: string;
     albumId: string;
-    lastfmListeners: string | null;
-    lastfmPlaycount: string | null;
     album: {
         id: string;
         name: string;
