@@ -13,6 +13,7 @@ import { GuessRowsSkeleton } from '../components/skeletons/GuessRowsSkeleton';
 import { ShareCard } from '../components/ShareCard';
 import { ResultBanner } from '../components/ResultBanner';
 import { AxiosError } from 'axios';
+import { findCorrectDailyAlbum } from '../utils/findCorrectDailyAlbum';
 
 export const DailyAlbumPageContent = ({
     dailyAlbumNumber,
@@ -114,7 +115,7 @@ export const DailyAlbumPageContent = ({
                     <div className="flex flex-col lg:flex-row items-center justify-center gap-5 resultBannerDiv">
                         {isFinished && guessRows.length > 0 && <ResultBanner
                             tries={tryCount}
-                            album={guessRows[guessRows.length - 1].album}
+                            album={findCorrectDailyAlbum(guessRows)}
                             nthPlayer={nthPlayerToGuess ?? null}
                         />}
                         {isFinished && guessRows.length > 0 && <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows} />}
