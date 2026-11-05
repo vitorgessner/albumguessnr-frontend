@@ -1,6 +1,6 @@
-import type { DailyAlbum } from '../types/DailyAlbum';
 import { useTimerToMidnightUtc } from '../hooks/useTimerToMidnightUtc';
 import { AwardIcon } from 'lucide-react';
+import type { AlbumCandidate } from '../types/AlbumCandidate';
 
 export const ResultBanner = ({
     tries,
@@ -8,7 +8,7 @@ export const ResultBanner = ({
     nthPlayer,
 }: {
     tries: number;
-    album: DailyAlbum;
+    album: AlbumCandidate | undefined;
     nthPlayer: number | null;
 }) => {
     const string = (nthPlayer ?? 1).toString();
@@ -37,24 +37,24 @@ export const ResultBanner = ({
             <div className="flex flex-col gap-1 items-start bg-sidebar-border border-2 border-border rounded-xl p-3 w-full max-w-sm">
                 <div className='flex items-center gap-3'>
                     <img
-                        src={album.album.cover_url}
-                        alt={album.album.name}
+                        src={album?.cover_url}
+                        alt={album?.name}
                         className="size-16 rounded-lg border-2 border-border object-cover shrink-0"
                     />
                     <div className="text-left min-w-0">
                         <p className="font-black font-heading text-navy truncate">
-                            {album.album.name}
+                            {album?.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                            {album.album.artists.map((artist) => artist.artist.name).join(', ')}
+                            {album?.artists.map((artist) => artist.artist.name).join(', ')}
                         </p>
-                        {album.album.year && (
-                            <p className="text-xs text-muted-foreground">{album.album.year}</p>
+                        {album?.year && (
+                            <p className="text-xs text-muted-foreground">{album.year}</p>
                         )}
                     </div>
                 </div>
-                <a href={`https://rateyourmusic.com/release/album/${album.album.normalizedArtist.split(' ').join('-')}/${album.album.normalizedName.split(' ').join('-')}`} target='_blank' className="text-xs text-muted-foreground underline">
-                    https://rateyourmusic.com/release/album/{album.album.normalizedArtist.split(' ').join('-')}/{album.album.normalizedName.split(' ').join('-')}
+                <a href={`https://rateyourmusic.com/release/album/${album?.normalizedArtist.split(' ').join('-')}/${album?.normalizedName.split(' ').join('-')}`} target='_blank' className="text-xs text-muted-foreground underline">
+                    https://rateyourmusic.com/release/album/{album?.normalizedArtist.split(' ').join('-')}/{album?.normalizedName.split(' ').join('-')}
                 </a>
             </div>
             <p className="font-black font-heading text-sm text-navy">

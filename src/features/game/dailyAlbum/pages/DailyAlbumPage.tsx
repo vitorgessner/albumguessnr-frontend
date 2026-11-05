@@ -5,25 +5,19 @@ import useUser from '@/features/auth/hooks/useUser';
 import axios from '@/shared/utils/axios';
 import { OverallStatistics } from '../components/OverallStatistics';
 import type { GuessRow } from '../types/GuessRow';
-import type { DailyAlbum } from '../types/DailyAlbum';
-import { ResultBanner } from '../components/ResultBanner';
-import { LastfmHints } from '../components/LastfmHints';
 import { Header } from '../components/Header';
 import { SearchBar } from '../components/SearchBar';
 import { Legend } from '../components/Legend';
 import { GuessRows } from '../components/GuessRows';
-import { buildGuessRow } from '../utils/buildGuessRow';
-import type { AlbumCandidate } from '../types/AlbumCandidate';
 import { GuessRowsSkeleton } from '../components/skeletons/GuessRowsSkeleton';
 import { ShareCard } from '../components/ShareCard';
+import { ResultBanner } from '../components/ResultBanner';
 import { AxiosError } from 'axios';
 
 export const DailyAlbumPageContent = ({
-    dailyAlbum,
     dailyAlbumNumber,
     totalGuessesCount,
 }: {
-    dailyAlbum: DailyAlbum;
     dailyAlbumNumber: number;
     totalGuessesCount: number;
 }) => {
@@ -35,7 +29,7 @@ export const DailyAlbumPageContent = ({
 
     const divRef = useRef<HTMLDivElement>(null);
 
-    const { userDailyAlbumStatistics, isPending } = useUserStatistics(user?.id, dailyAlbum.albumId);
+    const { userDailyAlbumStatistics, isPending } = useUserStatistics(user?.id);
 
     const [guessRows, setGuessRows] = useState<GuessRow[]>([]);
     const [isFinished, setIsFinished] = useState(false);
@@ -60,16 +54,12 @@ export const DailyAlbumPageContent = ({
             );
 
             if (candidateAlbumsIds) {
-                const candidateAlbums = await Promise.all(
-                    candidateAlbumsIds.map((candidate) =>
-                        axios.get<{ album: AlbumCandidate, count: number }>(`/album/${candidate}`)
-                    )
-                );
-
                 const rows = await Promise.all(
-                    candidateAlbums.map((album) => {
-                        return buildGuessRow(album.data.album, dailyAlbum, album.data.count);
-                    })
+                    candidateAlbumsIds.map(async (candidate) => {
+                        const response = await axios.get(`/daily/row/${candidate}`)
+                        return response.data.row
+                    }
+                    )
                 );
 
                 setGuessRows(rows);
@@ -77,7 +67,7 @@ export const DailyAlbumPageContent = ({
             setIsRowsLoading(false);
         };
         reconstructUserTries();
-    }, [isAlreadyFinished, userDailyAlbumStatistics, dailyAlbum]);
+    }, [isAlreadyFinished, userDailyAlbumStatistics]);
 
     if (isPending) {
         return (
@@ -94,13 +84,9 @@ export const DailyAlbumPageContent = ({
         <div className="pb-20 px-4 py-6 selection:bg-amber/80">
             <div ref={divRef} className="max-w-4xl mx-auto flex flex-col gap-5">
                 <Header totalGuessesCount={totalGuessesCount} />
-                <div className='flex justify-center items-center gap-2'>
-                    <LastfmHints dailyAlbum={dailyAlbum} />
-                </div>
 
                 {!isFinished && (
                     <SearchBar
-                        dailyAlbum={dailyAlbum}
                         guessRows={guessRows}
                         isFinished={isFinished}
                         setGuessRows={setGuessRows}
@@ -126,12 +112,12 @@ export const DailyAlbumPageContent = ({
 
                 {isFinished && !isPending && !isRowsLoading && (
                     <div className="flex flex-col lg:flex-row items-center justify-center gap-5 resultBannerDiv">
-                        <ResultBanner
+                        {isFinished && guessRows.length > 0 && <ResultBanner
                             tries={tryCount}
-                            album={dailyAlbum}
+                            album={guessRows[guessRows.length - 1].album}
                             nthPlayer={nthPlayerToGuess ?? null}
-                        />
-                        <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows} />
+                        />}
+                        {isFinished && guessRows.length > 0 && <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows} />}
                     </div>
                 )}
                 <OverallStatistics />
@@ -146,14 +132,12 @@ export const DailyAlbumPage = () => {
     }, []);
 
     const { data, isPending, error } = useQuery<{
-        dailyAlbum: DailyAlbum;
         dailyAlbumNumber: number;
-        dailyAlbumUrl: string;
         dailyAlbumTotalGuessesCount: number;
     }>({
-        queryKey: ['daily'],
+        queryKey: ['daily-stats'],
         queryFn: async () => {
-            const response = await axios.get('/daily/album');
+            const response = await axios.get('/daily/stats');
             return response.data;
         },
     });
@@ -162,10 +146,9 @@ export const DailyAlbumPage = () => {
     if (error instanceof AxiosError) return <div className="loading text-(--error-text)">{error.response?.data.message}</div>;
     if (error) return <div className="loading text-(--error-text)">{error.message}</div>;
 
-    const { dailyAlbum, dailyAlbumNumber, dailyAlbumTotalGuessesCount } = data;
+    const { dailyAlbumNumber, dailyAlbumTotalGuessesCount } = data;
     return (
         <DailyAlbumPageContent
-            dailyAlbum={dailyAlbum}
             dailyAlbumNumber={dailyAlbumNumber}
             totalGuessesCount={dailyAlbumTotalGuessesCount}
         />
