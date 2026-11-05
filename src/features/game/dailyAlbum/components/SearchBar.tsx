@@ -167,7 +167,7 @@ export const SearchBar = ({
                             handleSelect(candidates[0]);
                         }
                     }}
-                    placeholder="Search album..."
+                    placeholder="Search album, artist or year..."
                     className="flex-1 bg-transparent outline-none text-sm font-bold text-navy placeholder:text-muted-foreground placeholder:font-normal border-none"
                     autoComplete="off"
                 />
@@ -197,11 +197,10 @@ export const SearchBar = ({
                                     key={c.id}
                                     onClick={() => !alreadyGuessed && handleSelect(c)}
                                     disabled={alreadyGuessed}
-                                    className={`w-full flex items-center gap-3 px-4 py-2.5 border-b border-border last:border-0 text-left transition-colors ${
-                                        alreadyGuessed
-                                            ? 'opacity-40 cursor-not-allowed'
-                                            : 'hover:bg-muted/40'
-                                    }`}
+                                    className={`w-full flex items-center gap-3 px-4 py-2.5 border-b border-border last:border-0 text-left transition-colors ${alreadyGuessed
+                                        ? 'opacity-40 cursor-not-allowed'
+                                        : 'hover:bg-muted/40'
+                                        }`}
                                 >
                                     <img
                                         src={c.cover_url}

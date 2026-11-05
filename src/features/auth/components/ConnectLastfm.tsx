@@ -23,7 +23,7 @@ export const ConnectLastfm = ({ mainAccountId }: { mainAccountId?: string | null
         <>
             {!lastfmAccount && (
                 <button onClick={connectLastfm} className="providerButton white-component">
-                    <img src="../../src/assets/lastfm.png" className="w-6 h-6" />
+                    <img src={import.meta.env.VITE_SUPABASE_STORAGE + '/lastfm.png'} className="w-6 h-6" />
                     Connect Lastfm
                 </button>
             )}

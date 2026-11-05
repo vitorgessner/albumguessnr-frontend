@@ -163,7 +163,7 @@ const App = () => {
                                 <p>Username</p>
                             </div>
                             <div className="flex items-center gap-5">
-                                <p>Score</p>
+                                <p className='text-sage-dark'>Score</p>
                                 <p>Date</p>
                             </div>
                         </div>
@@ -199,16 +199,6 @@ const App = () => {
                             ))}
                     </div>
                 </div>
-                <Trophy
-                    size={180}
-                    color="#f2cc8f"
-                    className="hidden 2xl:block absolute left-15 top-90 opacity-40"
-                />
-                <Gamepad2
-                    size={180}
-                    color="#81b29a"
-                    className="hidden 2xl:block absolute right-15 top-90 opacity-25"
-                />
             </div>
         </div>
     );

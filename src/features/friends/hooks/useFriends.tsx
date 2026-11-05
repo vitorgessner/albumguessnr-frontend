@@ -17,7 +17,9 @@ interface IFriends {
     receivedRequests: {
         id: string;
         createdAt: Date;
-        totalScore: number;
+        userStats: {
+            totalScore: number;
+        }
         profile: {
             username: string;
             displayUsername: string;

@@ -35,6 +35,10 @@
   html {
     @apply font-sans;
   }
+
+  th,td {
+    @apply border px-2
+  }
 }
 
 @layer utilities {

@@ -9,6 +9,7 @@ export interface AlbumCandidate {
     rymRating: number | null;
     rymRanking: number | null;
     descriptors: string[];
+    count: number;
     artists: ({
         artist: {
             mbid: string | null;

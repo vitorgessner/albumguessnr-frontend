@@ -10,7 +10,8 @@ export const PrivacyPolicy = () => {
     return (
         <div className="max-w-195 m-auto pt-10 pb-20 px-6 leading-[1.65] text-[#1f2328]">
             <h1 className="text-3xl mb-0.5">Política de Privacidade / Privacy Policy</h1>
-            <p className="text-[#57606a] text-base mb-8">AlbumGuessnr</p>
+            <p className="text-[#57606a] text-base">AlbumGuessnr</p>
+            <p className="text-[#57606a] text-base mb-8">{language === 'pt-BR' ? 'Última atualização: 20 de outubro de 2026.' : 'Last updated: October 20, 2026.'}</p>
 
             <div className="sticky top-0 bg-cream py-3 px-0 mb-6 border-b border-b-primary z-10">
                 <button
@@ -18,322 +19,362 @@ export const PrivacyPolicy = () => {
                     className={`text-sm py-1.5 px-4 mr-2 border border-primary rounded-md cursor-pointer ${language === 'pt-BR' ? 'sage-component' : 'primary-component'}`}
                     onClick={() => setLanguage('pt-BR')}
                 >
-                    Português
+                    {language === 'pt-BR' ? 'Português' : 'Portuguese'}
                 </button>
                 <button
                     id="btn-en"
                     onClick={() => setLanguage('en')}
                     className={`text-sm py-1.5 px-4 mr-2 border border-primary rounded-md cursor-pointer ${language === 'en' ? 'sage-component' : 'primary-component'}`}
                 >
-                    English
+                    {language === 'pt-BR' ? 'Inglês' : 'English'}
                 </button>
             </div>
 
             {language === 'pt-BR' && (
                 <section id="lang-pt">
                     <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
-                        Política de Privacidade
+                        Quem somos
                     </h2>
                     <p className="my-3 mx-0">
-                        Sua privacidade é importante para nós. É política do AlbumGuessnr respeitar
-                        sua privacidade em relação a qualquer informação que possamos coletar de
-                        você em nosso site, AlbumGuessnr, e outros sites que possuímos e operamos.
+                        O AlbumGuessnr é um projeto de graduação (trabalho acadêmico) desenvolvido por Vitor Gabriel Gessner, estudante de Sistemas para Internet na UNIVALI (Universidade do Vale do Itajaí), que atua como controlador dos dados pessoais tratados neste site. Contato para assuntos de privacidade: albumguessnr@gmail.com.
                     </p>
-                    <p className="my-3 mx-0">
-                        Solicitamos informações pessoais apenas quando realmente necessário para
-                        fornecer um serviço a você. Coletamos essas informações por meios justos e
-                        legais, com seu conhecimento e consentimento. Também informamos por que
-                        estamos coletando essas informações e como elas serão usadas.
-                    </p>
-                    <p className="my-3 mx-0">
-                        Retemos as informações coletadas apenas pelo tempo necessário para fornecer
-                        o serviço solicitado. Os dados que armazenamos são protegidos por meios
-                        comercialmente aceitáveis para evitar perda, roubo, acesso não autorizado,
-                        divulgação, cópia, uso ou modificação.
-                    </p>
-                    <p className="my-3 mx-0">
-                        Não compartilhamos nenhuma informação de identificação pessoal publicamente
-                        ou com terceiros, exceto quando exigido por lei.
-                    </p>
-                    <p className="my-3 mx-0">
-                        Nosso site pode conter links para sites externos que não são operados por
-                        nós. Esteja ciente de que não temos controle sobre o conteúdo e as práticas
-                        desses sites, e não podemos aceitar responsabilidade por suas respectivas
-                        políticas de privacidade.
-                    </p>
-                    <p className="my-3 mx-0">
-                        Você é livre para recusar nossa solicitação de suas informações pessoais,
-                        entendendo que talvez não possamos fornecer alguns dos serviços desejados.
-                    </p>
-                    <p className="my-3 mx-0">
-                        O uso continuado do nosso site será considerado como aceitação de nossas
-                        práticas em relação à privacidade e informações pessoais. Se você tiver
-                        alguma dúvida sobre como tratamos os dados dos usuários e informações
-                        pessoais, entre em contato conosco.
-                    </p>
-
                     <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
-                        Política de Cookies
+                        Dados que coletamos
                     </h2>
-                    <p className="my-3 mx-0">
-                        Esta é a Política de Cookies do AlbumGuessnr, acessível pela URL{' '}
-                        <a href="https://albumguessnr.com">https://albumguessnr.com</a>.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">O que são cookies</h3>
-                    <p className="my-3 mx-0">
-                        Como é prática comum em quase todos os sites profissionais, este site usa
-                        cookies, que são pequenos arquivos baixados no seu computador, para melhorar
-                        sua experiência. Esta página descreve quais informações eles coletam, como
-                        as usamos e por que às vezes precisamos armazená-los. Também explicamos como
-                        você pode evitar que esses cookies sejam armazenados, embora isso possa
-                        prejudicar ou quebrar certos elementos da funcionalidade do site.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">Como usamos os cookies</h3>
-                    <p className="my-3 mx-0">
-                        Usamos cookies por diversos motivos, detalhados abaixo. Na maioria dos
-                        casos, não há opções padrão da indústria para desabilitar cookies sem
-                        desabilitar completamente as funcionalidades e recursos que eles adicionam a
-                        este site. Recomendamos que você mantenha os cookies ativados caso não tenha
-                        certeza se precisa deles, para evitar interromper algum serviço que você
-                        utiliza.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">Os cookies que definimos</h3>
-
-                    <p className="my-3 mx-0">
-                        <strong>Cookies de autenticação</strong>
-                        <br />
-                        Quando você faz login em nosso site — seja por e-mail e senha, seja
-                        utilizando uma conta de terceiros como o Google — definimos cookies (
-                        <code>token</code> e <code>refresh</code>) para mantê-lo autenticado
-                        enquanto utiliza o site. Esses cookies são armazenados em nosso domínio e
-                        não são acessíveis por scripts do lado do cliente (JavaScript), como medida
-                        de segurança. Eles expiram automaticamente após um período limitado e são
-                        necessários para a funcionalidade principal do site (permanecer conectado).
-                    </p>
-
-                    <p className="my-3 mx-0">
-                        <strong>Login por terceiros (OAuth)</strong>
-                        <br />
-                        Se você optar por entrar usando Google, Spotify ou Last.fm, será
-                        redirecionado ao site do respectivo provedor para autorizar o acesso.
-                        Durante esse processo, cookies podem ser definidos pelo provedor (Google,
-                        Spotify ou Last.fm) em seus próprios domínios, regidos pelas respectivas
-                        políticas de privacidade deles, não pela nossa. Não temos acesso nem
-                        controle sobre esses cookies. Recebemos apenas as informações necessárias
-                        para autenticá-lo (como e-mail, nome de usuário e informações de perfil)
-                        após você autorizar a conexão.
-                    </p>
-
-                    <p className="my-3 mx-0">
-                        <strong>Cookies analíticos</strong>
-                        <br />
-                        Utilizamos o Google Analytics (GA4) para entender como os visitantes
-                        interagem com nosso site — por exemplo, quantos usuários são novos ou
-                        recorrentes, quanto tempo passam em diferentes telas e quais funcionalidades
-                        utilizam. Essas informações são coletadas de forma agregada e anonimizada, e
-                        os cookies são definidos em nosso próprio domínio pelo script do Google
-                        Analytics. Essa coleta tem finalidade acadêmica, como parte da pesquisa
-                        deste projeto de graduação. Esses cookies só são ativados mediante seu
-                        consentimento explícito, e você pode revogar essa escolha a qualquer momento
-                        através das configurações de cookies do site.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">Desativando cookies</h3>
-                    <p className="my-3 mx-0">
-                        Você pode impedir a definição de cookies ajustando as configurações do seu
-                        navegador (consulte a seção de Ajuda do seu navegador para saber como fazer
-                        isso). Esteja ciente de que desativar cookies afetará a funcionalidade deste
-                        e de muitos outros sites que você visita, incluindo a capacidade de
-                        permanecer conectado.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">Responsabilidades do usuário</h3>
-                    <p className="my-3 mx-0">
-                        O usuário se compromete a fazer uso apropriado dos conteúdos e informações
-                        oferecidos no site, com comportamento enunciativo, mas não limitado a:
-                    </p>
-                    <ul className="pl-5">
-                        <li>
-                            Não se envolver em atividades ilegais ou contrárias à boa-fé e à ordem
-                            pública;
-                        </li>
-                        <li>
-                            Não difundir propaganda ou conteúdo de natureza racista, xenofóbica,
-                            relacionado a jogos de azar, qualquer tipo de pornografia ilegal,
-                            apologia ao terrorismo ou contra os direitos humanos;
-                        </li>
-                        <li>
-                            Não causar danos aos sistemas físicos (hardware) e lógicos (software) do
-                            AlbumGuessnr, de seus fornecedores ou de terceiros, nem introduzir ou
-                            disseminar vírus de computador ou quaisquer outros sistemas capazes de
-                            causar os danos mencionados anteriormente.
-                        </li>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'><b>Conta</b>: e-mail, nome de usuário e senha (armazenada de forma protegida, nunca em texto puro). Se você entrar com Google, Spotify ou Last.fm, recebemos os dados que você autorizar nesses serviços (item 4).</li>
+                        <li className='my-3 mx-0'><b>Jogador convidado</b>: se você joga o álbum diário sem criar conta, criamos um perfil de convidado ligado ao seu navegador para guardar seu progresso (histórico e sequência de dias). Se depois você criar uma conta, esse histórico pode ser mantido nela.</li>
+                        <li className='my-3 mx-0'><b>Dados de jogo e atividade</b>: palpites, tentativas, acertos, resultados, sequências e os dias em que você acessou o sistema.</li>
+                        <li className='my-3 mx-0'><b>Perfil público</b>: seu nome de usuário, informações de perfil e estatísticas de jogo podem ser exibidos publicamente na sua página de perfil e nos rankings.</li>
+                        <li className='my-3 mx-0'><b>Análise de uso (somente com seu consentimento)</b>: páginas visitadas, tempo nas telas, interações, origem do acesso, dispositivo, navegador e localização aproximada, coletados pelo Google Analytics. Contamos, de forma agregada e sem identificar você, quantas sessões têm a análise de uso bloqueada por extensões do navegador.</li>
+                        <li className='my-3 mx-0'><b>Dados técnicos</b>: nossos provedores de hospedagem podem tratar dados como endereço IP e registros de acesso para operação e segurança do serviço.</li>
                     </ul>
 
-                    <h3 className="text-lg mt-7 text-sage-dark">Mais informações</h3>
-                    <p className="my-3 mx-0">
-                        Esperamos que isso tenha esclarecido as coisas para você. Se houver algo
-                        sobre o qual você não tenha certeza se precisa ou não, geralmente é mais
-                        seguro manter os cookies ativados, caso interajam com algum recurso que você
-                        usa em nosso site.
-                    </p>
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Como usamos os seus dados
+                    </h2>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'>Prestar o serviço: autenticar você, executar o jogo, guardar seu progresso e montar rankings.</li>
+                        <li className='my-3 mx-0'>Personalizar o jogo com a sua música, quando você conecta Spotify ou Last.fm.</li>
+                        <li className='my-3 mx-0'><b>Pesquisa acadêmica</b>: estudar como o sistema é usado, por exemplo se o álbum diário incentiva os usuários a voltar. Os resultados são apresentados apenas de forma agregada e anonimizada.</li>
+                        <li className='my-3 mx-0'>Manter a segurança e o bom funcionamento do site.</li>
+                    </ul>
+                    <p className='my-3 mx-0'>Tratamos seus dados para prestar o serviço que você solicita e, com o seu consentimento, para análise de uso e conexão com serviços de terceiros. Os dados de jogo e atividade também são usados na pesquisa acadêmica descrita acima.</p>
 
-                    <p className="mt-10 text-sm text-[#57606a] italic border-t-sage border-t pt-4">
-                        Esta política é válida a partir de 26 de agosto de 2026.
-                    </p>
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Compartilhamento e serviços de terceiros
+                    </h2>
+
+                    <p className='my-3 mx-0'>Não vendemos seus dados. Compartilhamos dados apenas com os serviços necessários ao funcionamento do site:</p>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'><b>Google</b>: login com Google (e-mail e perfil básico) e Google Analytics (somente com consentimento).</li>
+                        <li className='my-3 mx-0'><b>Spotify</b>: se você conectar sua conta, acessamos e-mail, dados de perfil, biblioteca salva e seus artistas e faixas mais ouvidos, conforme as permissões que você autorizar.</li>
+                        <li className='my-3 mx-0'><b>Last.fm</b>: se você conectar sua conta, acessamos seu nome de usuário e os dados de escuta autorizados.</li>
+                        <li className='my-3 mx-0'><b>Infraestrutura</b>: hospedagem do site (como a Vercel), hospedagem da API, banco de dados e armazenamento de arquivos (como o Supabase).</li>
+                    </ul>
+                    <p className='my-3 mx-0'>Cada serviço tem sua própria política de privacidade, sobre a qual não temos controle. Você pode revogar o acesso do AlbumGuessnr nas configurações da sua conta Google, Spotify ou Last.fm. Também podemos divulgar dados quando exigido por lei.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Transferência internacional
+                    </h2>
+                    <p className='my-3 mx-0'>Nossos servidores e os de nossos provedores podem estar fora do Brasil (por exemplo, nos Estados Unidos), e o Google processa dados em escala global. Ao usar o serviço, seus dados podem ser transferidos para esses locais.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Retenção
+                    </h2>
+                    <p className='my-3 mx-0'>Mantemos dados de conta e de jogo enquanto sua conta (ou perfil de convidado) existir e for necessário para o serviço e para a pesquisa. Os dados do Google Analytics seguem o período de retenção configurado em nossa propriedade. Você pode pedir a exclusão dos seus dados a qualquer momento (item 7). Resultados de pesquisa já anonimizados e agregados podem ser mantidos.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Seus direitos
+                    </h2>
+                    <p className='my-3 mx-0'>Conforme a LGPD, você pode solicitar confirmação do tratamento, acesso, correção, anonimização ou exclusão, portabilidade, informações sobre compartilhamento e revogação do consentimento. Escreva para albumguessnr@gmail.com. Você também pode revogar o consentimento de análise de uso pelas configurações de cookies do site.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Segurança, links externos e alterações
+                    </h2>
+                    <p className='my-3 mx-0'>Protegemos os dados por meios comercialmente aceitáveis contra perda, roubo e acesso, divulgação, cópia, uso ou modificação não autorizados. O site pode conter links para sites externos que não operamos, e não nos responsabilizamos por suas políticas. Você é livre para recusar fornecer dados pessoais, entendendo que alguns serviços podem ficar indisponíveis. Podemos atualizar esta política; a data da última atualização fica no topo. Ao criar uma conta ou continuar usando o serviço, você reconhece esta política; a análise de uso só é ativada com o seu consentimento explícito.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Política de cookies
+                    </h2>
+                    <p className='my-3 mx-0'>Esta é a Política de Cookies do AlbumGuessnr, acessível em <a href='albumguessnr.com'>albumguessnr.com</a>. Cookies são pequenos arquivos que o site grava no seu navegador para funcionar e para entender como é usado.</p>
+                    <table className='border-collapse'>
+                        <thead>
+                            <tr>
+                                <th>
+                                    Cookie
+                                </th>
+                                <th>
+                                    Origem
+                                </th>
+                                <th>
+                                    Finalidade
+                                </th>
+                                <th>
+                                    Duração
+                                </th>
+                                <th>
+                                    Categoria
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    token
+                                </td>
+                                <td>
+                                    api.albumguessnr.com
+                                </td>
+                                <td>
+                                    Mantém você autenticado (conta ou convidado). Não é acessível por JavaScript.
+                                </td>
+                                <td>
+                                    cerca de 1 hora
+                                </td>
+                                <td>
+                                    Necessário
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    refresh
+                                </td>
+                                <td>
+                                    api.albumguessnr.com
+                                </td>
+                                <td>
+                                    Renova sua sessão automaticamente, sem novo login. Não é acessível por JavaScript.
+                                </td>
+                                <td>
+                                    7 dias (contas) ou 30 dias (convidados), renovados a cada visita
+                                </td>
+                                <td>
+                                    Necessário
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    cc_cookie
+                                </td>
+                                <td>
+                                    albumguessnr.com
+                                </td>
+                                <td>
+                                    Guarda suas escolhas sobre cookies.
+                                </td>
+                                <td>
+                                    período limitado
+                                </td>
+                                <td>
+                                    Necessário
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    _ga e {'_ga<ID>'}
+                                </td>
+                                <td>
+                                    albumguessnr.com (Google Analytics)
+                                </td>
+                                <td>
+                                    Distingue visitantes e sessões para estatísticas de uso, com finalidade acadêmica.
+                                </td>
+                                <td>
+                                    até 2 anos
+                                </td>
+                                <td>
+                                    Análise (só com consentimento)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p className='my-3 mx-0'><b>Login por terceiros</b>. Ao entrar com Google, Spotify ou Last.fm, você é redirecionado ao site do provedor, que pode definir cookies nos próprios domínios, regidos pelas políticas deles. Não temos acesso nem controle sobre esses cookies.</p>
+                    <p className='my-3 mx-0'><b>Gerenciando seus cookies</b>. Você pode alterar ou revogar sua escolha sobre cookies de análise a qualquer momento nas configurações de cookies do site. Ao revogar, apagamos os cookies do Google Analytics e recarregamos a página. Você também pode bloquear cookies no navegador, mas isso pode impedir o login e outras funcionalidades.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Responsabilidades do usuário
+                    </h2>
+                    <p className='my-3 mx-0'>O usuário se compromete a usar o site de forma apropriada, o que inclui, sem limitação:</p>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'>Não praticar atividades ilegais ou contrárias à boa-fé e à ordem pública;</li>
+                        <li className='my-3 mx-0'>Não difundir conteúdo racista, xenofóbico, de jogos de azar, pornografia ilegal, apologia ao terrorismo ou contrário aos direitos humanos;</li>
+                        <li className='my-3 mx-0'>Não causar danos aos sistemas do AlbumGuessnr, de seus fornecedores ou de terceiros, nem disseminar vírus ou outros códigos nocivos.</li>
+                    </ul>
                 </section>
             )}
 
             {language === 'en' && (
                 <section id="lang-en" className="lang">
-                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">Privacy Policy</h2>
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Who are we
+                    </h2>
                     <p className="my-3 mx-0">
-                        Your privacy is important to us. It is AlbumGuessnr's policy to respect your
-                        privacy regarding any information we may collect from you across our
-                        website, AlbumGuessnr, and other sites we own and operate.
+                        AlbumGuessnr is a university graduation project (academic work) developed by Vitor Gabriel Gessner, a student of Internet Systems at UNIVALI (Universidade do Vale do Itajaí), who acts as the controller of the personal data processed on this site. Privacy contact: albumguessnr@gmail.com.
                     </p>
-                    <p className="my-3 mx-0">
-                        We only ask for personal information when we truly need it to provide a
-                        service to you. We collect it by fair and lawful means, with your knowledge
-                        and consent. We also let you know why we're collecting it and how it will be
-                        used.
-                    </p>
-                    <p className="my-3 mx-0">
-                        We only retain collected information for as long as necessary to provide you
-                        with your requested service. What data we store, we'll protect within
-                        commercially acceptable means to prevent loss and theft, as well as
-                        unauthorised access, disclosure, copying, use or modification.
-                    </p>
-                    <p className="my-3 mx-0">
-                        We don't share any personally identifying information publicly or with third
-                        parties, except when required to by law.
-                    </p>
-                    <p className="my-3 mx-0">
-                        Our website may link to external sites that are not operated by us. Please
-                        be aware that we have no control over the content and practices of these
-                        sites, and cannot accept responsibility or liability for their respective
-                        privacy policies.
-                    </p>
-                    <p className="my-3 mx-0">
-                        You are free to refuse our request for your personal information, with the
-                        understanding that we may be unable to provide you with some of your desired
-                        services.
-                    </p>
-                    <p className="my-3 mx-0">
-                        Your continued use of our website will be regarded as acceptance of our
-                        practices around privacy and personal information. If you have any questions
-                        about how we handle user data and personal information, feel free to contact
-                        us.
-                    </p>
-
-                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">Cookie Policy</h2>
-                    <p className="my-3 mx-0">
-                        This is the Cookie Policy for AlbumGuessnr, accessible from{' '}
-                        <a href="https://albumguessnr.com">https://albumguessnr.com</a>.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">What Are Cookies</h3>
-                    <p className="my-3 mx-0">
-                        As is common practice with almost all professional websites, this site uses
-                        cookies, which are tiny files downloaded to your computer, to improve your
-                        experience. This page describes what information they gather, how we use it,
-                        and why we sometimes need to store these cookies. We also explain how you
-                        can prevent these cookies from being stored, although this may downgrade or
-                        break certain elements of the site's functionality.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">How We Use Cookies</h3>
-                    <p className="my-3 mx-0">
-                        We use cookies for a variety of reasons, detailed below. In most cases,
-                        there are no industry-standard options for disabling cookies without
-                        completely disabling the functionality and features they add to this site.
-                        It is recommended that you leave cookies enabled if you are unsure whether
-                        you need them, in case they support a service you use.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">The Cookies We Set</h3>
-
-                    <p className="my-3 mx-0">
-                        <strong>Authentication cookies</strong>
-                        <br />
-                        When you log in to our website — whether by email and password, or by
-                        signing in with a third-party account such as Google — we set cookies (
-                        <code>token</code> and <code>refresh</code>) to keep you authenticated while
-                        you use the site. These cookies are stored on our domain and are not
-                        accessible by client-side scripts, as a security measure. They expire
-                        automatically after a limited period and are required for the site's core
-                        functionality (staying logged in).
-                    </p>
-
-                    <p className="my-3 mx-0">
-                        <strong>Third-party sign-in (OAuth)</strong>
-                        <br />
-                        If you choose to sign in using Google, Spotify, or Last.fm, you will be
-                        redirected to that provider's own website to authorize access. During this
-                        process, cookies may be set by the provider (Google, Spotify, or Last.fm) on
-                        their own domains, governed by their respective privacy policies, not ours.
-                        We do not have access to, and do not control, these cookies. We only receive
-                        the information necessary to authenticate you (such as your email, username,
-                        and profile information) once you authorize the connection.
-                    </p>
-
-                    <p className="my-3 mx-0">
-                        <strong>Analytics cookies</strong>
-                        <br />
-                        We use Google Analytics (GA4) to understand how visitors interact with our
-                        website — such as how many users are new versus returning, how long they
-                        spend on different screens, and which features are used. This information is
-                        collected in an aggregated and anonymized form, and the cookies are set on
-                        our own domain by the Google Analytics script. This collection serves an
-                        academic purpose, as part of this graduation project's research. These
-                        cookies are only enabled with your explicit consent, and you can revoke that
-                        choice at any time through the site's cookie settings.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">Disabling Cookies</h3>
-                    <p className="my-3 mx-0">
-                        You can prevent the setting of cookies by adjusting your browser settings
-                        (see your browser's Help section for how to do this). Be aware that
-                        disabling cookies will affect the functionality of this and many other
-                        websites you visit, including the ability to stay logged in.
-                    </p>
-
-                    <h3 className="text-lg mt-7 text-sage-dark">User's Responsibilities</h3>
-                    <p className="my-3 mx-0">
-                        The user undertakes the responsibility to make appropriate use of the
-                        content and information offered on the site, including, but not limited to:
-                    </p>
-                    <ul className="pl-5">
-                        <li>
-                            Not to engage in activities that are illegal or contrary to good faith
-                            and public order;
-                        </li>
-                        <li>
-                            Not to spread propaganda or content of a racist, xenophobic, or gambling
-                            nature, any type of illegal pornography, terrorist claims, or content
-                            against human rights;
-                        </li>
-                        <li>
-                            Not to cause damage to the physical (hardware) or logical (software)
-                            systems of AlbumGuessnr, its suppliers, or third parties, nor to
-                            introduce or disseminate computer viruses or any other systems capable
-                            of causing the aforementioned damage.
-                        </li>
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Data we collect
+                    </h2>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'><b>Account</b>: email, username and password (stored in protected form, never in plain text). If you sign in with Google, Spotify or Last.fm, we receive the data you authorize on those services (item 4).</li>
+                        <li className='my-3 mx-0'><b>Guest players</b>: if you play without creating an account, we create a guest profile tied to your browser to save your progress (history and daily streak). If you later create an account, that history may be kept in it.</li>
+                        <li className='my-3 mx-0'><b>Gameplay and activity data</b>: guesses, attempts, correct answers, results, streaks and the days on which you accessed the system.</li>
+                        <li className='my-3 mx-0'><b>Public profile</b>: your username, profile information and game statistics may be shown publicly on your profile page and on leaderboards.</li>
+                        <li className='my-3 mx-0'><b>Usage analytics (only with your consent)</b>: pages visited, time on screens, interactions, traffic source, device, browser and approximate location, collected through Google Analytics. We count, in aggregate and without identifying you, how many sessions have usage analytics blocked by browser extensions.</li>
+                        <li className='my-3 mx-0'><b>Technical data</b>: our hosting providers may process data such as IP address and access logs to operate and secure the service. </li>
                     </ul>
 
-                    <h3 className="text-lg mt-7 text-sage-dark">More Information</h3>
-                    <p className="my-3 mx-0">
-                        Hopefully, this has clarified things for you. If there is something you
-                        aren't sure whether you need or not, it is usually safer to leave cookies
-                        enabled in case they interact with a feature you use on our site.
-                    </p>
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        How we use your data
+                    </h2>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'>To provide the service: authenticate you, run the game, save your progress and build leaderboards.</li>
+                        <li className='my-3 mx-0'>To personalize the game with your music when you connect Spotify or Last.fm.</li>
+                        <li className='my-3 mx-0'><b>Academic research</b>: to study how the system is used, for example whether the daily album encourages users to come back. Results are presented only in aggregated and anonymized form.</li>
+                        <li className='my-3 mx-0'>To keep the site secure and working properly.</li>
+                    </ul>
+                    <p className='my-3 mx-0'>We process your data to provide the service you request and, with your consent, for usage analytics and connections to third-party services. Gameplay and activity data are also used in the academic research described above.</p>
 
-                    <p className="mt-10 text-sm text-[#57606a] italic border-t-sage border-t pt-4">
-                        This policy is effective as of August 26, 2026.
-                    </p>
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Sharing and third-party services
+                    </h2>
+
+                    <p className='my-3 mx-0'>We do not sell your data. We share data only with the services needed to run the site:</p>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'><b>Google</b>: sign-in with Google (email and basic profile) and Google Analytics (only with consent).</li>
+                        <li className='my-3 mx-0'><b>Spotify</b>: if you connect your account, we access your email, profile data, saved library and top artists and tracks, according to the permissions you grant.</li>
+                        <li className='my-3 mx-0'><b>Last.fm</b>: if you connect your account, we access your username and the listening data you authorize.</li>
+                        <li className='my-3 mx-0'><b>Infraestrutura</b>: site hosting (such as Vercel), API hosting, database and file storage (such as Supabase).</li>
+                    </ul>
+                    <p className='my-3 mx-0'>Each service has its own privacy policy, over which we have no control. You can revoke AlbumGuessnr's access in your Google, Spotify or Last.fm account settings. We may also disclose data when required by law.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        International transfers
+                    </h2>
+                    <p className='my-3 mx-0'>Our servers and those of our providers may be located outside Brazil (for example, in the United States), and Google processes data globally. By using the service, your data may be transferred to those locations.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Retention
+                    </h2>
+                    <p className='my-3 mx-0'>We keep account and gameplay data while your account (or guest profile) exists and as needed for the service and the research. Google Analytics data follows the retention period configured in our property. You can request deletion of your data at any time (item 7). Research results that are already anonymized and aggregated may be kept.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Your rights
+                    </h2>
+                    <p className='my-3 mx-0'>Under Brazil's LGPD, you may request confirmation of processing, access, correction, anonymization or deletion, portability, information about sharing, and withdrawal of consent. Write to albumguessnr@gmail.com. You can also withdraw your analytics consent through the site's cookie settings.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Security, external links and changes
+                    </h2>
+                    <p className='my-3 mx-0'>We protect data by commercially acceptable means against loss, theft, and unauthorized access, disclosure, copying, use or modification. The site may link to external sites we do not operate, and we are not responsible for their policies. You are free to refuse to provide personal data, understanding that some services may become unavailable. We may update this policy; the date of the last update is shown at the top. By creating an account or continuing to use the service, you acknowledge this policy; usage analytics are only enabled with your explicit consent.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        Cookie Policy
+                    </h2>
+                    <p className='my-3 mx-0'>This is the Cookie Policy for AlbumGuessnr, accessible at <a href='albumguessnr.com'>albumguessnr.com</a>. Cookies are small files that the site stores in your browser so it can work and so we can understand how it is used.</p>
+                    <table className='border-collapse'>
+                        <thead>
+                            <tr>
+                                <th>
+                                    Cookie
+                                </th>
+                                <th>
+                                    Set by
+                                </th>
+                                <th>
+                                    Purpose
+                                </th>
+                                <th>
+                                    Duration
+                                </th>
+                                <th>
+                                    Category
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    token
+                                </td>
+                                <td>
+                                    api.albumguessnr.com
+                                </td>
+                                <td>
+                                    Keeps you authenticated (account or guest). Not accessible by JavaScript.
+                                </td>
+                                <td>
+                                    about 1 hour
+                                </td>
+                                <td>
+                                    Necessary
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    refresh
+                                </td>
+                                <td>
+                                    api.albumguessnr.com
+                                </td>
+                                <td>
+                                    Renews your session automatically, without logging in again. Not accessible by JavaScript.
+                                </td>
+                                <td>
+                                    7 days (accounts) or 30 days (guests), renewed on each visit
+                                </td>
+                                <td>
+                                    Necessary
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    cc_cookie
+                                </td>
+                                <td>
+                                    albumguessnr.com
+                                </td>
+                                <td>
+                                    Stores your cookie choices.
+                                </td>
+                                <td>
+                                    limited period
+                                </td>
+                                <td>
+                                    Necessary
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    _ga e {'_ga<ID>'}
+                                </td>
+                                <td>
+                                    albumguessnr.com (Google Analytics)
+                                </td>
+                                <td>
+                                    Distinguishes visitors and sessions for usage statistics, for academic purposes.
+                                </td>
+                                <td>
+                                    up to 2 years
+                                </td>
+                                <td>
+                                    Analytics (consent only)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p className='my-3 mx-0'><b>Third-party sign-in</b>. When you sign in with Google, Spotify or Last.fm, you are redirected to the provider's website, which may set cookies on its own domains, governed by its own policies. We have no access to or control over those cookies.</p>
+                    <p className='my-3 mx-0'><b>Managing your cookies</b>. You can change or withdraw your choice about analytics cookies at any time in the site's cookie settings. When you withdraw, we delete the Google Analytics cookies and reload the page. You can also block cookies in your browser, but this may prevent login and other features from working.</p>
+
+                    <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
+                        User's Responsibilities
+                    </h2>
+                    <p className='my-3 mx-0'>The user undertakes to use the site appropriately, including, without limitation:</p>
+                    <ul className="my-3 mx-0 ml-7 list-disc">
+                        <li className='my-3 mx-0'>Not to engage in activities that are illegal or contrary to good faith and public order;</li>
+                        <li className='my-3 mx-0'>Not to spread racist, xenophobic or gambling content, illegal pornography, terrorist claims, or content against human rights;</li>
+                        <li className='my-3 mx-0'>Not to cause damage to the systems of AlbumGuessnr, its suppliers or third parties, nor to spread viruses or other harmful code.</li>
+                    </ul>
                 </section>
             )}
         </div>

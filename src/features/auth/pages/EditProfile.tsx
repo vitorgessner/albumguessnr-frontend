@@ -1,6 +1,6 @@
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import axios from '../../../shared/utils/axios';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import Form from '../components/form/Form';
 import { AxiosError } from 'axios';
 import useUser from '../hooks/useUser';
@@ -9,13 +9,14 @@ import useAuthStore from '../stores/useAuthStore';
 import type { ErrorResponse } from '../types/response';
 import type { AllowedData } from '../types/editProfileResponse';
 import appendToFormData from '../utils/appendToFormData';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ConnectSpotify } from '../components/ConnectSpotify';
 import { ConnectLastfm } from '../components/ConnectLastfm';
+import { getDaysUntilNextSync } from '../utils/getDaysUntilNextSync';
 
 const EditProfile = () => {
     const { data: user, isPending: isUserPending, error } = useUser();
-
+    const [searchParams] = useSearchParams();
     const [, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [providerError, setProviderError] = useState<string | null>(null);
@@ -29,6 +30,7 @@ const EditProfile = () => {
         register,
         handleSubmit,
         formState: { errors },
+        setError
     } = useForm<AllowedData>({ mode: 'onChange' });
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -50,13 +52,11 @@ const EditProfile = () => {
             queryClient.removeQueries({ queryKey: ['profile', user?.profile.username] });
             queryClient.invalidateQueries({ queryKey: ['friends'] });
         },
-        onError: (err) => {
-            if (err instanceof AxiosError && err.response) {
-                err.message = err.response.data.message;
-                return console.log(err.response);
+        onError(error) {
+            if (error instanceof AxiosError && error.response?.data.message === 'Username already taken') {
+                setError('username', { message: 'Username already taken' })
             }
-            console.log(err);
-        },
+        }
     });
 
     const onProfileSubmit: SubmitHandler<AllowedData> = async (data) => {
@@ -120,15 +120,50 @@ const EditProfile = () => {
         });
     };
 
+    const hasRun = useRef(false);
+
+    useEffect(() => {
+        if (hasRun.current) return;
+        const syncAlbums = async () => {
+            if (searchParams.get('sync') === 'true') {
+                hasRun.current = true;
+                await axios.get('/sync');
+            }
+        }
+
+        syncAlbums();
+    }, [searchParams])
+
+    const lastSyncedAt = user?.accounts.filter((account) => account.lastSyncedAt).sort((a, b) => {
+        if (a.lastSyncedAt && b.lastSyncedAt) {
+            return new Date(b.lastSyncedAt).getTime() - new Date(a.lastSyncedAt).getTime()
+        }
+
+        return 1
+    }).at(0)?.lastSyncedAt;
+
+    const days = getDaysUntilNextSync(lastSyncedAt);
+
+    useEffect(() => {
+        const printError = () => {
+            if (searchParams.get('error')) {
+                setProviderError(searchParams.get('error'));
+            }
+        }
+
+        printError();
+    }, [searchParams])
+
     if (isUserPending) return <span className="loading">Loading...</span>;
 
+    if (error instanceof AxiosError) return <span className="loading text-(--error-text)">{error.response?.data.message}</span>;
     if (error) return <span className="loading text-(--error-text)">{error.message}</span>;
 
     return (
         <main className="flex flex-col md:flex-row justify-center items-center pt-2 h-lg:pt-12 gap-4">
             <article
                 className={
-                    'border-2 border-primary p-4 pb-2.5 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
+                    'border-2 border-primary text-navy p-4 pb-2.5 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
                 }
                 aria-label="login-form"
                 data-testid="login-section"
@@ -247,7 +282,7 @@ const EditProfile = () => {
             </article>
             <article
                 className={
-                    'flex flex-col gap-8 border-2 border-primary p-4 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
+                    'flex flex-col text-navy gap-8 h-full border-2 border-primary p-4 h-sm:pb-4 bg-(--card-light) min-w-90 text-center rounded-lg three-dimension-primary text-sm h-sm:text-base h-lg:text-lg'
                 }
             >
                 <div>
@@ -259,10 +294,14 @@ const EditProfile = () => {
                 <div className="flex flex-col gap-2">
                     <ConnectSpotify mainAccountId={mainProvider} />
                     <ConnectLastfm mainAccountId={mainProvider} />
-                    <button className="providerButton" onClick={onProviderChange}>
+                    <button className="providerButton text-navy" onClick={onProviderChange}>
                         Change main provider
                     </button>
                     <p className="text-right text-sm text-red-600">{providerError}</p>
+                </div>
+                <div className='text-sm'>
+                    {lastSyncedAt && <p>Last synced at: {new Date(lastSyncedAt).toLocaleDateString('en-US')}</p>}
+                    {days && <p>Next sync in: {days} days</p>}
                 </div>
             </article>
         </main>

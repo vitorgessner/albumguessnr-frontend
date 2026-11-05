@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import useAuthStore from '../../features/auth/stores/useAuthStore';
 import { Pencil, LogOut, Trophy, Gamepad, Calendar } from 'lucide-react';
@@ -9,8 +9,19 @@ import { useQueryClient } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
 import * as CookieConsent from 'vanilla-cookieconsent';
 import { Footer } from './Footer';
+import { useAdblockDetector } from '@scthakuri/adblock-detector';
+
+declare global {
+    interface Window {
+      [key: `ga-disable-${string}`]: boolean;
+    }
+  }
+  
+  export {};
 
 const Header = () => {
+    const [consent, setConsent] = useState(false);
+    const { detected, loading } = useAdblockDetector();
     const { data: user, isPending } = useUser();
     const { isAuthenticated, setIsLoggingOut, setIsAuthenticated } = useAuthStore();
     const queryClient = useQueryClient();
@@ -48,25 +59,20 @@ const Header = () => {
     };
 
     const loadAnalyticsScript = () => {
-        if (CookieConsent.acceptedCategory('analytics') && import.meta.env.PROD) {
+        if (CookieConsent.acceptedCategory('analytics')) {
             if (
                 document.querySelector(
                     `script[src="https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}"]`
                 )
             ) {
-                console.log('Analytics script already working');
                 return;
             }
 
-            console.log('accepted analytics cookie');
             const script = document.createElement('script');
             script.src = `https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GTAG_ID}`;
             script.async = true;
 
             document.head.appendChild(script);
-            script.onload = () => {
-                console.log('loaded analytics script');
-            };
             script.onerror = () => {
                 throw new Error('Failed to load analytics script');
             };
@@ -85,8 +91,6 @@ const Header = () => {
             script2.onerror = () => {
                 throw new Error('Failed to load analytics script2');
             };
-
-            console.log('loaded analytics script 2');
         }
     };
 
@@ -140,23 +144,72 @@ const Header = () => {
                 },
             },
             disablePageInteraction: true,
-            onConsent: () => {
-                loadAnalyticsScript();
+            onFirstConsent: () => {
+                if (CookieConsent.acceptedCategory('analytics')) {
+                    loadAnalyticsScript();
+                    setConsent(true);
+                }
             },
-            onChange: function ({ changedCategories }) {
-                if (!changedCategories.includes('analytics')) {
-                    return;
+            onConsent: () => {
+                if (CookieConsent.acceptedCategory('analytics')) {
+                    loadAnalyticsScript();
+                    setConsent(true);
+                }
+            },
+            onChange: async function ({ changedCategories }) {
+                console.log(changedCategories);
+                if (CookieConsent.acceptedCategory('analytics')) {
+                    setConsent(true);
+                    loadAnalyticsScript();
                 }
 
-                loadAnalyticsScript();
-
                 if (!CookieConsent.acceptedCategory('analytics')) {
-                    CookieConsent.eraseCookies(['_gid', /^_ga/]);
+                    setConsent(false);
+
+                    const gtagId = import.meta.env.VITE_GTAG_ID;
+                    if (gtagId) {
+                        window[`ga-disable-${gtagId}`] = true;
+                    }
+
+                    const hostname = window.location.hostname;
+                    const parts = hostname.split('.');
+                    const baseDomain = parts.length > 2 ? `.${parts.slice(-2).join('.')}` : `.${hostname}`;
+
+                    const gaCookies = document.cookie.split(';').filter(c => /_ga.*/.test(c.trim().split('=')[0]));
+
+                    gaCookies.forEach(cookieStr => {
+                        const name = cookieStr.trim().split('=')[0];
+
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${hostname};`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${baseDomain};`;
+                        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${hostname};`;
+                    });
+
+                    await new Promise(resolve => setTimeout(resolve, 300));
                     location.reload();
                 }
             },
         });
     }, []);
+
+    useEffect(() => {
+        const detectAdBlock = async () => {
+            if (!loading && detected && consent && !localStorage.getItem('blocked')) {
+                localStorage.removeItem('checked');
+                localStorage.setItem('blocked', 'blocked');
+                return await axios.post('/metrics/blocked');
+            }
+
+            if (!loading && !detected && consent && !localStorage.getItem('checked')) {
+                localStorage.removeItem('blocked');
+                localStorage.setItem('checked', 'checked');
+                return await axios.post('metrics/checked');
+            }
+        }
+
+        detectAdBlock();
+    }, [detected, consent, loading]);
 
     const avatar_url = user && user.profile ? user.profile.avatar_url : 'https://niipndjhivstawptgjsp.supabase.co/storage/v1/object/public/profilePictures/uploads/default.svg';
 
@@ -211,7 +264,13 @@ const Header = () => {
                                 </button>
                                 <Link
                                     to={'/guess'}
-                                    className="flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component"
+                                    className="flex sm:hidden items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component"
+                                >
+                                    <Gamepad size={30} className="mt-0.5" />
+                                </Link>
+                                <Link
+                                    to={'/guess'}
+                                    className="hidden sm:flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg white-component"
                                 >
                                     Guess now <Gamepad size={30} className="mt-0.5" />
                                 </Link>
@@ -301,12 +360,12 @@ const Header = () => {
                 )}
                 {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
-            {user && (
+            {/* {user && (
                 <p className="sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)">
                     This is a beta version, keep in mind that scores and stats might reset in the near future
                     for official releases.
                 </p>
-            )}
+            )} */}
             <ToastContainer />
             <main className="flex flex-col flex-1 grow overflow-y-auto justify-between">
                 <Outlet />

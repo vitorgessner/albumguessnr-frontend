@@ -13,7 +13,16 @@ export const GuessRow = ({
     isMe?: boolean;
 }) => {
     const rank = idx + 1;
+
     const date = new Date(player.date);
+    const month = (date.getMonth() + 1).toLocaleString().padStart(2, '0');
+    const day = date.getDate().toLocaleString().padStart(2, '0');
+    const formattedDate = `${month}/${day}`
+
+    const hours = date.getHours().toLocaleString().padStart(2, '0');
+    const minutes = date.getMinutes().toLocaleString().padStart(2, '0');
+    const formattedHours = `${hours}:${minutes}`;
+
     const score = Number(formatScore(player.totalScore));
     return (
         <div
@@ -44,9 +53,9 @@ export const GuessRow = ({
                     {score < 10 ? 0 + score : score}
                 </span>
                 <span className="text-base font-bold text-navy number shrink-0">
-                    {date.toLocaleDateString().substring(0, 5) +
+                    {formattedDate +
                         ' - ' +
-                        date.toLocaleTimeString().substring(0, 5)}
+                        formattedHours}
                 </span>
             </div>
         </div>

@@ -10,4 +10,5 @@ export interface GuessRow {
     rymRating: { status: CellStatus; direction: Direction };
     rymRanking: { status: CellStatus; direction: Direction };
     descriptors: { status: CellStatus, values: string[] };
+    count: number
 }

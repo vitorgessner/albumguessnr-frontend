@@ -23,7 +23,7 @@ export const ConnectSpotify = ({ mainAccountId }: { mainAccountId?: string | nul
         <>
             {!spotifyAccount && (
                 <button onClick={connectSpotify} className="providerButton">
-                    <img src="../../src/assets/spotify.png" className="w-6 h-6" />
+                    <img src={import.meta.env.VITE_SUPABASE_STORAGE + '/spotify.png'} className="w-6 h-6" />
                     Connect Spotify
                 </button>
             )}

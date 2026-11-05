@@ -54,15 +54,16 @@ export const GuessRowItem = ({
         <div className="flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="number min-w-[33px] text-right font-heading text-navy font-black">
                 #{totalRows - 1 - index + 1}
-            </div>
+                <span className="number flex flex-col text-[10px] font-normal text-muted-foreground line-clamp-1">tried: {row.count}</span>
+            </div> 
             <div className="shrink-0 w-14 h-14 rounded-lg border-2 border-border overflow-hidden bg-muted">
                 <img
                     src={album.cover_url}
                     alt={album.normalizedName}
                     className="w-full h-full object-cover"
                 />
+                
             </div>
-
             <div className="flex gap-2">
                 <div
                     className={`${COL_WIDTHS.album} shrink-0 flex flex-col items-center justify-center min-h-[56px] rounded-lg border-2 border-border bg-sidebar-border px-2 py-2 text-center`}
@@ -70,7 +71,7 @@ export const GuessRowItem = ({
                     <span className="text-xs font-bold text-navy leading-tight line-clamp-3 break-words w-full">
                         {album.normalizedName}
                     </span>
-                    <span className="text-[10px] text-muted-foreground line-clamp-1 w-full">
+                    <span className="flex flex-col text-[10px] text-muted-foreground line-clamp-1 w-full">
                         {album.normalizedArtist}
                     </span>
                 </div>
