@@ -10,7 +10,6 @@ import type { ErrorResponse } from '../types/response';
 import type { AllowedData } from '../types/editProfileResponse';
 import appendToFormData from '../utils/appendToFormData';
 import { useEffect, useRef, useState } from 'react';
-import { ConnectSpotify } from '../components/ConnectSpotify';
 import { ConnectLastfm } from '../components/ConnectLastfm';
 import { getDaysUntilNextSync } from '../utils/getDaysUntilNextSync';
 
@@ -70,9 +69,6 @@ const EditProfile = () => {
         if (preview) URL.revokeObjectURL(preview);
     };
 
-    const lastfmAccount = user?.accounts.find((a) => a.provider === 'lastfm');
-    const spotifyAccount = user?.accounts.find((a) => a.provider === 'spotify');
-
     useEffect(() => {
         const setProvider = () => {
             if (user?.mainAccountId) {
@@ -82,43 +78,6 @@ const EditProfile = () => {
 
         setProvider();
     }, [user]);
-
-    const { mutate: mutateProvider, isPending: isProviderPending } = useMutation({
-        mutationKey: ['provider', user?.id],
-        mutationFn: async (mainAccountId: string) => {
-            const response = await axios.put('/mainProvider', { accountId: mainAccountId });
-            return response.data;
-        },
-    });
-
-    const onProviderChange = async () => {
-        if (isProviderPending) {
-            return;
-        }
-
-        if (!lastfmAccount || !spotifyAccount) {
-            return setProviderError(
-                'You need at least two providers connected to change between them'
-            );
-        }
-
-        const nextProviderId =
-            mainProvider === lastfmAccount.id ? spotifyAccount.id : lastfmAccount.id;
-
-        mutateProvider(nextProviderId, {
-            onSuccess(data) {
-                setMainProvider(data.mainProvider.id);
-
-                queryClient.invalidateQueries({
-                    queryKey: ['provider', user?.id],
-                });
-
-                queryClient.invalidateQueries({
-                    queryKey: ['user'],
-                });
-            },
-        });
-    };
 
     const hasRun = useRef(false);
 
@@ -292,11 +251,7 @@ const EditProfile = () => {
                     </p>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <ConnectSpotify mainAccountId={mainProvider} />
                     <ConnectLastfm mainAccountId={mainProvider} />
-                    <button className="providerButton text-navy" onClick={onProviderChange}>
-                        Change main provider
-                    </button>
                     <p className="text-right text-sm text-red-600">{providerError}</p>
                 </div>
                 <div className='text-sm'>
