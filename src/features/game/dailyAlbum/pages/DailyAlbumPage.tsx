@@ -115,7 +115,7 @@ export const DailyAlbumPageContent = ({
                     <div className="flex flex-col lg:flex-row items-center justify-center gap-5 resultBannerDiv">
                         {isFinished && guessRows.length > 0 && <ResultBanner
                             tries={tryCount}
-                            album={findCorrectDailyAlbum(guessRows)}
+                            row={findCorrectDailyAlbum(guessRows)}
                             nthPlayer={nthPlayerToGuess ?? null}
                         />}
                         {isFinished && guessRows.length > 0 && <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows} />}

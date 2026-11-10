@@ -4,11 +4,11 @@ import type { AlbumCandidate } from '../types/AlbumCandidate';
 
 export const ResultBanner = ({
     tries,
-    album,
+    row,
     nthPlayer,
 }: {
     tries: number;
-    album: AlbumCandidate | undefined;
+    row: {album: AlbumCandidate | undefined, cover_url: string | undefined};
     nthPlayer: number | null;
 }) => {
     const string = (nthPlayer ?? 1).toString();
@@ -22,6 +22,7 @@ export const ResultBanner = ({
                 : 'th';
 
     const timeLeft = useTimerToMidnightUtc();
+    const album = row.album;
     return (
         <div
             className={`resultBanner max-w-md w-full mx-auto rounded-xl border-2 p-4 flex flex-col items-center gap-3 text-center shadow-[3px_3px_0_var(--sage-dark)] bg-sage/20 border-success`}
@@ -37,7 +38,7 @@ export const ResultBanner = ({
             <div className="flex flex-col gap-1 items-start bg-sidebar-border border-2 border-border rounded-xl p-3 w-full max-w-sm">
                 <div className='flex items-center gap-3'>
                     <img
-                        src={album?.cover_url}
+                        src={row.cover_url}
                         alt={album?.name}
                         className="size-16 rounded-lg border-2 border-border object-cover shrink-0"
                     />

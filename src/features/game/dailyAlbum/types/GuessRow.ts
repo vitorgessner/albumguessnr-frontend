@@ -4,6 +4,7 @@ import type { Direction } from "./Direction";
 
 export interface GuessRow {
     album: AlbumCandidate;
+    cover_url: string;
     year: { value: string | null, status: CellStatus; direction: Direction };
     artists: { status: CellStatus };
     genres: { status: CellStatus, values: string[] };
