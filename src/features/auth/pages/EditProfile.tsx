@@ -252,6 +252,7 @@ const EditProfile = () => {
                 </div>
                 <div className="flex flex-col gap-2">
                     <ConnectLastfm mainAccountId={mainProvider} />
+                    <a href="https://www.last.fm" target='_blank' className="text-sm text-navy underline">Powered by AudioScrobbler</a>
                     <p className="text-right text-sm text-red-600">{providerError}</p>
                 </div>
                 <div className='text-sm'>

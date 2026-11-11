@@ -70,8 +70,9 @@ const GuessSync = ({ user }: { user: IUser }) => {
         queryFn: async () => {
             const response = await axios.get<AlbumsQuantityResponse>('/integration/albums/quantity');
             if (response.data.quantity < 100) {
-                await axios.get('/sync');
+                return await axios.get('/sync');
             }
+            return response.data.quantity;
         }
     });
 
@@ -325,25 +326,28 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             </Form.Label>
                                         )}
                                         {config.genre && isGuessed && (
-                                            <div
-                                                title={currentAlbum.album.genres
-                                                    .map((g) => g.genre.name)
-                                                    .join(', ')}
-                                                className="flex-1 min-w-0 truncate overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-terra-dark font-bold px-1"
-                                                onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
-                                                    if (e.deltaY !== 0) {
-                                                        e.preventDefault();
-                                                        e.currentTarget.scrollLeft += e.deltaY;
-                                                    }
-                                                }}
-                                            >
-                                                {(correctAnswers.genre === true ||
-                                                    correctAnswers.genre === false) &&
-                                                    currentAlbum.album.genres.map((g, i, arr) =>
-                                                        i !== arr.length - 1
-                                                            ? g.genre.name + ', '
-                                                            : g.genre.name
-                                                    )}
+                                            <div>
+
+                                                <div
+                                                    title={currentAlbum.album.genres
+                                                        .map((g) => g.genre.name)
+                                                        .join(', ')}
+                                                    className="flex-1 min-w-0 truncate overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-terra-dark font-bold px-1"
+                                                    onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
+                                                        if (e.deltaY !== 0) {
+                                                            e.preventDefault();
+                                                            e.currentTarget.scrollLeft += e.deltaY;
+                                                        }
+                                                    }}
+                                                >
+                                                    {(correctAnswers.genre === true ||
+                                                        correctAnswers.genre === false) &&
+                                                        currentAlbum.album.genres.map((g, i, arr) =>
+                                                            i !== arr.length - 1
+                                                                ? g.genre.name + ', '
+                                                                : g.genre.name
+                                                        )}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -373,12 +377,18 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                             config.year &&
                                             isGuessed &&
                                             correctAnswers.year === false && (
-                                                <span className="text-terra-dark font-bold px-1">
-                                                    {currentAlbum.album.year}
-                                                </span>
+                                                <div>
+                                                    <span className="text-terra-dark font-bold px-1">
+                                                        {currentAlbum.album.year}
+                                                    </span>
+                                                </div>
                                             )}
                                     </div>
                                 </div>
+                                {config.genre && currentAlbum.album.genres.length > 0 && <div className='flex gap-1 lg:flex-col mx-auto lg:mx-0'>
+                                    <p className='text-xs text-muted-foreground'>Tags from <a href="https://musicbrainz.org/" target='_blank' className="text-xs text-black underline">MusicBrainz</a>,</p>
+                                    <p className='text-xs text-muted-foreground'>license <a target='_blank' className="text-xs text-black underline" href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a></p>
+                                </div>}
                             </div>
 
                             <Form.Input
