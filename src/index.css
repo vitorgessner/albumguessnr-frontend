@@ -92,6 +92,10 @@
     @apply flex justify-center items-center h-dvh text-3xl
   }
 
+  .loading-test {
+    @apply flex justify-center items-center h-dvh
+  }
+
   .border-success {
     @apply border-(--success-text) border-2
   }

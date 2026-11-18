@@ -1,6 +1,7 @@
 import Form from '../../../auth/components/form/Form';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
+import { preload } from 'react-dom'
 import axios from '../../../../shared/utils/axios';
 import type { GuessType, TrackType } from '../types/guessTypes';
 import type { AlbumsQuantityResponse, FetchResponse } from '../types/albumTypes';
@@ -24,6 +25,8 @@ import BottomNav from '../components/BottomNav';
 import TracklistSection from '../components/TracklistSection';
 import { LogErrorModal } from '../../album/components/LogErrorModal';
 import { AxiosError } from 'axios';
+import { Progress } from '@/components/ui/progress';
+import { useSyncStatusStore } from '../stores/useSyncStatusStore';
 
 export type Sheet = 'config' | 'friends' | 'tracklist' | null;
 
@@ -39,19 +42,32 @@ const Guess = () => {
 const GuessSync = ({ user }: { user: IUser }) => {
     const { albums, setAlbums, resetIndex } = useGuessStore();
 
+    const { status, albumsCount } = useSyncStatusStore();
+
+    const syncing = status === 'SYNCING';
+    const progress = albumsCount ? Math.min(100, (albumsCount / 150) * 100) : 0;
+
     const {
         isLoading: isAlbumsLoading,
         isRefetching,
         dataUpdatedAt,
     } = useQuery({
         queryKey: ['albums', user.profile.displayUsername],
-        queryFn: async () =>
-            axios.get<FetchResponse>('/integration/albums').then((res) => {
-                shuffle(res.data.albums);
-                setAlbums(res.data.albums);
-                return res.data.albums;
-            }),
-        refetchInterval: albums.length <= 0 ? 20000 : false,
+        queryFn: async () => {
+            const response = await axios.get<FetchResponse>('/integration/albums');
+            const current = useGuessStore.getState().albums;
+            if (current.length === 0) {
+                shuffle(response.data.albums);
+                setAlbums(response.data.albums);
+            } else {
+                const known = new Set(current.map((a) => a.value.albumId));
+                const fresh = response.data.albums.filter((a) => !known.has(a.value.albumId));
+                shuffle(fresh);
+                setAlbums([...current, ...fresh]);
+            }
+            return response.data.albums;
+        },
+        refetchInterval: albums.length <= 0 ? 5000 : false,
         gcTime: 0,
         staleTime: 0,
     });
@@ -62,24 +78,41 @@ const GuessSync = ({ user }: { user: IUser }) => {
             isFirstLoad.current = false;
             return;
         }
-        resetIndex();
-    }, [dataUpdatedAt, resetIndex]);
 
-    useQuery({
+        if (albums.length <= 0) {
+            resetIndex();
+        }
+    }, [dataUpdatedAt, resetIndex, albums]);
+
+    const { isSuccess: syncChecked } = useQuery({
         queryKey: ['albumsQuantity', user.profile.displayUsername],
         queryFn: async () => {
             const response = await axios.get<AlbumsQuantityResponse>('/integration/albums/quantity');
-            if (response.data.quantity < 100) {
-                return await axios.get('/sync');
+            if (response.data.quantity < 100 || !response.data.lastAlbumsSync || new Date(response.data.lastAlbumsSync).getTime() + (1000 * 60 * 60 * 24 * 28) < new Date().getTime()) {
+                await axios.get('/sync');
+                sessionStorage.setItem('syncWatchUntil', String(new Date().getTime() + 2 * 60 * 1000));
+                await queryClient.invalidateQueries({ queryKey: ['sync-status'] });
+                return response.data.quantity;
             }
             return response.data.quantity;
-        }
+        },
     });
 
-    if (isAlbumsLoading) return <span className="loading">Loading albums...</span>;
+    if (isAlbumsLoading || !syncChecked) return <span className="loading">Loading albums...</span>;
 
-    if (albums.length <= 0)
-        return <div className="loading">Preparing your albums, this may take a few minutes...</div>;
+    if (albums.length <= 0) {
+        return syncing || status === 'IDLE' ? (
+            <div className="relative flex justify-center items-center text-base text-center h-dvh">
+                <Progress value={progress} className="h-10 max-w-lg text-base" />
+                <p className="absolute text-white text-3xl">
+                    {syncing ? `Syncing albums ${progress.toFixed(0)}%` : 'Preparing your albums...'}
+                </p>
+            </div>
+        ) : (
+            <div className="loading">No albums found yet. Try again in a moment.</div>
+        );
+    }
+
     if (isRefetching) return <div className="loading">Loading more albums...</div>;
 
     return <GuessContent user={user} />;
@@ -92,7 +125,8 @@ const GuessContent = ({ user }: { user: IUser }) => {
     const { register, handleSubmit, resetField, setFocus } = useForm<GuessType>();
     const { resetField: resetTrack } = useForm<TrackType>();
 
-    const { currentAlbum, guess, reset } = useCompare(resetField, setFocus);
+    const { currentAlbum, nextAlbum, guess, reset } = useCompare(resetField, setFocus);
+    preload(nextAlbum.album.cover_url, { as: 'image' })
     const formRef = useRef<HTMLFormElement>(null);
     const { startTimer, pauseTimer, clearTimer, seconds, minutes } = useTimer();
     const [index, setIndex] = useState<number | undefined>();
@@ -170,6 +204,8 @@ const GuessContent = ({ user }: { user: IUser }) => {
         }
     }, [isFinished, pauseTimer]);
 
+    if (!currentAlbum) return <div className="loading">Loading albums...</div>;
+
     return (
         <>
             <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-3 h-md:gap-5 py-1 h-md:py-2 lg:main-height">
@@ -233,7 +269,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                             onSubmit={handleSubmit(onGuess)}
                         >
                             <div
-                                className={`flex w-full flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-2.5 h-sm:px-3 shadow-[3px_3px_0_var(--border)] ${isGuessed && 'pb-1'
+                                className={`flex w-full max-w-[288px] lg:max-w-[265px] flex-col gap-1 rounded-xl border-2 border-border bg-(--card-light) p-2.5 h-sm:px-3 shadow-[3px_3px_0_var(--border)] ${isGuessed && 'pb-1'
                                     }`}
                             >
                                 {config.album && (
@@ -257,12 +293,18 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                     </Form.Label>
                                 )}
                                 {config.album && isGuessed && !correctAnswers.album && (
-                                    <span
-                                        className="min-w-0 overflow-x-hidden text-left truncate text-ellipsis text-terra-dark font-bold px-1"
+                                    <div
+                                        className="flex-1 min-w-0 truncate overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-terra-dark font-bold px-1"
+                                        onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
+                                            if (e.deltaY !== 0) {
+                                                e.preventDefault();
+                                                e.currentTarget.scrollLeft += e.deltaY;
+                                            }
+                                        }}
                                         title={currentAlbum.album.normalizedName}
                                     >
                                         {currentAlbum.album.normalizedName}
-                                    </span>
+                                    </div>
                                 )}
 
                                 {config.artist && (
@@ -287,8 +329,14 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                     </Form.Label>
                                 )}
                                 {config.artist && isGuessed && correctAnswers.artist === false && (
-                                    <span
-                                        className="min-w-0 truncate overflow-hidden text-left text-nowrap text-ellipsis text-terra-dark font-bold px-1"
+                                    <div
+                                        className="flex-1 min-w-0 truncate overflow-x-scroll scroll-smooth pb-2 text-left text-nowrap text-terra-dark font-bold px-1"
+                                        onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
+                                            if (e.deltaY !== 0) {
+                                                e.preventDefault();
+                                                e.currentTarget.scrollLeft += e.deltaY;
+                                            }
+                                        }}
                                         title={currentAlbum.album.artists
                                             .map((a) => a.artist.normalizedName)
                                             .join(', ')}
@@ -298,7 +346,7 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                                 ? a.artist.normalizedName + ', '
                                                 : a.artist.normalizedName
                                         )}
-                                    </span>
+                                    </div>
                                 )}
 
                                 <div className="flex justify-between gap-2">
@@ -386,8 +434,13 @@ const GuessContent = ({ user }: { user: IUser }) => {
                                     </div>
                                 </div>
                                 {config.genre && currentAlbum.album.genres.length > 0 && <div className='flex gap-1 lg:flex-col mx-auto lg:mx-0'>
-                                    <p className='text-xs text-muted-foreground'>Tags from <a href="https://musicbrainz.org/" target='_blank' className="text-xs text-black underline">MusicBrainz</a>,</p>
-                                    <p className='text-xs text-muted-foreground'>license <a target='_blank' className="text-xs text-black underline" href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a></p>
+                                    <div className='flex flex-col'>
+                                        <div className='flex gap-1 lg:flex-col lg:gap-0'>
+                                            <p className='text-xs text-muted-foreground'>Tags from <a href="https://musicbrainz.org/" target='_blank' className="text-xs text-black underline">MusicBrainz</a>,</p>
+                                            <p className='text-xs text-muted-foreground'>license <a target='_blank' className="text-xs text-black underline" href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a></p>
+                                        </div>
+                                        <p className='text-xs text-muted-foreground'>Names normalized for exhibition</p>
+                                    </div>
                                 </div>}
                             </div>
 

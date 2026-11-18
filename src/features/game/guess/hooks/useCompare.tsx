@@ -10,7 +10,8 @@ import { WORD_REPLACEMENTS } from "../utils/removeWords";
 const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFormSetFocus<GuessType>) => {
     const { albums, config, index, setCorrectAnswers, resetAnswers, setIsGuessed, incrementIndex } = useGuessStore();
     const { addGuess, resetTracksState, setIsFinished, guessed, tries, incrementTries, resetTries } = useTrackStore();
-    const currentAlbum = albums[index];
+    const currentAlbum = albums[index].value;
+    const nextAlbum = albums[index + 1].value;
     const { data: user } = useUser();
     const queryClient = useQueryClient();
 
@@ -186,7 +187,7 @@ const useCompare = (resetField?: UseFormResetField<GuessType>, setFocus?: UseFor
             .split(' ').length;
     }
 
-    return { currentAlbum, guess, compareTrack, reset, tries, incrementTries, resetTries };
+    return { currentAlbum, nextAlbum, guess, compareTrack, reset, tries, incrementTries, resetTries };
 }
 
 export default useCompare;

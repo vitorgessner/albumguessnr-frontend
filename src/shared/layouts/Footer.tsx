@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 export const Footer = () => {
     const { data: user } = useUser();
     return (
-        <footer className={`border-t-3 border-border bg-card py-2 px-2 text-center ${document.title === 'Guess' ? 'mb-14' : 'mb-0'} lg:mb-0`}>
+        <footer className={`border-t-3 border-border bg-card text-center ${document.title === 'Guess' ? 'mb-14' : 'mb-0'} lg:mb-0`}>
             <div className="max-w-md mx-auto space-y-4">
                 {(!user && (document.title !== 'Register' && document.title !== 'Login')) && <div>
                     <p className="font-heading font-black text-xl text-navy mb-3">

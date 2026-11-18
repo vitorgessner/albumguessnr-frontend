@@ -30,7 +30,6 @@ const TracklistSection = ({
         if (data.track === '' || !data.track) setIsFinished(true);
         resetField('track');
         const result = compareTrack(data.track);
-        console.log(result);
         onTrackIndexChange(result);
     };
 

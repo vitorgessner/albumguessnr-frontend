@@ -149,13 +149,13 @@ export const SearchBar = ({
                     <Eye size={14} /> See possible albums within the tips
                 </a>
             ) : (
-                <p className="flex justify-center items-center gap-2 text-xs font-heading font-black text-muted-foreground mb-4">
+                <div className="flex justify-center items-center gap-2 text-xs font-heading font-black text-muted-foreground mb-4">
                     {' '}
                     <div>
                         <span className="text-primary">{Math.abs(guessRows.length - 5)}</span> tries
                         until you can see possible albums
                     </div>
-                </p>
+                </div>
             )}
             <div className="flex items-center gap-2 bg-(--card-light) border-2 border-border rounded-xl px-3 py-2 shadow-[3px_3px_0_var(--border)] focus-within:border-terra transition-colors">
                 <Search size={16} className="text-muted-foreground shrink-0" />

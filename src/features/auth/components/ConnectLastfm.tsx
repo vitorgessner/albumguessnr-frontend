@@ -10,8 +10,8 @@ export const ConnectLastfm = ({ mainAccountId }: { mainAccountId?: string | null
     const lastfmAccount = user?.accounts.find((a) => a.provider === 'lastfm');
 
     const connectLastfm = async () => {
+        sessionStorage.setItem('syncWatchUntil', String(Date.now() + 2 * 60 * 1000));
         window.location.href = import.meta.env.VITE_API_URL + '/login/lastfm';
-        await queryClient.invalidateQueries({ queryKey: ['user'] });
     };
 
     const disconnectLastfm = async () => {

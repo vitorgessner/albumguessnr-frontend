@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserStatistics } from '../hooks/useUserStatistics';
 import useUser from '@/features/auth/hooks/useUser';
-import axios from '@/shared/utils/axios';
+import axios, { resetSessionGuard } from '@/shared/utils/axios';
 import { OverallStatistics } from '../components/OverallStatistics';
 import type { GuessRow } from '../types/GuessRow';
 import { Header } from '../components/Header';
@@ -139,6 +139,7 @@ export const DailyAlbumPage = () => {
         queryKey: ['daily-stats'],
         queryFn: async () => {
             const response = await axios.get('/daily/stats');
+            resetSessionGuard();
             return response.data;
         },
     });

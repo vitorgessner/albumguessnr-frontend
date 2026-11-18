@@ -10,14 +10,16 @@ import Skeleton from 'react-loading-skeleton';
 import * as CookieConsent from 'vanilla-cookieconsent';
 import { Footer } from './Footer';
 import { useAdblockDetector } from '@scthakuri/adblock-detector';
+import { ProgressBar } from '../components/ProgressBar';
+import { useSyncStatus } from '@/features/game/guess/hooks/useSyncStatus';
 
 declare global {
     interface Window {
-      [key: `ga-disable-${string}`]: boolean;
+        [key: `ga-disable-${string}`]: boolean;
     }
-  }
-  
-  export {};
+}
+
+export { };
 
 const Header = () => {
     const [consent, setConsent] = useState(false);
@@ -213,6 +215,8 @@ const Header = () => {
 
     const avatar_url = user && user.profile ? user.profile.avatar_url : 'https://niipndjhivstawptgjsp.supabase.co/storage/v1/object/public/profilePictures/uploads/default.svg';
 
+    useSyncStatus();
+
     return (
         <div className="h-dvh flex flex-col overflow-hidden">
             <header className="sticky top-0 flex items-center z-1000 p-3 w-full bg-(--card-light)">
@@ -360,15 +364,16 @@ const Header = () => {
                 )}
                 {isPending && <Skeleton width={50} height={25} className="absolute right-2" />}
             </header>
-            {/* {user && (
+            {user && (
                 <p className="sticky top-13 z-8 text-xs text-center text-navy w-full bg-(--secondary-color)">
                     This is a beta version, keep in mind that scores and stats might reset in the near future
                     for official releases.
                 </p>
-            )} */}
+            )}
             <ToastContainer />
             <main className="flex flex-col flex-1 grow overflow-y-auto justify-between">
                 <Outlet />
+                <ProgressBar />
                 <Footer />
             </main>
             {document.title !== 'Guess' && <button
