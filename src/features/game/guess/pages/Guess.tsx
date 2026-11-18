@@ -60,14 +60,14 @@ const GuessSync = ({ user }: { user: IUser }) => {
                 shuffle(response.data.albums);
                 setAlbums(response.data.albums);
             } else {
-                const known = new Set(current.map((a) => a.value.albumId));
-                const fresh = response.data.albums.filter((a) => !known.has(a.value.albumId));
+                const known = new Set(current.map((a) => a.albumId));
+                const fresh = response.data.albums.filter((a) => !known.has(a.albumId));
                 shuffle(fresh);
                 setAlbums([...current, ...fresh]);
             }
             return response.data.albums;
         },
-        refetchInterval: albums.length <= 0 ? 5000 : false,
+        refetchInterval: albums.length <= 0 ? 10000 : false,
         gcTime: 0,
         staleTime: 0,
     });

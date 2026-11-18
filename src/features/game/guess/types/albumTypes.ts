@@ -45,10 +45,7 @@ export type Album = {
 
 export type FetchResponse = {
     status: string,
-    albums: Array<{
-        status: string;
-        value: Album;
-    }>
+    albums: Array<Album>
 }
 
 export type AlbumsQuantityResponse = {

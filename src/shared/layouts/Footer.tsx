@@ -36,17 +36,17 @@ export const Footer = () => {
                         </li>
                     </div>
                     <div className='border-b-2 w-full py-3'>
-                        <li className="text-xs hover:underline text-muted-foreground">
+                        <li className="text-xs text-muted-foreground">
                             Listen history: <a href="https://www.last.fm" target='_blank' className="text-black underline">Powered by AudioScrobbler</a>
                         </li>
-                        <li className="text-xs hover:underline text-muted-foreground">
+                        <li className="text-xs text-muted-foreground">
                             Album data: <a href="https://musicbrainz.org/" target='_blank' className="text-black underline">MusicBrainz</a>
                         </li>
-                        <li className="text-xs hover:underline text-muted-foreground">
+                        <li className="text-xs text-muted-foreground">
                             Covers: <a href="https://coverartarchive.org/" target='_blank' className="text-black underline">Cover Art Archive</a>
                         </li>
                     </div>
-                    <li className="text-xs hover:underline flex gap-1 text-muted-foreground pt-3">
+                    <li className="text-xs flex gap-1 text-muted-foreground pt-3">
                         Contact: <p className="text-xs text-black"> albumguessnr@gmail.com</p>
                     </li>
                     

@@ -1,6 +1,6 @@
 import type { Album } from "../types/albumTypes";
 
-const shuffle = (arr: Array<{status: string, value: Album}>) => {
+const shuffle = (arr: Array<Album>) => {
     let currentIndex = arr.length;
 
     while (currentIndex !== 0) {

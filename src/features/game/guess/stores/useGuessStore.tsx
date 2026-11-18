@@ -14,19 +14,13 @@ type Answers = Omit<IConfig, 'tracklist'> & {
 }
 
 interface IGuessStore {
-    albums: Array<{
-        status: string,
-        value: Album
-    }>;
+    albums: Array<Album>;
     index: number;
     isGuessed: boolean;
     config: IConfig;
     correctAnswers: Partial<Answers>;
 
-    setAlbums: (albums: Array<{
-        status: string,
-        value: Album
-    }>) => void;
+    setAlbums: (albums: Array<Album>) => void;
     incrementIndex: () => void;
     resetIndex: () => void;
     setIsGuessed: (val: boolean) => void;
