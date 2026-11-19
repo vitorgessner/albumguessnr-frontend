@@ -41,19 +41,19 @@ function Cell({
 }
 
 export const GuessRowItem = ({
-    key,
+    i,
     row,
     index,
     totalRows,
 }: {
-    key: string;
+    i: string;
     row: GuessRow;
     index: number;
     totalRows: number;
 }) => {
     const { album } = row;
     return (
-        <div key={key} className="flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div key={i} className="flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="number min-w-[33px] text-right font-heading text-navy font-black">
                 #{totalRows - 1 - index + 1}
                 <span className="number flex flex-col text-[10px] font-normal text-muted-foreground line-clamp-1">tried: {row.count}</span>

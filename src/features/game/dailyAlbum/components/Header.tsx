@@ -24,7 +24,7 @@ export const Header = ({ totalGuessesCount }: { totalGuessesCount: number | unde
                         <DialogDescription className="text-navy">
                             <ul className='flex flex-col gap-3'>
                                 <li className='list-disc'>
-                                    Currently all daily album data comes from a dataset of the most popular albums in RateYourMusic based in 2022. The plan is to update that soon.
+                                    Currently all daily albums come from a dataset of the most popular albums in RateYourMusic based in 2022. That's why it does't have any albums after 2022. Soon I'll try to fix it.
                                 </li>
                             </ul>
                         </DialogDescription>

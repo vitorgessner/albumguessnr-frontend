@@ -36,7 +36,7 @@ export const GuessRows = ({ guessRows }: { guessRows: GuessRow[] }) => {
                                         <Info width={16} fill="lightGray" stroke="black" />
                                     </HoverCardTrigger>
                                     <HoverCardContent side="top" className="w-fit bg-white ml-60">
-                                        Based on RateYourMusic (2022)
+                                        Based on RateYourMusic
                                     </HoverCardContent>
                                 </HoverCard>
                             </div>
@@ -49,7 +49,7 @@ export const GuessRows = ({ guessRows }: { guessRows: GuessRow[] }) => {
                                         <Info width={16} fill="lightGray" stroke="black" />
                                     </HoverCardTrigger>
                                     <HoverCardContent side="top" className="w-fit bg-white ml-60">
-                                        <p>Based on RateYourMusic's popularity ranking (2022)</p>
+                                        <p>Based on RateYourMusic</p>
                                         <p>Higher or lower <span className='text-primary'>number</span> NOT ranking</p>
                                     </HoverCardContent>
                                 </HoverCard>
@@ -62,7 +62,7 @@ export const GuessRows = ({ guessRows }: { guessRows: GuessRow[] }) => {
 
                     {guessRows.map((row, i) => (
                         <GuessRowItem
-                            key={row.album.id + i}
+                            i={row.album.id + i}
                             row={row}
                             index={i}
                             totalRows={guessRows.length}

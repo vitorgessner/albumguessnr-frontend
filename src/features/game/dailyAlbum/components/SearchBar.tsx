@@ -120,7 +120,7 @@ export const SearchBar = ({
             };
             await axios.put(`/daily/album/overall/statistics`, data);
 
-            await queryClient.invalidateQueries({ queryKey: ['daily'] });
+            await queryClient.invalidateQueries({ queryKey: ['daily-stats'] });
             await queryClient.invalidateQueries({ queryKey: ['daily', user?.id] });
             await queryClient.invalidateQueries({ queryKey: ['overall', user?.id] });
 
