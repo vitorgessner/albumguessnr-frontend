@@ -13,6 +13,11 @@ let sessionsExpired = false;
 
 const NO_LOGIN_REDIRECT_PATHS = ['/auth/login', '/auth/register', '/daily-album', '/', '/leaderboards'];
 
+const isDailyAlbumRoute = () =>
+    window.location.pathname.startsWith('/daily-album');
+
+const getMaxRefreshAttempts = () => (isDailyAlbumRoute() ? 3 : 1);
+
 const handleDeadSession = () => {
     if (sessionsExpired) return;
     sessionsExpired = true;
@@ -53,7 +58,7 @@ axiosInstance.interceptors.response.use(
             return error.response;
         }
 
-        const config = error.config as typeof error.config & { _retry?: boolean };
+        const config = error.config as typeof error.config & { _refreshCount?: number };
         const status = error.response?.status ?? error.status;
         const message = error.response?.data?.message;
 
@@ -63,31 +68,41 @@ axiosInstance.interceptors.response.use(
             (message === 'Invalid or expired token' || message === 'Invalid token format');
 
         if (isRefreshCall && status === 401) {
-            handleDeadSession();
+            // Em /daily-album, evita matar a sessão logo no primeiro 401 do /refresh
+            if (!isDailyAlbumRoute()) {
+                handleDeadSession();
+            }
             return Promise.reject(error);
         }
 
-        if (!isTokenError || isRefreshCall || config._retry) {
+        const maxAttempts = getMaxRefreshAttempts();
+        const currentAttempt = config._refreshCount ?? 0;
+
+        if (!isTokenError || isRefreshCall || currentAttempt >= maxAttempts) {
+            if (currentAttempt >= maxAttempts && !isDailyAlbumRoute()) {
+                handleDeadSession();
+            }
             return Promise.reject(error);
         }
 
-        if (sessionsExpired) {
+        if (sessionsExpired && !isDailyAlbumRoute()) {
             return Promise.reject(error);
         }
 
-        config._retry = true;
+        config._refreshCount = currentAttempt + 1;
 
         try {
-            refreshPromise ??= axiosInstance
-                .post('/refresh')
-                .finally(() => {
-                    refreshPromise = null;
-                });
+            // Cria uma nova promise de refresh a cada tentativa (útil quando há múltiplas tentativas em /daily-album)
+            refreshPromise = axiosInstance.post('/refresh').finally(() => {
+                refreshPromise = null;
+            });
 
             await refreshPromise;
             return axiosInstance(config);
         } catch (err) {
-            handleDeadSession();
+            if (!isDailyAlbumRoute()) {
+                handleDeadSession();
+            }
             return Promise.reject(err);
         }
     }
