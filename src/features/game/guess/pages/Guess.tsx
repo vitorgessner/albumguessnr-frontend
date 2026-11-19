@@ -63,7 +63,7 @@ const GuessSync = ({ user }: { user: IUser }) => {
                 const known = new Set(current.map((a) => a.albumId));
                 const fresh = response.data.albums.filter((a) => !known.has(a.albumId));
                 shuffle(fresh);
-                setAlbums([...current, ...fresh]);
+                setAlbums([...fresh]);
             }
             return response.data.albums;
         },
