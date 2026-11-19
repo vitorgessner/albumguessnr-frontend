@@ -44,7 +44,7 @@ createRoot(document.getElementById('root')!).render(
                                 <Route path="/verify/:token" element={<VerifyToken />} />
                             </Route>
                             <Route path="/profile/:username" element={<Profile />} />
-                            <Route path="/dailyAlbum/" element={<DailyAlbumPage />} />
+                            <Route path="/daily-album/" element={<DailyAlbumPage />} />
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/profile/:username/edit" element={<EditProfile />} />
                                 <Route path="/guess" element={<Guess />} />
