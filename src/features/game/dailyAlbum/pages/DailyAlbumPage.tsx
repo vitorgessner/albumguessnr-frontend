@@ -14,6 +14,7 @@ import { ShareCard } from '../components/ShareCard';
 import { ResultBanner } from '../components/ResultBanner';
 import { AxiosError } from 'axios';
 import { findCorrectDailyAlbum } from '../utils/findCorrectDailyAlbum';
+import queryClient from '@/shared/utils/queryClient';
 
 export const DailyAlbumPageContent = ({
     dailyAlbumNumber,
@@ -140,8 +141,10 @@ export const DailyAlbumPage = () => {
         queryFn: async () => {
             const response = await axios.get('/daily/stats');
             resetSessionGuard();
+            await queryClient.invalidateQueries({ queryKey: ['user'] })
             return response.data;
         },
+        staleTime: Infinity
     });
 
     if (isPending) return <div className="loading">Loading daily album...</div>;

@@ -25,6 +25,7 @@ export const useUserStatistics = (userId: string | undefined, date?: string) => 
             const response = await axios.get(!date ? `/daily/album/statistics` : `/daily/album/statistics?date=${date}`);
             return response.data
         },
+        enabled: Boolean(userId)
     });
 
     return { userDailyAlbumStatistics: data?.userDailyAlbumStatistics, totalGuesses: data?.totalGuesses, isPending, error };
