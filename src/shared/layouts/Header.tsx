@@ -225,7 +225,7 @@ const Header = () => {
                         {isAuthenticated && (
                             <div className="flex items-center gap-5">
                                 <Link
-                                    to={'/dailyAlbum'}
+                                    to={'/daily-album'}
                                     className="hidden xl:flex items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg light-sage-component"
                                 >
                                     Daily album <Calendar size={30} className="mt-0.5" />
@@ -279,7 +279,7 @@ const Header = () => {
                                     Guess now <Gamepad size={30} className="mt-0.5" />
                                 </Link>
                                 <Link
-                                    to={'/dailyAlbum'}
+                                    to={'/daily-album'}
                                     className="hidden sm:flex xl:hidden items-center text-sm sm:text-base gap-2 border-2 py-0.25 px-2 rounded-lg light-sage-component"
                                 >
                                     Daily album <Calendar size={30} className="mt-0.5" />
@@ -347,7 +347,7 @@ const Header = () => {
                             <button
                                 className="flex justify-center h-full py-2 w-full sm:hidden hover:bg-(--sage-light)"
                                 onClick={() => {
-                                    navigate(`/dailyAlbum`);
+                                    navigate(`/daily-album`);
                                     setIsModalOpen(false);
                                 }}
                             >

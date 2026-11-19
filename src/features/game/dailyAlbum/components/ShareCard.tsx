@@ -95,11 +95,11 @@ export const ShareCard = ({
                 </div>
             </div>
             <a
-                href="https://albumguessnr.com/dailyAlbum"
+                href="https://albumguessnr.com/daily-album"
                 target="_blank"
                 className="font-heading text-navy font-black underline"
             >
-                https://albumguessnr.com/dailyAlbum
+                https://albumguessnr.com/daily-album
             </a>
             <button
                 className={`flex gap-1 items-center primary-component hover:shadow-none transition hover:translate-x-0.5 hover:translate-y-0.5 p-1 px-2 rounded-sm text-white ${!isCopied && 'mb-7'}`}
