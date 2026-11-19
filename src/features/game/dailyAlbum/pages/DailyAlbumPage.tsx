@@ -71,7 +71,7 @@ export const DailyAlbumPageContent = ({
         reconstructUserTries();
     }, [isAlreadyFinished, userDailyAlbumStatistics]);
 
-    if (isPending) {
+    if (user?.id && isPending) {
         return (
             <div className="min-h-dvh flex items-center justify-center">
                 <div className="loading">Loading...</div>
@@ -142,6 +142,7 @@ export const DailyAlbumPage = () => {
             const response = await axios.get('/daily/stats');
             resetSessionGuard();
             void queryClient.invalidateQueries({ queryKey: ['user'] })
+            resetSessionGuard();
             return response.data;
         },
     });

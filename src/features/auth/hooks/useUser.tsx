@@ -14,7 +14,7 @@ const useUser = () => {
                 const res = await axios.get('/me');
                 return (res.data.user ?? null) as IUser | null;
             } catch (err) {
-                if (err instanceof AxiosError && err.response?.status === 401) {
+                if (err instanceof AxiosError && (err.response?.status === 401 || err.status === 401)) {
                     return null;
                 }
                 throw err;
