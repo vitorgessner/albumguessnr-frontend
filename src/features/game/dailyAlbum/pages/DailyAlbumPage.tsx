@@ -133,7 +133,7 @@ export const DailyAlbumPage = () => {
         document.title = 'Daily Album';
     }, []);
 
-    const { data, isPending, error } = useQuery<{
+    const { data, isPending, error } = useQuery<{ 
         dailyAlbumNumber: number;
         dailyAlbumTotalGuessesCount: number;
     }>({
@@ -141,7 +141,7 @@ export const DailyAlbumPage = () => {
         queryFn: async () => {
             const response = await axios.get('/daily/stats');
             resetSessionGuard();
-            void queryClient.invalidateQueries({ queryKey: ['user'] })
+            await queryClient.invalidateQueries({ queryKey: ['user'] })
             resetSessionGuard();
             return response.data;
         },

@@ -118,7 +118,7 @@ export const SearchBar = ({
                 tries: newRows.length,
                 isFinished: true,
             };
-            await axios.put(`/daily/album/overall/statistics`, data);
+            await axios.put(`/daily/album/overall/statistics`, data, {withCredentials: true});
 
             await queryClient.invalidateQueries({ queryKey: ['daily-stats'] });
             await queryClient.invalidateQueries({ queryKey: ['daily', user?.id] });
