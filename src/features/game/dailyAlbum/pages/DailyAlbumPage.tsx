@@ -141,10 +141,9 @@ export const DailyAlbumPage = () => {
         queryFn: async () => {
             const response = await axios.get('/daily/stats');
             resetSessionGuard();
-            await queryClient.invalidateQueries({ queryKey: ['user'] })
+            void queryClient.invalidateQueries({ queryKey: ['user'] })
             return response.data;
         },
-        staleTime: Infinity
     });
 
     if (isPending) return <div className="loading">Loading daily album...</div>;

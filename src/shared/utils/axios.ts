@@ -11,7 +11,7 @@ axiosInstance.defaults.withCredentials = true;
 let refreshPromise: Promise<unknown> | null = null;
 let sessionsExpired = false;
 
-const AUTH_PAGES = ['/auth/login', '/auth/register', '/daily-album'];
+const AUTH_PAGES = ['/auth/login', '/auth/register', '/daily-album', '/'];
 
 const handleDeadSession = () => {
     if (sessionsExpired) return;

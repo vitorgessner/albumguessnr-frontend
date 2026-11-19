@@ -9,16 +9,16 @@ const useUser = () => {
     const { setIsAuthenticated, setInitialized } = useAuthStore();
     const { data, isPending, error, isSuccess, isLoading, isError } = useQuery({
         queryKey: ['user'],
-        queryFn: () => {
-            const response: Promise<IUser | undefined | null> = axios
-                .get('/me')
-                .then((res) => res.data.user)
-                .catch((err) => {
-                    console.log(err);
-                    if (err instanceof AxiosError && err.status === 401) return null;
-                    throw err;
-                });
-            return response;
+        queryFn: async () => {
+            try {
+                const res = await axios.get('/me');
+                return (res.data.user ?? null) as IUser | null;
+            } catch (err) {
+                if (err instanceof AxiosError && err.response?.status === 401) {
+                    return null;
+                }
+                throw err;
+            }
         },
         retry: false,
     });
