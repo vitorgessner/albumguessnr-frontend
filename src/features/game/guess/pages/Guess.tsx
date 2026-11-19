@@ -126,7 +126,9 @@ const GuessContent = ({ user }: { user: IUser }) => {
     const { resetField: resetTrack } = useForm<TrackType>();
 
     const { currentAlbum, nextAlbum, guess, reset } = useCompare(resetField, setFocus);
-    preload(nextAlbum.album.cover_url, { as: 'image' })
+    if (nextAlbum) {
+        preload(nextAlbum.album.cover_url, { as: 'image' })
+    }
     const formRef = useRef<HTMLFormElement>(null);
     const { startTimer, pauseTimer, clearTimer, seconds, minutes } = useTimer();
     const [index, setIndex] = useState<number | undefined>();
