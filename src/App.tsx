@@ -41,7 +41,7 @@ const App = () => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center md:justify-start">
-                        <Link to={import.meta.env.DEV ? 'http://127.0.0.1:5173/daily-album' : 'https://albumguessnr.com/daily-album'} className="inline-flex items-center justify-center gap-2 px-8 py-4 font-heading font-black text-lg text-white bg-primary border-3 border-terra-dark rounded-xl shadow-[4px_4px_0_var(--terra-dark)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--terra-dark)] transition-all text-nowrap">
+                        <Link to={"/daily-album"} className="inline-flex items-center justify-center gap-2 px-8 py-4 font-heading font-black text-lg text-white bg-primary border-3 border-terra-dark rounded-xl shadow-[4px_4px_0_var(--terra-dark)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_var(--terra-dark)] transition-all text-nowrap">
                             Guess Daily Album <Gamepad2 className="w-5 h-5" />
                         </Link>
                         <Link

@@ -191,7 +191,7 @@ const Header = () => {
                     await new Promise(resolve => setTimeout(resolve, 300));
                     location.reload();
                 }
-            },
+            }
         });
     }, []);
 
