@@ -27,11 +27,19 @@ import { LogErrorModal } from '../../album/components/LogErrorModal';
 import { AxiosError } from 'axios';
 import { Progress } from '@/components/ui/progress';
 import { useSyncStatusStore } from '../stores/useSyncStatusStore';
+import { useNavigate } from 'react-router';
 
 export type Sheet = 'config' | 'friends' | 'tracklist' | null;
 
 const Guess = () => {
     const { data: user, isPending, error } = useUser();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user?.mainAccount) {
+            navigate(`/profile/${user?.profile.username}/edit?error=Connect a provider to start guessing your albums`)
+        }
+    }, [navigate, user?.mainAccount, user?.profile])
 
     if (isPending) return <div className="loading">Loading...</div>;
     if (error instanceof AxiosError) return <div className="loading text-(--error-text)">{error.response?.data.message}</div>;
