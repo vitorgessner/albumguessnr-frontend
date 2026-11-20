@@ -24,36 +24,45 @@ import { PrivacyPolicy } from './shared/pages/PrivacyPolicy.tsx';
 import { Analytics } from './shared/components/Analytics.tsx';
 import { DailyAlbumPage } from './features/game/dailyAlbum/pages/DailyAlbumPage.tsx';
 
-createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <SkeletonTheme baseColor="#DAC3BB" highlightColor="#ebd9d4">
-                <BrowserRouter>
-                    <Analytics />
-                    <Routes>
-                        <Route element={<Header />}>
-                            <Route path="/" element={<App />} />
-                            <Route path="/leaderboards" element={<Leaderboards />} />
+if (
+    import.meta.env.PROD &&
+    window.location.hostname === 'albumguessnr.com'
+) {
+    window.location.replace(
+        `https://www.albumguessnr.com${window.location.pathname}${window.location.search}${window.location.hash}`
+    );
+} else {
+    createRoot(document.getElementById('root')!).render(
+        <StrictMode>
+            <QueryClientProvider client={queryClient}>
+                <SkeletonTheme baseColor="#DAC3BB" highlightColor="#ebd9d4">
+                    <BrowserRouter>
+                        <Analytics />
+                        <Routes>
+                            <Route element={<Header />}>
+                                <Route path="/" element={<App />} />
+                                <Route path="/leaderboards" element={<Leaderboards />} />
                                 <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
-                            <Route element={<UnprotectedRoute />}>
-                                <Route path="/auth/register" element={<Register />} />
-                                <Route path="/auth/login" element={<Login />} />
-                                <Route path="/auth/forgot" element={<Forgot />} />
-                                <Route path="/test" element={<Test />} />
-                                <Route path="/auth/passwordChange/:passwordResetToken" element={<PasswordChange />} />
-                                <Route path="/verify/:token" element={<VerifyToken />} />
+                                <Route element={<UnprotectedRoute />}>
+                                    <Route path="/auth/register" element={<Register />} />
+                                    <Route path="/auth/login" element={<Login />} />
+                                    <Route path="/auth/forgot" element={<Forgot />} />
+                                    <Route path="/test" element={<Test />} />
+                                    <Route path="/auth/passwordChange/:passwordResetToken" element={<PasswordChange />} />
+                                    <Route path="/verify/:token" element={<VerifyToken />} />
+                                </Route>
+                                <Route path="/profile/:username" element={<Profile />} />
+                                <Route path="/daily-album/" element={<DailyAlbumPage />} />
+                                <Route element={<ProtectedRoute />}>
+                                    <Route path="/profile/:username/edit" element={<EditProfile />} />
+                                    <Route path="/guess" element={<Guess />} />
+                                </Route>
                             </Route>
-                            <Route path="/profile/:username" element={<Profile />} />
-                            <Route path="/daily-album/" element={<DailyAlbumPage />} />
-                            <Route element={<ProtectedRoute />}>
-                                <Route path="/profile/:username/edit" element={<EditProfile />} />
-                                <Route path="/guess" element={<Guess />} />
-                            </Route>
-                        </Route>
-                        <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
-                </BrowserRouter>
-            </SkeletonTheme>
-        </QueryClientProvider>
-    </StrictMode>
-);
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </BrowserRouter>
+                </SkeletonTheme>
+            </QueryClientProvider>
+        </StrictMode>
+    );
+}
