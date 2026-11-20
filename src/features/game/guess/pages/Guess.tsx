@@ -55,6 +55,12 @@ const GuessSync = ({ user }: { user: IUser }) => {
     const syncing = status === 'SYNCING';
     const progress = albumsCount ? Math.min(100, (albumsCount / 150) * 100) : 0;
 
+    useEffect(() => {
+        if (albums.length === 0 && (albumsCount ?? 0) > 0) {
+            queryClient.invalidateQueries({ queryKey: ['albums', user.profile.displayUsername] });
+        }
+    }, [albums.length, albumsCount, user.profile.displayUsername]);
+
     const {
         isLoading: isAlbumsLoading,
         isRefetching,
@@ -63,18 +69,47 @@ const GuessSync = ({ user }: { user: IUser }) => {
         queryKey: ['albums', user.profile.displayUsername],
         queryFn: async () => {
             const response = await axios.get<FetchResponse>('/integration/albums');
-            const current = useGuessStore.getState().albums;
+            console.log('[DEBUG /integration/albums]', {
+                raw: response.data,
+                albumsField: response.data?.albums,
+                storeBefore: useGuessStore.getState().albums,
+            });
+            const store = useGuessStore.getState();
+            const current = store.albums;
+            const currentAlbumId = current[store.index ?? 0]?.albumId;
+
             if (current.length === 0) {
-                shuffle(response.data.albums);
-                setAlbums(response.data.albums);
-            } else {
-                const known = new Set(current.map((a) => a.albumId));
-                const fresh = response.data.albums.filter((a) => !known.has(a.albumId));
-                shuffle(fresh);
-                setAlbums([...fresh]);
+                const shuffled = [...response.data.albums];
+                shuffle(shuffled);
+                if (shuffled.length > 1 && shuffled[0].albumId === currentAlbumId) {
+                    const swapIdx = shuffled.findIndex((a) => a.albumId !== currentAlbumId);
+                    if (swapIdx > 0) {
+                        [shuffled[0], shuffled[swapIdx]] = [shuffled[swapIdx], shuffled[0]];
+                    }
+                }
+                setAlbums(shuffled);
+                return response.data.albums;
             }
+
+            const known = new Set(current.map((a) => a.albumId));
+            const fresh = response.data.albums.filter((a) => !known.has(a.albumId));
+
+            if (fresh.length === 0) {
+                return response.data.albums;
+            }
+
+            shuffle(fresh);
+            const nextList = [...current, ...fresh];
+
+            if (nextList.length > 1 && nextList[0]?.albumId === currentAlbumId) {
+                const first = nextList.shift()!;
+                nextList.push(first);
+            }
+
+            setAlbums(nextList);
             return response.data.albums;
         },
+
         refetchInterval: albums.length <= 0 ? 10000 : false,
         gcTime: 0,
         staleTime: 0,
@@ -97,10 +132,18 @@ const GuessSync = ({ user }: { user: IUser }) => {
         queryFn: async () => {
             const response = await axios.get<AlbumsQuantityResponse>('/integration/albums/quantity');
             if (response.data.quantity < 100 || !response.data.lastAlbumsSync || new Date(response.data.lastAlbumsSync).getTime() + (1000 * 60 * 60 * 24 * 28) < new Date().getTime()) {
-                await axios.get('/sync');
-                sessionStorage.setItem('syncWatchUntil', String(new Date().getTime() + 2 * 60 * 1000));
-                await queryClient.invalidateQueries({ queryKey: ['sync-status'] });
-                return response.data.quantity;
+                try {
+                    await axios.get('/sync');
+                    sessionStorage.setItem('syncWatchUntil', String(Date.now() + 2 * 60 * 1000));
+                    useSyncStatusStore.getState().setStatus('SYNCING');
+                    await queryClient.invalidateQueries({ queryKey: ['sync-status'] });
+                } catch (err) {
+                    if (err instanceof AxiosError && err.response?.status === 403) {
+                        sessionStorage.removeItem('syncWatchUntil');
+                        return response.data.quantity;
+                    }
+                    throw err;
+                }
             }
             return response.data.quantity;
         },
@@ -121,7 +164,7 @@ const GuessSync = ({ user }: { user: IUser }) => {
         );
     }
 
-    if (isRefetching) return <div className="loading">Loading more albums...</div>;
+    if (albums.length === 0 && isRefetching) return <div className="loading">Loading more albums...</div>;
 
     return <GuessContent user={user} />;
 };
