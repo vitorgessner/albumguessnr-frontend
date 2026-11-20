@@ -4,8 +4,6 @@ import axios from '@/shared/utils/axios';
 import { useQuery } from '@tanstack/react-query';
 
 interface IFriendStatus {
-    sentRequestsId: string;
-    receivedRequestsId: string;
     stat: 'FRIEND' | 'PENDING' | 'DENIED';
     timesRequested: number;
     timesRejected: number;
@@ -26,6 +24,7 @@ export interface IFriendsResponse {
     status: string;
     message: string;
     friendStatus: IFriendStatus;
+    profile: IProfile;
 }
 
 const useUserRelated = () => {
@@ -35,12 +34,15 @@ const useUserRelated = () => {
 };
 
 const useUserRelatedContent = (username: string | null | undefined) => {
-    const { data: friend, error, isPending, isLoading } = useQuery<IFriendStatus>({
+    const { data: friend, error, isPending, isLoading } = useQuery({
         queryKey: ['friend', username],
-        queryFn: () =>
-            axios
-                .get<IFriendsResponse>(`/friend/${username}/status`)
-                .then((res) => res.data.friendStatus),
+        queryFn: async () => {
+            const response = await axios.get<IFriendsResponse>(`/friend/${username}/status`);
+            return {
+                friendStatus: response.data.friendStatus,
+                profile: response.data.profile,
+            }
+        },
         enabled: !!username,
     });
 
@@ -51,7 +53,7 @@ const useRelations = (profile: IProfile | undefined, isProfileLoading: boolean) 
     const { data: user, isLoading: isUserLoading } = useUser();
     const { friend, isLoading: isFriendLoading } = useUserRelatedContent(profile?.username);
 
-    const isOwnProfile = user?.id === profile?.user.id;
+    const isOwnProfile = user?.profile.username === profile?.username;
 
     const isLoading = isProfileLoading || isUserLoading || isFriendLoading
 
@@ -62,17 +64,17 @@ const useRelations = (profile: IProfile | undefined, isProfileLoading: boolean) 
             isPending: false,
             isRequested: false,
             isDenied: false,
-            isNotRelated: !isLoading,
+            isNotRelated: !isLoading,   
             isLoading: Boolean(isLoading)
         };
 
-    const isFriend = friend?.stat === 'FRIEND';
+    const isFriend = friend?.friendStatus?.stat === 'FRIEND';
 
-    const isPending = friend?.stat === 'PENDING' && friend.sentRequestsId === user?.id;
+    const isRequested = friend?.friendStatus?.stat === 'PENDING' && friend.friendStatus?.receivedRequests.profile.username === user?.profile.username;
 
-    const isRequested = friend?.stat === 'PENDING' && friend.sentRequestsId === profile?.user.id;
+    const isPending = friend?.friendStatus?.stat === 'PENDING' &&  profile?.username === friend.friendStatus?.receivedRequests.profile.username
 
-    const isDenied = friend.stat === 'DENIED';
+    const isDenied = friend.friendStatus?.stat === 'DENIED';
 
     return {
         isOwnProfile,

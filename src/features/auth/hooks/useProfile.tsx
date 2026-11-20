@@ -9,15 +9,12 @@ interface IProfileResponse {
 }
 
 export interface IProfile {
-    id: string;
     username: string;
     displayUsername: string;
     bio: string;
     avatar_url: string;
     user: {
         userStats: {
-            id: string,
-            userId: string,
             totalScore: number,
             guessedAlbums: number,
             guessedDistinctAlbums: number,
@@ -32,8 +29,6 @@ export interface IProfile {
             rightGuessedTracks: number
         }
         createdAt: Date;
-        id: string;
-        totalScore: number;
     };
 };
 

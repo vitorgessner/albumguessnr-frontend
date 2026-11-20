@@ -5,8 +5,6 @@ export interface RecentPlayersResponse {
 }
 
 export interface RecentPlayers {
-    id: string;
-    userId: string;
     albumId: string;
     date: Date;
     totalScore: number;

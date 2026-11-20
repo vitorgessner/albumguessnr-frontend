@@ -186,9 +186,9 @@ const App = () => {
                         {recentPlayers?.map((rp, i) => (
                             <GuessRow
                                 player={rp}
-                                isMe={user.id === rp.userId}
+                                isMe={user.profile.username === rp.user.profile.username}
                                 idx={i}
-                                key={rp.id}
+                                key={i}
                             />
                         ))}
                         {!recentPlayers ||

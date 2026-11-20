@@ -74,7 +74,7 @@ const LeaderboardContent = ({
                 <div className={`px-2 ${location.pathname === '/leaderboards' ? 'pt-4' : 'pt-0'}`}>
                     <div className={`${!unique ? 'grid grid-cols-3 gap-1 items-end' : 'flex justify-center'}`}>
                         {top3.map((user, i) => (
-                            <PodiumCard key={user.userId} user={user} idx={i} unique={unique}/>
+                            <PodiumCard key={i} user={user} idx={i} unique={unique}/>
                         ))}
                     </div>
                 </div>
@@ -83,8 +83,8 @@ const LeaderboardContent = ({
             {rest.length > 0 && (
                 <div className="bg-card border border-border rounded-xl overflow-hidden">
                     {rest.map((user, i) => limit ? i < 7 ? (
-                        <RankRow key={user.userId} user={user} idx={i + 3} isMe={loggedUser?.id === user.userId}/>
-                    ) : null : <RankRow key={user.userId} user={user} idx={i + 3} isMe={loggedUser?.id === user.userId}/>)}
+                        <RankRow key={i} user={user} idx={i + 3} isMe={loggedUser?.profile.username === user.username}/>
+                    ) : null : <RankRow key={i} user={user} idx={i + 3} isMe={loggedUser?.profile.username === user.username}/>)}
                 </div>
             )}
         </div>

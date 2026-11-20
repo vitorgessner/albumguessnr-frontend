@@ -45,7 +45,7 @@ const FriendsLeaderboard = () => {
                     </li>
                 ) : (
                     friends.map((friend, i) => {
-                        const isMe = friend.receivedRequestsId === user?.id;
+                        const isMe = friend.receivedRequests.profile.username === user?.profile.username;
                         const friendProfile = friend.receivedRequests.profile;
                         return (
                             <Link

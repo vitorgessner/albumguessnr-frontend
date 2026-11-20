@@ -9,8 +9,6 @@ import Skeleton from 'react-loading-skeleton';
 import useFriends from '../hooks/useFriends';
 
 interface IFriendRequest {
-    sentRequestsId: string;
-    receivedRequestsId: string;
     stat: string;
     timesRequested: number;
     timesRejected: number;
@@ -31,9 +29,8 @@ const RequestButton = () => {
     const queryClient = useQueryClient();
 
     const { mutate: request } = useMutation<IFriendRequestResponse, ErrorResponse, void>({
-        mutationFn: () => axios.post(`/friend/${profile?.user.id}`).then((res) => res.data),
+        mutationFn: () => axios.post(`/friend/${profile?.username}`).then((res) => res.data),
         onSuccess: () => {
-            console.log(profile?.username);
             return queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] });
         },
         onError: (err) => {
@@ -45,7 +42,7 @@ const RequestButton = () => {
     });
 
     const { mutate: unfriend } = useMutation<FormResponse, ErrorResponse, void>({
-        mutationFn: () => axios.delete(`/friend/${profile?.user.id}`).then((res) => res.data),
+        mutationFn: () => axios.delete(`/friend/${profile?.username}`).then((res) => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] });
             queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] });
@@ -53,12 +50,13 @@ const RequestButton = () => {
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
+                toast.error(err.response.data.message);
             }
         },
     });
 
     const { mutate: accept } = useMutation<FormResponse, ErrorResponse, void>({
-        mutationFn: () => axios.post(`/friend/accept/${profile?.user.id}`).then((res) => res.data),
+        mutationFn: () => axios.post(`/friend/accept/${profile?.username}`).then((res) => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] });
             queryClient.invalidateQueries({ queryKey: ['friends', profile?.username] });
@@ -66,26 +64,29 @@ const RequestButton = () => {
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
+                toast.error(err.response.data.message);
             }
         },
     });
 
     const { mutate: dismiss } = useMutation<FormResponse, ErrorResponse, void>({
-        mutationFn: () => axios.post(`/friend/deny/${profile?.user.id}`).then((res) => res.data),
+        mutationFn: () => axios.post(`/friend/deny/${profile?.username}`).then((res) => res.data),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] }),
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
+                toast.error(err.response.data.message);
             }
         },
     });
 
     const { mutate: cancel } = useMutation<FormResponse, ErrorResponse, void>({
-        mutationFn: () => axios.patch(`/friend/${profile?.user.id}`).then((res) => res.data),
+        mutationFn: () => axios.patch(`/friend/${profile?.username}`).then((res) => res.data),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['friend', profile?.username] }),
         onError: (err) => {
             if (err instanceof AxiosError && err.response?.data) {
                 console.error(err);
+                toast.error(err.response.data.message);
             }
         },
     });

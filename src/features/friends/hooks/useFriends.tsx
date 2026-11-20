@@ -8,14 +8,11 @@ interface IUseFriendsResponse {
 }
 
 interface IFriends {
-    sentRequestsId: string;
-    receivedRequestsId: string;
     stat: 'FRIEND' | 'PENDING' | 'DENIED' | 'CANCELLED_REQUEST';
     timesRequested: number;
     timesRejected: number;
     lastRequestedAt: Date;
     receivedRequests: {
-        id: string;
         createdAt: Date;
         userStats: {
             totalScore: number;
@@ -35,7 +32,7 @@ export interface IUseFriendsAlbumsResponse {
 }
 
 export interface IFriendsAlbums {
-    id: string;
+    id: null,
     profile: {
         avatar_url: string;
         username: string;

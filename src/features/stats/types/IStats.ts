@@ -1,6 +1,4 @@
 export interface IStats {
-    id: string;
-    userId: string;
     totalScore: number;
     guessedAlbums: number;
     guessedArtists: number;

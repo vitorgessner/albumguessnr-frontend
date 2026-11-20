@@ -19,7 +19,6 @@ const EditProfile = () => {
     const [, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [providerError, setProviderError] = useState<string | null>(null);
-    const [mainProvider, setMainProvider] = useState(user?.mainAccountId);
 
     useEffect(() => {
         document.title = 'Edit profile | ' + user?.profile.username;
@@ -68,16 +67,6 @@ const EditProfile = () => {
         mutate(formData);
         if (preview) URL.revokeObjectURL(preview);
     };
-
-    useEffect(() => {
-        const setProvider = () => {
-            if (user?.mainAccountId) {
-                setMainProvider(user.mainAccountId);
-            }
-        }
-
-        setProvider();
-    }, [user]);
 
     const hasRun = useRef(false);
 
@@ -251,7 +240,7 @@ const EditProfile = () => {
                     </p>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <ConnectLastfm mainAccountId={mainProvider} />
+                    <ConnectLastfm />
                     <a href="https://www.last.fm" target='_blank' className="text-sm text-navy underline">Powered by AudioScrobbler</a>
                     <p className="text-right text-sm text-red-600">{providerError}</p>
                 </div>

@@ -3,7 +3,7 @@ import useUser from '../hooks/useUser';
 import { X } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
-export const ConnectLastfm = ({ mainAccountId }: { mainAccountId?: string | null }) => {
+export const ConnectLastfm = () => {
     const { data: user } = useUser();
     const queryClient = useQueryClient();
 
@@ -28,8 +28,7 @@ export const ConnectLastfm = ({ mainAccountId }: { mainAccountId?: string | null
                 </button>
             )}
 
-            {lastfmAccount &&
-                (lastfmAccount.id === mainAccountId ? (
+            {lastfmAccount && (
                     <div className="flex flex-col gap-2">
                         <button
                             onClick={disconnectLastfm}
@@ -42,17 +41,7 @@ export const ConnectLastfm = ({ mainAccountId }: { mainAccountId?: string | null
                             </span>
                         </button>
                     </div>
-                ) : (
-                    <div className="flex flex-col gap-2">
-                        <button
-                            onClick={disconnectLastfm}
-                            className="providerButton lastfm-component flex gap-1 items-center text-white"
-                        >
-                            <X size={30} />
-                            {lastfmAccount?.displayUsername} on Lastfm
-                        </button>
-                    </div>
-                ))}
+                )}
         </>
     );
 };

@@ -15,8 +15,8 @@ const Profile = () => {
     const { data: user } = useUser();
 
     useEffect(() => {
-        document.title = "Profile | " + user?.profile.displayUsername;
-    }, [user?.profile.displayUsername])
+        document.title = "Profile | " + profile?.displayUsername;
+    }, [profile?.displayUsername])
 
     if (userError)
         return (
@@ -50,12 +50,6 @@ const Profile = () => {
                                 <h1 className="text-2xl font-black font-heading tracking-tight text-navy leading-tight truncate">
                                     {profile.displayUsername}
                                 </h1>
-                                {/* <p className="text-xs text-muted-foreground mt-0.5">
-                                    <span className="font-bold text-terra-dark">
-                                        {profile.user.lastfmIntegration.lastfmDisplayUsername}
-                                    </span>{' '}
-                                    on Last.fm
-                                </p> */}
                             </div>
                         </div>
 
@@ -108,7 +102,7 @@ const Profile = () => {
                             Member since {creationDate}
                         </p>
 
-                        {user && <RequestButton />}
+                        {user && !user.isGuest && <RequestButton />}
                     </article>
                 </section>
 
