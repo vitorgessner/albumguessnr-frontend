@@ -97,7 +97,7 @@ export const PrivacyPolicy = () => {
                     <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
                         Política de cookies
                     </h2>
-                    <p className='my-3 mx-0'>Esta é a Política de Cookies do AlbumGuessnr, acessível em <a href='albumguessnr.com'>albumguessnr.com</a>. Cookies são pequenos arquivos que o site grava no seu navegador para funcionar e para entender como é usado.</p>
+                    <p className='my-3 mx-0'>Esta é a Política de Cookies do AlbumGuessnr, acessível em <a href='https://www.albumguessnr.com'>albumguessnr.com</a>. Cookies são pequenos arquivos que o site grava no seu navegador para funcionar e para entender como é usado.</p>
                     <table className='border-collapse'>
                         <thead>
                             <tr>
@@ -158,7 +158,7 @@ export const PrivacyPolicy = () => {
                                     cc_cookie
                                 </td>
                                 <td>
-                                    albumguessnr.com
+                                    www.albumguessnr.com
                                 </td>
                                 <td>
                                     Guarda suas escolhas sobre cookies.
@@ -175,7 +175,7 @@ export const PrivacyPolicy = () => {
                                     _ga e {'_ga<ID>'}
                                 </td>
                                 <td>
-                                    albumguessnr.com (Google Analytics)
+                                    www.albumguessnr.com (Google Analytics)
                                 </td>
                                 <td>
                                     Distingue visitantes e sessões para estatísticas de uso, com finalidade acadêmica.
@@ -271,7 +271,7 @@ export const PrivacyPolicy = () => {
                     <h2 className="text-xl mt-9 border-b border-b-primary pb-1">
                         Cookie Policy
                     </h2>
-                    <p className='my-3 mx-0'>This is the Cookie Policy for AlbumGuessnr, accessible at <a href='albumguessnr.com'>albumguessnr.com</a>. Cookies are small files that the site stores in your browser so it can work and so we can understand how it is used.</p>
+                    <p className='my-3 mx-0'>This is the Cookie Policy for AlbumGuessnr, accessible at <a href='https://www.albumguessnr.com'>www.albumguessnr.com</a>. Cookies are small files that the site stores in your browser so it can work and so we can understand how it is used.</p>
                     <table className='border-collapse'>
                         <thead>
                             <tr>
@@ -332,7 +332,7 @@ export const PrivacyPolicy = () => {
                                     cc_cookie
                                 </td>
                                 <td>
-                                    albumguessnr.com
+                                    www.albumguessnr.com
                                 </td>
                                 <td>
                                     Stores your cookie choices.
@@ -349,7 +349,7 @@ export const PrivacyPolicy = () => {
                                     _ga e {'_ga<ID>'}
                                 </td>
                                 <td>
-                                    albumguessnr.com (Google Analytics)
+                                    www.albumguessnr.com (Google Analytics)
                                 </td>
                                 <td>
                                     Distinguishes visitors and sessions for usage statistics, for academic purposes.
