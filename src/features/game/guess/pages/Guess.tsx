@@ -69,11 +69,6 @@ const GuessSync = ({ user }: { user: IUser }) => {
         queryKey: ['albums', user.profile.displayUsername],
         queryFn: async () => {
             const response = await axios.get<FetchResponse>('/integration/albums');
-            console.log('[DEBUG /integration/albums]', {
-                raw: response.data,
-                albumsField: response.data?.albums,
-                storeBefore: useGuessStore.getState().albums,
-            });
             const store = useGuessStore.getState();
             const current = store.albums;
             const currentAlbumId = current[store.index ?? 0]?.albumId;
