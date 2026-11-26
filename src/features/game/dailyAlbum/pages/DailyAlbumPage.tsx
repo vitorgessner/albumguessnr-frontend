@@ -84,7 +84,7 @@ export const DailyAlbumPageContent = ({
 
     return (
         <div className="pb-20 px-4 py-6 selection:bg-amber/80">
-            <div ref={divRef} className="max-w-4xl mx-auto flex flex-col gap-5">
+            <div className="max-w-4xl mx-auto flex flex-col gap-5">
                 <Header totalGuessesCount={totalGuessesCount} />
 
                 {!isFinished && (
@@ -93,7 +93,6 @@ export const DailyAlbumPageContent = ({
                         isFinished={isFinished}
                         setGuessRows={setGuessRows}
                         setIsFinished={setIsFinished}
-                        divRef={divRef}
                     />
                 )}
 
@@ -118,6 +117,7 @@ export const DailyAlbumPageContent = ({
                             tries={tryCount}
                             row={findCorrectDailyAlbum(guessRows)}
                             nthPlayer={nthPlayerToGuess ?? null}
+                            divRef={divRef}
                         />}
                         {isFinished && guessRows.length > 0 && <ShareCard dailyAlbumNumber={dailyAlbumNumber} guessRows={guessRows} />}
                     </div>

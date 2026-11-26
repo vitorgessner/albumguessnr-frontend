@@ -12,6 +12,7 @@ import appendToFormData from '../utils/appendToFormData';
 import { useEffect, useRef, useState } from 'react';
 import { ConnectLastfm } from '../components/ConnectLastfm';
 import { getDaysUntilNextSync } from '../utils/getDaysUntilNextSync';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const EditProfile = () => {
     const { data: user, isPending: isUserPending, error } = useUser();
@@ -242,12 +243,19 @@ const EditProfile = () => {
                 <div className="flex flex-col gap-2">
                     <ConnectLastfm />
                     <a href="https://www.last.fm" target='_blank' className="text-sm text-navy underline">Powered by AudioScrobbler</a>
-                    <p className="text-right text-sm text-red-600">{providerError}</p>
                 </div>
                 <div className='text-sm'>
                     {lastSyncedAt && <p>Last synced at: {new Date(lastSyncedAt).toLocaleDateString('en-US')}</p>}
                     {days && <p>Next sync in: {days} days</p>}
                 </div>
+                <Dialog open={providerError ? true : false} onOpenChange={() => setProviderError(null)}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle className='text-lg font-heading font-bold'>Error</DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription className='text-red-600 font-heading font-bold'>{providerError}</DialogDescription>
+                    </DialogContent>
+                </Dialog>
             </article>
         </main>
     );

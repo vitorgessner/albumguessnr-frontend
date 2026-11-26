@@ -1,5 +1,5 @@
 import { Eye, Search, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
 import axios from '@/shared/utils/axios';
 import type { GuessRow } from '../types/GuessRow';
@@ -14,7 +14,6 @@ type SearchBarProps = {
     setGuessRows: React.Dispatch<React.SetStateAction<GuessRow[]>>;
     isFinished: boolean;
     setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
-    divRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export const SearchBar = ({
@@ -22,7 +21,6 @@ export const SearchBar = ({
     setGuessRows,
     isFinished,
     setIsFinished,
-    divRef,
 }: SearchBarProps) => {
     const { data: user } = useUser();
     const [query, setQuery] = useState('');
@@ -60,16 +58,6 @@ export const SearchBar = ({
             }
         }
     };
-
-    useEffect(() => {
-        if (divRef && !divRef.current) return;
-
-        const div = divRef.current;
-        const banner = div?.querySelector('resultBannerDiv resultBanner');
-        if (!banner) return;
-
-        banner.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }, [divRef]);
 
     const handleSearch = (value: string) => {
         setQuery(value);
@@ -123,14 +111,6 @@ export const SearchBar = ({
             await queryClient.invalidateQueries({ queryKey: ['daily-stats'] });
             await queryClient.invalidateQueries({ queryKey: ['daily', user?.id] });
             await queryClient.invalidateQueries({ queryKey: ['overall', user?.id] });
-
-            if (divRef && !divRef.current) return;
-
-            const div = divRef.current;
-            const banner = div?.querySelector('resultBannerDiv resultBanner');
-            if (!banner) return;
-
-            banner.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
     };
 

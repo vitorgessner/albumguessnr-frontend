@@ -1,15 +1,18 @@
 import { useTimerToMidnightUtc } from '../hooks/useTimerToMidnightUtc';
 import { AwardIcon } from 'lucide-react';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
+import { useEffect } from 'react';
 
 export const ResultBanner = ({
     tries,
     row,
     nthPlayer,
+    divRef,
 }: {
     tries: number;
     row: {album: AlbumCandidate | undefined, cover_url: string | undefined};
     nthPlayer: number | null;
+    divRef: React.RefObject<HTMLDivElement | null>
 }) => {
     const string = (nthPlayer ?? 1).toString();
     const ordinal =
@@ -23,8 +26,16 @@ export const ResultBanner = ({
 
     const timeLeft = useTimerToMidnightUtc();
     const album = row.album;
+
+    useEffect(() => {
+        if (divRef.current) {
+            divRef.current.scrollIntoView({ block: 'center', behavior: 'smooth', })
+        }
+    }, [divRef])
+    
     return (
         <div
+            ref={divRef}
             className={`resultBanner max-w-md w-full mx-auto rounded-xl border-2 p-4 flex flex-col items-center gap-3 text-center shadow-[3px_3px_0_var(--sage-dark)] bg-sage/20 border-success`}
         >
             <span className="text-4xl"><AwardIcon size={46} stroke='#5d8f7a'/></span>
