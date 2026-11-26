@@ -37,7 +37,7 @@ const Guess = () => {
 
     useEffect(() => {
         if (!user?.mainAccount) {
-            navigate(`/profile/${user?.profile.username}/edit?error=Connect a provider to start guessing your albums`)
+            navigate(`/profile/${user?.profile.username}/edit?error=Connect a provider in edit profile to start guessing your albums`)
         }
     }, [navigate, user?.mainAccount, user?.profile])
 

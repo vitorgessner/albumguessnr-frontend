@@ -24,7 +24,7 @@ export const SearchBar = ({
 }: SearchBarProps) => {
     const { data: user } = useUser();
     const [query, setQuery] = useState('');
-    const [candidates, setCandidates] = useState<AlbumCandidate[]>([]);
+    const [candidates, setCandidates] = useState<AlbumCandidate[] | null>([]);
     const [isSearching, setIsSearching] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -70,9 +70,9 @@ export const SearchBar = ({
             setIsSearching(true);
             try {
                 const res = await axios.post('/daily/find', { attempt: value });
-                setCandidates(res.data.possibleAlbums ?? []);
+                setCandidates(res.data.possibleAlbums && res.data.possibleAlbums.length > 0 ? res.data.possibleAlbums : null);
             } catch {
-                setCandidates([]);
+                setCandidates(null);
             } finally {
                 setIsSearching(false);
             }
@@ -106,7 +106,7 @@ export const SearchBar = ({
                 tries: newRows.length,
                 isFinished: true,
             };
-            await axios.put(`/daily/album/overall/statistics`, data, {withCredentials: true});
+            await axios.put(`/daily/album/overall/statistics`, data, { withCredentials: true });
 
             await queryClient.invalidateQueries({ queryKey: ['daily-stats'] });
             await queryClient.invalidateQueries({ queryKey: ['daily', user?.id] });
@@ -143,7 +143,7 @@ export const SearchBar = ({
                     value={query}
                     onChange={(e) => handleSearch(e.target.value)}
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === 'Enter' && candidates) {
                             handleSelect(candidates[0]);
                         }
                     }}
@@ -163,14 +163,22 @@ export const SearchBar = ({
                 )}
             </div>
 
-            {(candidates.length > 0 || isSearching) && (
+            {candidates === null && (
+                <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden max-h-64 overflow-y-auto hover:border-sage active:border-sage selection:border-sage focus:border-sage focus-within:border-sage">
+                    <div className="px-4 py-3 text-sm text-center text-primary font-bold">
+                        No album was found for the query entered
+                    </div>
+                </div>
+            )}
+
+            {(candidates && candidates.length > 0 || isSearching) && (
                 <div className="absolute top-full left-0 right-0 z-20 mt-1 bg-(--card-light) border-2 border-border rounded-xl shadow-[3px_3px_0_var(--border)] overflow-hidden max-h-64 overflow-y-auto hover:border-sage active:border-sage selection:border-sage focus:border-sage focus-within:border-sage">
                     {isSearching ? (
                         <div className="px-4 py-3 text-sm text-muted-foreground text-center">
                             Searching...
                         </div>
                     ) : (
-                        candidates.map((c) => {
+                        candidates?.map((c) => {
                             const alreadyGuessed = guessRows.some((row) => row.album.id === c.id);
                             return (
                                 <button

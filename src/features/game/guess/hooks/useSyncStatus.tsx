@@ -3,11 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useSyncStatusStore, type ISyncStatusStore } from "../stores/useSyncStatusStore";
 import { useEffect } from "react";
 import useAuthStore from "@/features/auth/stores/useAuthStore";
+import useUser from "@/features/auth/hooks/useUser";
 
 const TERMINAL_STATUSES = ['SUCCESS', 'SUCCEEDWITHFAILURE'] as const;
 
 export const useSyncStatus = () => {
-    const { isAuthenticated } = useAuthStore()
+    const { isAuthenticated } = useAuthStore();
+    const { data: user } = useUser();
     const { setAlbumsCount, setCursor, setMaxPages, setStatus } = useSyncStatusStore();
 
     const { data } = useQuery<ISyncStatusStore>({
@@ -28,7 +30,7 @@ export const useSyncStatus = () => {
             return Date.now() < watchUntil ? 4000 : false;
         },
         refetchIntervalInBackground: false,
-        enabled: isAuthenticated
+        enabled: isAuthenticated && !user?.isGuest
     });
 
     useEffect(() => {
