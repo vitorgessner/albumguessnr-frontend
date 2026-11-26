@@ -1,5 +1,5 @@
 import { Eye, Search, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AlbumCandidate } from '../types/AlbumCandidate';
 import axios from '@/shared/utils/axios';
 import type { GuessRow } from '../types/GuessRow';
@@ -8,6 +8,7 @@ import useUser from '@/features/auth/hooks/useUser';
 import { calculatePeriod } from '../utils/calculatePeriod';
 import { calculateArrayCategories } from '../utils/calculateArrayCategories';
 import { isDailyAlbum } from '../utils/isDailyAlbum';
+import { isCancel } from 'axios';
 
 type SearchBarProps = {
     guessRows: GuessRow[];
@@ -27,6 +28,8 @@ export const SearchBar = ({
     const [candidates, setCandidates] = useState<AlbumCandidate[] | null>([]);
     const [isSearching, setIsSearching] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const abortRef = useRef<AbortController | null>(null);
+    const cacheRef = useRef(new Map<string, AlbumCandidate[]>());
 
     const [period, setPeriod] = useState<string>('all-time');
     const [isPeriodCorrect, setIsPeriodCorrect] = useState<boolean>(false);
@@ -62,22 +65,38 @@ export const SearchBar = ({
     const handleSearch = (value: string) => {
         setQuery(value);
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (!value.trim()) {
+        abortRef.current?.abort();
+
+        if (value.trim().length < 2) {
             setCandidates([]);
+            setIsSearching(false);
             return;
         }
         debounceRef.current = setTimeout(async () => {
+            const controller = new AbortController();
+            abortRef.current = controller;
             setIsSearching(true);
             try {
-                const res = await axios.post('/daily/find', { attempt: value });
+                const cached = cacheRef.current.get(value.toLowerCase());
+                if (cached) { setCandidates(cached.length ? cached : null); return; }
+                const res = await axios.post('/daily/find', { attempt: value }, { signal: controller.signal });
                 setCandidates(res.data.possibleAlbums && res.data.possibleAlbums.length > 0 ? res.data.possibleAlbums : null);
-            } catch {
+                cacheRef.current.set(value.toLowerCase(), res.data.possibleAlbums ?? []);
+            } catch (err) {
+                if (isCancel(err)) return;
                 setCandidates(null);
             } finally {
                 setIsSearching(false);
             }
         }, 350);
     };
+
+    useEffect(() => {
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+            abortRef.current?.abort();
+        };
+    }, []);
 
     const handleSelect = async (candidate: AlbumCandidate) => {
         setQuery('');
