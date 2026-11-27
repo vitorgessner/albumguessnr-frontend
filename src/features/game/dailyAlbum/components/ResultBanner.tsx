@@ -1,7 +1,7 @@
 import { useTimerToMidnightUtc } from '../hooks/useTimerToMidnightUtc';
 import { AwardIcon } from 'lucide-react';
-import type { AlbumCandidate } from '../types/AlbumCandidate';
 import { useEffect } from 'react';
+import type { GuessRow } from '../types/GuessRow';
 
 export const ResultBanner = ({
     tries,
@@ -10,7 +10,7 @@ export const ResultBanner = ({
     divRef,
 }: {
     tries: number;
-    row: {album: AlbumCandidate | undefined, cover_url: string | undefined};
+    row: {album: GuessRow | undefined, cover_url: string | undefined};
     nthPlayer: number | null;
     divRef: React.RefObject<HTMLDivElement | null>
 }) => {
@@ -50,23 +50,23 @@ export const ResultBanner = ({
                 <div className='flex items-center gap-3'>
                     <img
                         src={row.cover_url}
-                        alt={album?.name}
+                        alt={album?.title}
                         className="size-16 rounded-lg border-2 border-border object-cover shrink-0"
                     />
                     <div className="text-left min-w-0">
                         <p className="font-black font-heading text-navy truncate">
-                            {album?.name}
+                            {album?.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                            {album?.artists.map((artist) => artist.artist.name).join(', ')}
+                            {album?.artists.values}
                         </p>
                         {album?.year && (
-                            <p className="text-xs text-muted-foreground">{album.year}</p>
+                            <p className="text-xs text-muted-foreground">{album.year.value}</p>
                         )}
                     </div>
                 </div>
-                <a href={`https://rateyourmusic.com/release/album/${album?.normalizedArtist.split(' ').join('-')}/${album?.normalizedName.split(' ').join('-')}`} target='_blank' className="text-xs text-muted-foreground underline">
-                    https://rateyourmusic.com/release/album/{album?.normalizedArtist.split(' ').join('-')}/{album?.normalizedName.split(' ').join('-')}
+                <a href={`https://rateyourmusic.com/release/album/${album?.artists.values.join('-')}/${album?.title.split(' ').join('-')}`} target='_blank' className="text-xs text-muted-foreground underline">
+                    https://rateyourmusic.com/release/album/{album?.artists.values.join('-')}/{album?.title.split(' ').join('-')}
                 </a>
             </div>
             <p className="font-black font-heading text-sm text-navy">

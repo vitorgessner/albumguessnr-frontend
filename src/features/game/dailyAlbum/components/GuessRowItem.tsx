@@ -51,7 +51,6 @@ export const GuessRowItem = ({
     index: number;
     totalRows: number;
 }) => {
-    const { album } = row;
     return (
         <div key={i} className="flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="number min-w-[33px] text-right font-heading text-navy font-black">
@@ -61,7 +60,7 @@ export const GuessRowItem = ({
             <div className="shrink-0 w-14 h-14 rounded-lg border-2 border-border overflow-hidden bg-muted">
                 <img
                     src={row.cover_url}
-                    alt={album.normalizedName}
+                    alt={row.title}
                     className="w-full h-full object-cover"
                 />
 
@@ -71,10 +70,10 @@ export const GuessRowItem = ({
                     className={`${COL_WIDTHS.album} shrink-0 flex flex-col items-center justify-center min-h-[56px] rounded-lg border-2 border-border bg-sidebar-border px-2 py-2 text-center`}
                 >
                     <span className="text-xs font-bold text-navy leading-tight line-clamp-3 break-words w-full">
-                        {album.normalizedName}
+                        {row.title}
                     </span>
                     <span className="flex flex-col text-[10px] text-muted-foreground line-clamp-1 w-full">
-                        {album.normalizedArtist}
+                        {row.artists.values}
                     </span>
                 </div>
 
@@ -83,7 +82,7 @@ export const GuessRowItem = ({
                     direction={row.year.direction}
                     width={COL_WIDTHS.numeric}
                 >
-                    {album.year ?? '—'}
+                    {row.year.value ?? '—'}
                 </Cell>
 
                 <Cell
@@ -91,7 +90,7 @@ export const GuessRowItem = ({
                     direction={row.rymRating.direction}
                     width={COL_WIDTHS.numeric}
                 >
-                    {album.rymRating != null ? Number(album.rymRating).toFixed(2) : '—'}
+                    {row.rymRating.value != null ? Number(row.rymRating.value).toFixed(2) : '—'}
                 </Cell>
 
                 <Cell
@@ -99,25 +98,25 @@ export const GuessRowItem = ({
                     direction={row.rymRanking.direction}
                     width={COL_WIDTHS.numeric}
                 >
-                    {album.rymRanking != null ? `#${album.rymRanking}` : '—'}
+                    {row.rymRanking.value != null ? `#${row.rymRanking.value}` : '—'}
                 </Cell>
 
                 <Cell status={row.artists.status} width={COL_WIDTHS.artist}>
-                    {album.artists
+                    {row.artists.values
                         .filter((_, i) => i < 3)
-                        .map((a) => a.artist.normalizedName)
+                        .map((a) => a)
                         .join(', ') || '—'}
                 </Cell>
 
                 <Cell status={row.genres.status} width={COL_WIDTHS.genre}>
-                    {album.genres
+                    {row.genres.values
                         .filter((_, i) => i < 3)
-                        .map((g) => g.genre.name)
+                        .map((g) => g)
                         .join(', ') || '—'}
                 </Cell>
 
                 <Cell status={row.descriptors.status} width={COL_WIDTHS.text}>
-                    {album.descriptors.filter((_, i) => i < 3).join(', ') || '—'}
+                    {row.descriptors.values.filter((_, i) => i < 3).join(', ') || '—'}
                 </Cell>
             </div>
         </div>

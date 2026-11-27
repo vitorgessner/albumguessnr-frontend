@@ -102,7 +102,7 @@ export const SearchBar = ({
         setQuery('');
         setCandidates([]);
 
-        const alreadyGuessed = guessRows.some((row) => row.album.id === candidate.id);
+        const alreadyGuessed = guessRows.some((row) => row.id === candidate.id);
         if (alreadyGuessed || isFinished) return;
 
         const response = await axios.get(`/daily/row/${candidate.id}`)
@@ -198,7 +198,7 @@ export const SearchBar = ({
                         </div>
                     ) : (
                         candidates?.map((c) => {
-                            const alreadyGuessed = guessRows.some((row) => row.album.id === c.id);
+                            const alreadyGuessed = guessRows.some((row) => row.id === c.id);
                             return (
                                 <button
                                     key={c.id}

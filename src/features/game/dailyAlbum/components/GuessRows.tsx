@@ -62,7 +62,7 @@ export const GuessRows = ({ guessRows }: { guessRows: GuessRow[] }) => {
 
                     {guessRows.map((row, i) => (
                         <GuessRowItem
-                            i={row.album.id + i}
+                            i={row.id + i}
                             row={row}
                             index={i}
                             totalRows={guessRows.length}
